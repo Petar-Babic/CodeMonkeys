@@ -4,7 +4,7 @@
 Nakon analize postojećih rješenja za praćenje napretka u fitnessu, primijetili smo da trenutno ne postoji besplatna, ali ni kvalitetna plaćena verzija koja bi kvalitetno zadovoljila potrebe korisnika, zbog čega smo osmislili ideju za GYM Progress Tracker.
 
 Omogućili bi praćenje napretka u teretani te pružali korisnicima intuitivne i personalizirane funkcionalnosti, s posebnim fokusom na progressive overload i RPE skalu. Progressive overload je ključan princip u teretani jer osigurava kontinuiran napredak u snazi i mišićnoj masi. Povećavanjem težine, broja ponavljanja ili intenziteta vježbi, tijelo se stalno prilagođava većim opterećenjima, što vodi do boljih rezultata. Praćenjem RPE skale te progressive overload-a kroz našu aplikaciju, korisnici bi mogli precizno vidjeti gdje napreduju i identificirati područja koja trebaju dodatno razmatranje u vezi plana treninga. Ovakav uvid omogućava planiranje budućih treninga s ciljem optimizacije rezultata.
->Korisnicima bi bio omogućen upload slike barkoda i pomoću vanjskog servisa dohvatiti informacije o makronutijentima i kalorijama neke namirnice kako bi lakše bilježili dnevni unos.
+Korisnicima bi bio omogućen upload slike barkoda i pomoću vanjskog servisa dohvatiti informacije o makronutijentima i kalorijama neke namirnice kako bi lakše bilježili dnevni unos.
 
 Postojale bi tri razine korisnika (za svaku je potrebna registracija i autorizacija putem OAuth 2.0 standarda): obični korisnik, privatni trener i administrator.
 
@@ -21,7 +21,7 @@ Postojale bi tri razine korisnika (za svaku je potrebna registracija i autorizac
 * Klijent ima opciju angažiranja privatnog trenera
 * Ukoliko je u suradnji sa privatnim trenerom-om ostavljanja recenzije o njemu
 * Za vrijeme suradnje sa privatnim trenerom klijent ostavlja dojme o treningu koji mu je zadao trener, ima pristup kroz kalendar unaprijed definiranim obrocima zadanih od trenera, ostavljanja ključnih informacija o provedenom danu ( kako se osjecao tokom dana, da li je kvalitetno spavao, da li je zadovoljan s prehranom, da li mu je hrana ukusna)
-*Ostavljanje recenzije o treningu svom treneru. Klijent nakon odrađenog treninga ima mogućnost ostaviti poruku svom treneru
+* Ostavljanje recenzije o treningu svom treneru. Klijent nakon odrađenog treninga ima mogućnost ostaviti poruku svom treneru
 
 ## Privatni trener: 
 * Uređivanje planova treninga za klijente: Trener može kreirati ili prilagoditi planove treninga za svakog klijenta posebno. 
