@@ -1,4 +1,4 @@
-# Programsko inženjerstvo
+# Gym Progress Tracking App
 
 > Ime projekta u naslovu ima cilj opisati namjenu projekta te pomoći u podizanju početnog interesa za projekt prezentirajući osnovnu svrhu projekta.
 > Isključivo ovisi o Vama!
@@ -8,23 +8,59 @@
 > Zašto ovaj dokument? Samo manji dio timova je do sada propoznao potrebu (a i meni je lakše pratiti Vaš rad).  
 
 # Opis projekta
-Ovaj projekt je reultat timskog rada u sklopu projeknog zadatka kolegija [Programsko inženjerstvo](https://www.fer.unizg.hr/predmet/proinz) na Fakultetu elektrotehnike i računarstva Sveučilišta u Zagrebu. 
+Nakon analize postojećih rješenja za praćenje napretka u fitnessu, primijetili smo da trenutno ne postoji besplatna, ali ni kvalitetna plaćena verzija koja bi kvalitetno zadovoljila potrebe korisnika, zbog čega smo osmislili ideju za GYM Progress Tracker.
 
-Kratko opisati cilj Vašeg projekta. Vaša motivacija?  (Napomena: odgovor nije »Zato što je to bio zadatak i nismo imali ideje za drugo.«). Koji problem rješavate?
-> Obzirom da je ovo zadani projekt navedite i što želite/jeste novo  naučili.
+Omogućili bi praćenje napretka u teretani te pružali korisnicima intuitivne i personalizirane funkcionalnosti, s posebnim fokusom na progressive overload i RPE skalu. Progressive overload je ključan princip u teretani jer osigurava kontinuiran napredak u snazi i mišićnoj masi. Povećavanjem težine, broja ponavljanja ili intenziteta vježbi, tijelo se stalno prilagođava većim opterećenjima, što vodi do boljih rezultata. Praćenjem RPE skale te progressive overload-a kroz našu aplikaciju, korisnici bi mogli precizno vidjeti gdje napreduju i identificirati područja koja trebaju dodatno razmatranje u vezi plana treninga. Ovakav uvid omogućava planiranje budućih treninga s ciljem optimizacije rezultata.
+>Korisnicima bi bio omogućen upload slike barkoda i pomoću vanjskog servisa dohvatiti informacije o makronutijentima i kalorijama neke namirnice kako bi lakše bilježili dnevni unos.
 
-> Dobro izrađen opis omogućuje vam da pokažete svoj rad drugim programerima, kao i potencijalnim poslodavcima. Ne samo da prvi dojam na stranici opisa često razlikuje dobar projekt od lošeg projekta već i predstavlja dobru praksu koju morate savladati.
+Postojale bi tri razine korisnika (za svaku je potrebna registracija i autorizacija putem OAuth 2.0 standarda): obični korisnik, privatni trener i administrator.
 
 # Funkcijski zahtjevi
-> Navedite ključne zahtjeve Vašeg projekta.
+## Obični korisnik: 
+* Pri prijavi u aplikaciju korisnik unosi svoje trenutne osobine (kilaža, visina, ...) te svoje ciljeve.
+* Postavljanje trening plana: Kreiranje plana treninga s brojem serija, ponavljanjima i RPE (Rate of Perceived Exertion) brojem za svaku vježbu. 
+* Praćenje napretka (progressive overload): Korisnik može pregledavati svoj napredak po tjednima te dobiti uvid u povećanje težina kroz vrijeme na svakoj zasebnoj vježbi.  
+* Tutorijali za vježbe: Vježbe dolaze sa detaljnim opisom izvođenja. 
+* Praćenje treninga uživo: Za vrijeme treninga, korisnik može unositi rezultate (količina podignute težine, broj ponavljanja, RPE), uz opciju pokretanja timera za odmor između serija. 
+* Praćenje kalorija i makronutrijenata: Korisnik može unositi dnevne obroke i pratiti unos kalorija i makronutrijenata (Slično aplikaciji MyFitnessPal). 
+* Postavke korisničkog računa: Uređivanje osobnih podataka (npr. težina, visina) i praćenje statistike o napretku u odnosu na zadane ciljeve u početku.
+* Analitika osobnog napretka: Detaljni grafovi i statistike o napretku korisnika (smanjenje/kilaže ovisno o cilju, progressive overload, ...) 
+* Klijent ima opciju angažiranja privatnog trenera
+* Ukoliko je u suradnji sa privatnim trenerom-om ostavljanja recenzije o njemu
+* Za vrijeme suradnje sa privatnim trenerom klijent ostavlja dojme o treningu koji mu je zadao trener, ima pristup kroz kalendar unaprijed definiranim obrocima zadanih od trenera, ostavljanja ključnih informacija o provedenom danu ( kako se osjecao tokom dana, da li je kvalitetno spavao, da li je zadovoljan s prehranom, da li mu je hrana ukusna)
+*Ostavljanje recenzije o treningu svom treneru. Klijent nakon odrađenog treninga ima mogućnost ostaviti poruku svom treneru
+
+## Privatni trener: 
+* Uređivanje planova treninga za klijente: Trener može kreirati ili prilagoditi planove treninga za svakog klijenta posebno. 
+* Uređivanje prehrambenih planova: Trener može klijentima dodijeliti individualne planove prehrane s preporučenim obrocima i unosom kalorija. 
+* Praćenje napretka klijenata: Trener ima uvid u napredak svakog klijenta po treninzima i prehranama. 
+* Uređivanje ciljeva klijenta: Trener može postaviti ciljeve za svoje klijente (npr. smanjenje težine, povećanje mišićne mase) i prilagođavati planove kako bi im pomogao da ih ostvare. 
+* Summary od klijenata Trener nakon svakog klijentovog odradenog treninga dobije summary o treningu.Na kraju svakog dana klijent ima opciju napisati privatnom treneru kako je spavao, kako se osjecao u toku dana, ... Trener dobiva takoder summary kako je jeo klijent te da li on voli tu hranu itd.
+* Promoviranje sebe putem aplikacije
+
+## Admin aplikacije: 
+* Upravljanje vježbama: Admini mogu dodavati nove vježbe ili odobravati prijedloge korisnika za dodavanje vježbi koje još nisu u bazi podataka (korisnik uvijek ima opciju dodavanja vježbe u svoj dio aplikacije te admin ima opciju njegovu dodanu vježbu dodati svim korisnicima). 
+* Kreiranje predefiniranih planova treninga: Admin može dodavati unaprijed definirane planove koje korisnici mogu koristiti kao osnovu za svoje treninge. 
+* Moderacija sadržaja: Upravljanje sadržajem aplikacije, poput odobravanja ili odbijanja prijedloga za nove vježbe. 
 
 
 # Tehnologije
 
 #Instalcija
 # Članovi tima 
-> Popis članova tima/linkovi/ glavni doprinos
->
+[@EmaAdamec](https://github.com/EmaAdamec)
+
+[@gabster3001](https://github.com/gabster3001)
+
+[@Luka Kordić](https://github.com/kordicluka)
+
+[@leoCigula](https://github.com/leoCigula)
+
+[@matijaZaProgi](https://github.com/matijaZaProgi)
+
+[@SonjaCikovic](https://github.com/SonjaCikovic)
+
+[@Petar-Babic](https://github.com/Petar-Babic)
 
 # Kontribucije
 >Pravila ovise o organizaciji tima i su često izdvojena u CONTRIBUTING.md
