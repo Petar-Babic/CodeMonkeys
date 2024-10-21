@@ -1,12 +1,5 @@
 # Gym Progress Tracking App
 
-> Ime projekta u naslovu ima cilj opisati namjenu projekta te pomoći u podizanju početnog interesa za projekt prezentirajući osnovnu svrhu projekta.
-> Isključivo ovisi o Vama!
-> 
-> Naravno, nijedan predložak nije idealan za sve projekte jer su potrebe i ciljevi različiti. Ne bojte se naglasiti Vaš cilj u ovoj početnoj stranici projekta, podržat ćemo ga bez obzira usredotočili se Vi više na tenologiju ili marketing.
-> 
-> Zašto ovaj dokument? Samo manji dio timova je do sada propoznao potrebu (a i meni je lakše pratiti Vaš rad).  
-
 # Opis projekta
 Nakon analize postojećih rješenja za praćenje napretka u fitnessu, primijetili smo da trenutno ne postoji besplatna, ali ni kvalitetna plaćena verzija koja bi kvalitetno zadovoljila potrebe korisnika, zbog čega smo osmislili ideju za GYM Progress Tracker.
 
