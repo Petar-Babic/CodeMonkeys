@@ -79,7 +79,7 @@ export default function Navigation({
             <Tooltip key={item.href}>
               <TooltipTrigger asChild>
                 <Button
-                  variant={pathname === item.href ? "default" : "ghost"}
+                  variant={pathname.includes(item?.href) ? "default" : "ghost"}
                   size="icon"
                   className="h-10 w-10"
                   asChild

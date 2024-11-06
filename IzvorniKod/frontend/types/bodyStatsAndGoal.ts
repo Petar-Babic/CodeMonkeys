@@ -1,18 +1,20 @@
 import { ActivityLevel, Gender } from "./user";
 
-// Define the type for the form data
 export type BodyStatsAndGoalDataType = {
-  height: string;
-  isHeightImperial: boolean;
-  weight: string;
-  isWeightImperial: boolean;
-  goalWeight: string;
-  isGoalWeightImperial: boolean;
+  userId: string;
+  height: number;
+  weight: number;
+  goalWeight: number;
   activityLevel: ActivityLevel;
-  calories: number;
+  isWeightImperial: boolean;
+  isHeightImperial: boolean;
+  isGoalWeightImperial: boolean;
   gender: Gender;
   timelineWeeks: number;
   protein: number;
   carbs: number;
   fat: number;
+  calories: number;
+  createdAt: Date;
+  updatedAt: Date;
 };

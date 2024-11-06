@@ -15,7 +15,6 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Slider } from "@/components/ui/slider";
-import { useUser } from "@/hooks/useUser";
 import { CustomUnitSwitch } from "./CustomUnitSwitch";
 import {
   Bed,
@@ -29,6 +28,7 @@ import {
 import { BodyStatsAndGoalDataType } from "@/types/bodyStatsAndGoal";
 import { ActivityLevel, Gender } from "@/types/user";
 import StepProgress from "./StepProgress";
+import { useAppContext } from "@/contexts/AppContext";
 
 const activityLevels = [
   {
@@ -122,13 +122,15 @@ const formSchema = z.object({
 
 export default function BodyStatsAndGoalForm() {
   const router = useRouter();
-  const { user, bodyStatsAndGoal, isLoading, error } = useUser();
+  const { user, bodyStatsAndGoal } = useAppContext();
   const [currentStep, setCurrentStep] = useState(1);
   const [calculatedCalories, setCalculatedCalories] = useState<number | null>(
     null
   );
   const [totalCalories, setTotalCalories] = useState(0);
   const [direction, setDirection] = useState<"forward" | "backward">("forward");
+  const [isLoadingNutritionalPlan, setIsLoadingNutritionalPlan] =
+    useState(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -236,13 +238,17 @@ export default function BodyStatsAndGoalForm() {
   }, [form.watch("protein"), form.watch("carbs"), form.watch("fat")]);
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
+    setIsLoadingNutritionalPlan(true);
     try {
       const data: BodyStatsAndGoalDataType = {
-        height: values.height,
+        userId: user?.id || "", // Assuming user object has an id property
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        height: parseFloat(values.height),
         isHeightImperial: values.isHeightImperial,
-        weight: values.weight,
+        weight: parseFloat(values.weight),
         isWeightImperial: values.isWeightImperial,
-        goalWeight: values.goalWeight,
+        goalWeight: parseFloat(values.goalWeight),
         isGoalWeightImperial: values.isGoalWeightImperial,
         gender: values.gender === "male" ? Gender.MALE : Gender.FEMALE,
         activityLevel:
@@ -263,12 +269,12 @@ export default function BodyStatsAndGoalForm() {
       };
 
       await bodyStatsAndGoal(data);
-      if (!error) {
-        router.push("/workouts");
-      }
+      router.push("/workouts");
     } catch (error) {
       router.push("/sign-in");
       console.error("Failed to update user data:", error);
+    } finally {
+      setIsLoadingNutritionalPlan(false);
     }
   }
 
@@ -300,7 +306,7 @@ export default function BodyStatsAndGoalForm() {
   };
 
   return (
-    <div className="flex flex-col bg-black/80 max-xl:pt-[4rem] max-xl:pb-[15vh] items-center h-screen justify-center overflow-auto w-full 2xl:w-2/5 xl:w-2/5 lg:w-1/2 md:w-full px-8 sm:px-24 xl:px-28 2xl:px-[10%] relative">
+    <div className="flex flex-col bg-black/80 max-xl:pt-[2rem]  items-center h-screen justify-center overflow-auto w-full 2xl:w-2/5 xl:w-2/5 lg:w-1/2 md:w-full px-8 sm:px-24 xl:px-28 2xl:px-[10%] relative">
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
@@ -680,8 +686,9 @@ export default function BodyStatsAndGoalForm() {
           onClick={
             currentStep === 7 ? form.handleSubmit(onSubmit) : handleNextStep
           }
+          disabled={isLoadingNutritionalPlan}
         >
-          {isLoading ? (
+          {isLoadingNutritionalPlan ? (
             <Loader2 className="animate-spin" />
           ) : currentStep === 7 ? (
             "Submit"

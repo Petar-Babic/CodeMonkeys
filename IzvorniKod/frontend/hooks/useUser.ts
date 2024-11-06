@@ -19,14 +19,8 @@ const bodyStatsAndGoalAPI = async (
   const updatedUser: UserBase = JSON.parse(
     localStorage.getItem("session") || "{}"
   ).user;
-  updatedUser.height = convertToCm(
-    parseFloat(data.height),
-    data.isHeightImperial
-  );
-  updatedUser.weight = convertToKg(
-    parseFloat(data.weight),
-    data.isWeightImperial
-  );
+  updatedUser.height = convertToCm(data.height, data.isHeightImperial);
+  updatedUser.weight = convertToKg(data.weight, data.isWeightImperial);
   updatedUser.activityLevel = data.activityLevel;
   updatedUser.gender = data.gender;
   updatedUser.currentNutritionPlanId = nutritionPlanId;
@@ -114,7 +108,6 @@ export function useUser() {
           protein: data.protein,
           carbs: data.carbs,
           fat: data.fat,
-          trainerId: null,
           calories: data.calories,
           startDate: new Date(),
           // endDate is the current date + values.durations weeks
@@ -185,5 +178,14 @@ export function useUser() {
     bodyStatsAndGoal,
     changeUserWeight,
     changeUserHeight,
-  };
+  } as UseUserContextType;
 }
+
+export type UseUserContextType = {
+  user: UserBase | null;
+  isLoading: boolean;
+  error: string | null;
+  bodyStatsAndGoal: (data: BodyStatsAndGoalDataType) => Promise<void>;
+  changeUserWeight: (newWeight: number) => Promise<void>;
+  changeUserHeight: (newHeight: number) => Promise<void>;
+};

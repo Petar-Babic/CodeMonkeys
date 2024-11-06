@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback } from "react";
 import {
   MuscleGroupBase,
   CreateMuscleGroupInput,
@@ -20,10 +20,6 @@ export const useMuscleGroup = () => {
   const [muscleGroups, setMuscleGroups] = useState<MuscleGroupBase[]>(
     predefinedMuscleGroups
   );
-
-  useEffect(() => {
-    console.log("Muscle Groups:", muscleGroups);
-  }, [muscleGroups]);
 
   const createMuscleGroup = useCallback(
     (muscleGroupInput: CreateMuscleGroupInput) => {
@@ -82,5 +78,16 @@ export const useMuscleGroup = () => {
     getAllMuscleGroups,
     updateMuscleGroup,
     deleteMuscleGroup,
-  };
+  } as UseMuscleGroupContextType;
+};
+
+export type UseMuscleGroupContextType = {
+  muscleGroups: MuscleGroupBase[];
+  createMuscleGroup: (
+    muscleGroupInput: CreateMuscleGroupInput
+  ) => MuscleGroupBase;
+  getMuscleGroupById: (id: string) => MuscleGroupBase | undefined;
+  getAllMuscleGroups: () => Promise<MuscleGroupBase[]>;
+  updateMuscleGroup: (id: string, updateData: UpdateMuscleGroupInput) => void;
+  deleteMuscleGroup: (id: string) => void;
 };

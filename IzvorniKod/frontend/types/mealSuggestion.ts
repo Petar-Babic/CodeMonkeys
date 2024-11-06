@@ -1,6 +1,3 @@
-import { NutritionPlanBase } from "./nutritionPlan";
-
-// MealSuggestion Types
 export type MealSuggestionBase = {
   id: string;
   nutritionPlanId: string;
@@ -14,15 +11,11 @@ export type MealSuggestionBase = {
   updatedAt: Date;
 };
 
-export type MealSuggestionWithRelations = MealSuggestionBase & {
-  nutritionPlan: NutritionPlanBase; // Replace 'any' with actual NutritionPlan type
-};
-
 export type CreateMealSuggestionInput = Omit<
   MealSuggestionBase,
   "id" | "createdAt" | "updatedAt"
 >;
 
 export type UpdateMealSuggestionInput = Partial<
-  Omit<MealSuggestionBase, "id" | "nutritionPlanId" | "createdAt" | "updatedAt">
->;
+  Omit<MealSuggestionBase, "createdAt" | "updatedAt">
+> & { id: string };

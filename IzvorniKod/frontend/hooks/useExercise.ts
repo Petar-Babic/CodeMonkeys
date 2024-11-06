@@ -14,6 +14,7 @@ const createExerciseAPI = async (
   const newExercise: ExerciseBase = {
     id: Math.random().toString(36).substr(2, 9),
     ...data,
+    isApproved: false,
     createdAt: new Date(),
     updatedAt: new Date(),
   };
@@ -75,7 +76,6 @@ export const useExercise = () => {
 
   const getAllExercises = useCallback(async () => {
     const fetchedExercises = await getExercisesAPI(userId);
-    console.log("Exercises from API:", fetchedExercises);
     setExercises(fetchedExercises);
     return fetchedExercises;
   }, [userId]);
@@ -123,5 +123,17 @@ export const useExercise = () => {
     getAllExercises,
     updateExercise,
     deleteExercise,
-  };
+  } as UseExerciseContextType;
+};
+
+export type UseExerciseContextType = {
+  exercises: ExerciseBase[];
+  createExercise: (exerciseInput: CreateExerciseInput) => Promise<ExerciseBase>;
+  getExerciseById: (id: string) => ExerciseBase | undefined;
+  getAllExercises: () => Promise<ExerciseBase[]>;
+  updateExercise: (
+    id: string,
+    updateData: Partial<ExerciseBase>
+  ) => Promise<void>;
+  deleteExercise: (id: string) => void;
 };

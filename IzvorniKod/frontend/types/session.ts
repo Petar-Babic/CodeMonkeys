@@ -14,6 +14,7 @@ export type SessionWithRelations = SessionBase & {
 
 export type CreateSessionInput = Omit<SessionBase, "id">;
 
+<<<<<<< HEAD
 export type UpdateSessionInput = Partial<Omit<SessionBase, "id" | "userId">>;
 
 // Additional types that might be useful for session management
@@ -53,4 +54,8 @@ export type SessionMiddlewareConfig = {
   cookieName: string;
   cookieOptions: SessionOptions;
   store: SessionStore;
+=======
+export type UpdateSessionInput = Partial<Omit<SessionBase, "userId">> & {
+  id: string;
+>>>>>>> dev
 };

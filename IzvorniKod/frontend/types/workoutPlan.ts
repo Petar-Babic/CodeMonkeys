@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import { PlannedExerciseBase } from "./plannedExercise";
 import { TrainerBase } from "./trainer";
 import { UserBase } from "./user";
@@ -13,10 +14,23 @@ export type WorkoutPlanBase = {
   trainerId: string | null;
   createdById: string;
   isApproved: boolean;
+=======
+import { WorkoutWithPlannedExercises } from "./workout";
+
+export type WorkoutPlanBase = {
+  id: string;
+  name: string;
+  description?: string;
+  image?: string;
+  userId?: string;
+  trainerId?: string;
+  createdById: string;
+>>>>>>> dev
   createdAt: Date;
   updatedAt: Date;
 };
 
+<<<<<<< HEAD
 // WorkoutPlan type with populated exercises
 export type WorkoutPlanWithExercises = WorkoutPlanBase & {
   exercises: PlannedExerciseBase[];
@@ -73,4 +87,17 @@ export type WorkoutPlanSearchResult = Pick<
 > & {
   exerciseCount: number;
   createdBy: Pick<UserBase, "id" | "name">;
+=======
+export type CreateWorkoutPlanInput = Omit<
+  WorkoutPlanBase,
+  "id" | "createdAt" | "updatedAt"
+>;
+
+export type UpdateWorkoutPlanInput = Partial<
+  Omit<WorkoutPlanBase, "createdAt" | "updatedAt">
+> & { id: string };
+
+export type WorkoutPlanWithWorkouts = WorkoutPlanBase & {
+  workouts: WorkoutWithPlannedExercises[];
+>>>>>>> dev
 };

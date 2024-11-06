@@ -1,19 +1,12 @@
-import { UserBase } from "./user";
-
-// SleepLog Types
 export type SleepLogBase = {
   id: string;
   userId: string;
   date: Date;
   duration: number;
   quality: number;
-  notes: string | null;
+  notes?: string;
   createdAt: Date;
   updatedAt: Date;
-};
-
-export type SleepLogWithRelations = SleepLogBase & {
-  user: UserBase; // Replace 'any' with actual User type
 };
 
 export type CreateSleepLogInput = Omit<
@@ -22,5 +15,5 @@ export type CreateSleepLogInput = Omit<
 >;
 
 export type UpdateSleepLogInput = Partial<
-  Omit<SleepLogBase, "id" | "userId" | "createdAt" | "updatedAt">
->;
+  Omit<SleepLogBase, "createdAt" | "updatedAt">
+> & { id: string };

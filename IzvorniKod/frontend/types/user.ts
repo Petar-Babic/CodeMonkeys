@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import { BodyMeasurementBase } from "./bodyMeasurement";
 import { DailyNutritionLogBase } from "./dailyNutritionLog";
 import { ExerciseBase } from "./exercise";
@@ -12,6 +13,35 @@ import { WorkoutGoalBase } from "./workoutGoal";
 import { WorkoutPlanBase } from "./workoutPlan";
 import { WorkoutReviewBase } from "./workoutReview";
 import { WorkoutSessionBase } from "./workoutSession";
+=======
+// User Types
+export type UserBase = {
+  id: string;
+  name: string;
+  email: string;
+  emailVerified?: Date;
+  image?: string;
+  role: Role;
+  height?: number;
+  weight?: number;
+  gender?: Gender;
+  activityLevel?: ActivityLevel;
+  currentNutritionPlanId?: string;
+  trainerId?: string;
+  workoutPlanId?: string;
+  createdAt: Date;
+  updatedAt: Date;
+};
+
+export type CreateUserInput = Omit<
+  UserBase,
+  "id" | "createdAt" | "updatedAt" | "emailVerified"
+>;
+
+export type UpdateUserInput = Partial<
+  Omit<UserBase, "id" | "createdAt" | "updatedAt">
+>;
+>>>>>>> dev
 
 // Enum definitions (since we're not using Prisma)
 export enum Role {
@@ -30,6 +60,7 @@ export enum ActivityLevel {
   LIGHT = "light",
   MODERATE = "moderate",
   ACTIVE = "active",
+<<<<<<< HEAD
   VERY_ACTIVE = "very-active",
 }
 
@@ -79,3 +110,7 @@ export type CreateUserInput = Omit<
 export type UpdateUserInput = Partial<
   Omit<UserBase, "id" | "email" | "createdAt" | "updatedAt">
 >;
+=======
+  VERY_ACTIVE = "very",
+}
+>>>>>>> dev

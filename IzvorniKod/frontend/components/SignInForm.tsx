@@ -20,7 +20,7 @@ import { ArrowRight, Loader2, Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
 import { FaGoogle, FaFacebook, FaApple } from "react-icons/fa";
 import { useAuthContext } from "@/contexts/AuthContext";
-import { useNutritionPlan } from "@/hooks/useNutritionPlan";
+import { nutritionPlans } from "@/data/nutritionPlan";
 
 const formSchema = z.object({
   email: z.string().email({
@@ -36,7 +36,7 @@ export function SignInForm() {
   const { login } = useAuthContext();
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [showPassword, setShowPassword] = useState<boolean>(false);
-  const { getNutritionPlan } = useNutritionPlan();
+  const [error, setError] = useState<string | null>(null);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -65,8 +65,14 @@ export function SignInForm() {
       const res = await getNutritionPlan(userId);
 
       console.log("Nutrition Plan:", res);
+      if (res) {
+        router.push("/workouts");
+      } else {
+        router.push("/body-stats-and-goals");
+      }
     } catch (error) {
       console.error("Login failed:", error);
+      setError("Invalid email or password. Please try again.");
       // Here you might want to show an error message to the user
     } finally {
       setIsLoading(false);
@@ -99,14 +105,25 @@ export function SignInForm() {
         router.push("/body-stats-and-goals");
       }
     } catch (error) {
+      setError("An error occurred. Please try again.");
       console.error(`${provider} login failed:`, error);
     } finally {
       setIsLoading(false);
     }
   };
 
+  const getNutritionPlan = async (userId: string) => {
+    // Simulate API call to get user's nutrition plan
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+
+    // Find the nutrition plan for the given user
+    const nutritionPlan = nutritionPlans.find((plan) => plan.userId === userId);
+
+    return nutritionPlan ? true : false;
+  };
+
   return (
-    <div className="flex flex-col bg-black/80 max-xl:pt-[2rem]  items-center h-screen justify-center overflow-auto w-full 2xl:w-2/5 xl:w-2/5 lg:w-1/2 md:w-full px-8 sm:px-24 xl:px-28 2xl:px-[10%] relative">
+    <div className="flex flex-col bg-black/80 max-xl:pt-[2rem] max-xl:justify-start items-center h-screen justify-center overflow-auto w-full 2xl:w-2/5 xl:w-2/5 lg:w-1/2 md:w-full px-8 sm:px-24 xl:px-28 2xl:px-[10%] relative">
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
@@ -207,6 +224,9 @@ export function SignInForm() {
               </FormItem>
             )}
           />
+          {error && (
+            <div className="text-red-400 text-sm mb-4 text-center">{error}</div>
+          )}
           <Button
             variant="white"
             type="submit"

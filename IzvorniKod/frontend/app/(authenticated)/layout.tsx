@@ -16,13 +16,15 @@ export default function AppLayout({
         <LoadingAppScreen />
         <div className="flex flex-col min-h-screen">
           <Header />
-          <div className="flex flex-1 h-[calc(100vh-2.75rem)]">
+          <div className="flex flex-1 h-[calc(100vh-60px)]">
             <div className="hidden xl:block">
               <Navigation orientation="vertical" />
             </div>
-            <main className="flex-1 overflow-y-auto">{children}</main>
+            <main className="flex-1 overflow-y-auto max-xl:pb-[60px]">
+              {children}
+            </main>
           </div>
-          <div className="xl:hidden">
+          <div className="xl:hidden fixed bottom-0 w-full">
             <Navigation orientation="horizontal" />
           </div>
         </div>

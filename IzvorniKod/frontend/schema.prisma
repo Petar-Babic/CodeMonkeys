@@ -1,0 +1,458 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Represents a user of the application, including regular users, trainers, and admins
+model User {
+  id                   String               @id @default(cuid())
+  name                 String
+  email                String               @unique
+  emailVerified        DateTime?
+  image                String?
+  role                 Role                 @default(user)
+  height               Float?
+  weight               Float?
+  gender               Gender?
+  activityLevel        ActivityLevel?
+  currentNutritionPlan NutritionPlan?       @relation("CurrentNutritionPlan", fields: [currentNutritionPlanId], references: [id])
+  currentNutritionPlanId String?
+  trainer              Trainer?             @relation("UserToTrainer", fields: [trainerId], references: [id])
+  trainerId            String?
+  createdAt            DateTime             @default(now())
+  updatedAt            DateTime             @updatedAt
+  activeWorkoutPlanId  String?              @unique
+  accounts             Account[]
+  sessions             Session[]
+  workoutPlans         UserWorkoutPlan[]    @relation("UserWorkoutPlans")
+  activeWorkoutPlan    UserWorkoutPlan?     @relation("ActiveWorkoutPlan", fields: [activeWorkoutPlanId], references: [id])
+  createdWorkoutPlans  WorkoutPlan[]        @relation("CreatedWorkoutPlans")
+  workoutSessions      WorkoutSession[]
+  nutritionPlans       NutritionPlan[]
+  dailyNutritionLogs   DailyNutritionLog[]
+  meals                Meal[]
+  progressLogs         ProgressLog[]
+  bodyMeasurements     BodyMeasurement[]
+  personalRecords      PersonalRecord[]
+  workoutGoals         WorkoutGoal[]
+  sleepLogs            SleepLog[]
+  workoutReviews       WorkoutReview[]
+  nutritionReviews     NutritionReview[]
+  createdExercises     Exercise[]
+  trainerProfile       Trainer?             @relation("TrainerToUser")
+}
+
+// Represents authentication accounts linked to a user (e.g., Google, Facebook)
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+// Represents a user's session for authentication purposes
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// Used for email verification process
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+// Represents a trainer in the system, linked to a user account
+model Trainer {
+  id        String   @id @default(cuid())
+  userId    String   @unique
+  user      User     @relation("TrainerToUser", fields: [userId], references: [id])
+  clients   User[]   @relation("UserToTrainer")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  nutritionPlans NutritionPlan[]
+}
+
+// Represents a workout plan created by a user or trainer that is public for everyone
+model WorkoutPlan {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  image       String?
+  userId      String?
+  trainerId   String?
+  createdById String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  createdBy   User     @relation("CreatedWorkoutPlans", fields: [createdById], references: [id])
+  workouts    Workout[]
+  userWorkoutPlans UserWorkoutPlan[]
+}
+
+// Represents individual workouts within a workout plan
+model Workout {
+  id            String   @id @default(cuid())
+  name          String
+  description   String?
+  workoutPlanId String
+  order         Int
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  workoutPlan   WorkoutPlan @relation(fields: [workoutPlanId], references: [id])
+  exercises     PlannedExercise[]
+  userWorkouts  UserWorkout[]
+}
+
+// Represents a user's personalized version of a public workout plan or a plan created by user 
+model UserWorkoutPlan {
+  id            String   @id @default(cuid())
+  name          String
+  userId        String
+  workoutPlanId String?    
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  user          User     @relation("UserWorkoutPlans", fields: [userId], references: [id])
+  activeForUser User?    @relation("ActiveWorkoutPlan")
+  workoutPlan   WorkoutPlan? @relation(fields: [workoutPlanId], references: [id])
+  userWorkouts  UserWorkout[]
+  workoutSessions WorkoutSession[]
+}
+
+// Represents a user's personalized version of a workout
+model UserWorkout {
+  id               String   @id @default(cuid())
+  name             String
+  userWorkoutPlanId String
+  workoutId        String?
+  order            Int
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  userWorkoutPlan UserWorkoutPlan @relation(fields: [userWorkoutPlanId], references: [id])
+  workout         Workout?         @relation(fields: [workoutId], references: [id])
+  exercises       UserPlannedExercise[]
+  workoutSessions WorkoutSession[]
+}
+
+// Represents an individual exercise that can be included in workout plans
+model Exercise {
+  id                String   @id @default(cuid())
+  name              String   @unique
+  description       String?
+  gifUrl            String?
+  createdById       String
+  isApproved        Boolean  @default(false)
+  categoryId        String
+  primaryMuscleGroupId   String
+  secondaryMuscleGroupIds String[]
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  createdBy         User               @relation(fields: [createdById], references: [id])
+  primaryMuscleGroup MuscleGroup       @relation("PrimaryExercises", fields: [primaryMuscleGroupId], references: [id])
+  secondaryMuscleGroups MuscleGroup[]  @relation("SecondaryExercises")
+  plannedExercises  PlannedExercise[]
+  userPlannedExercises UserPlannedExercise[]
+  performedExercises PerformedExercise[]
+  personalRecords   PersonalRecord[]
+}
+
+
+
+// Represents muscle groups targeted by exercises
+model MuscleGroup {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  description String?
+  image       String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  primaryExercises   Exercise[] @relation("PrimaryExercises")
+  secondaryExercises Exercise[] @relation("SecondaryExercises")
+}
+
+// Represents an exercise planned as part of a workout
+model PlannedExercise {
+  id        String   @id @default(cuid())
+  workoutId String
+  exerciseId String
+  sets      Int
+  reps      Int
+  rpe       Int?
+  order     Int
+
+  workout   Workout  @relation(fields: [workoutId], references: [id])
+  exercise  Exercise @relation(fields: [exerciseId], references: [id])
+}
+
+// Represents a user's personalized version of a planned exercise
+model UserPlannedExercise {
+  id           String   @id @default(cuid())
+  userWorkoutId String
+  exerciseId   String
+  sets         Int
+  reps         Int
+  rpe          Int?
+  order        Int
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  userWorkout UserWorkout @relation(fields: [userWorkoutId], references: [id])
+  exercise    Exercise    @relation(fields: [exerciseId], references: [id])
+}
+
+// Represents a completed workout session by a user
+model WorkoutSession {
+  id            String   @id @default(cuid())
+  userId        String
+  userWorkoutPlanId String
+  userWorkoutId     String
+  date          DateTime
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  user         User       @relation(fields: [userId], references: [id])
+  userWorkoutPlan  UserWorkoutPlan @relation(fields: [userWorkoutPlanId], references: [id])
+  workout      UserWorkout    @relation(fields: [userWorkoutId], references: [id])
+  exercises    PerformedExercise[]
+  review       WorkoutReview?
+}
+
+// Represents an exercise performed during a workout session
+model PerformedExercise {
+  id               String   @id @default(cuid())
+  workoutSessionId String
+  exerciseId       String
+  workoutSession WorkoutSession @relation(fields: [workoutSessionId], references: [id])
+  exercise       Exercise       @relation(fields: [exerciseId], references: [id])
+  sets           PerformedSet[]
+}
+
+// Represents a set of an exercise performed during a workout
+model PerformedSet {
+  id                  String   @id @default(cuid())
+  performedExerciseId String
+  reps                Int
+  weight              Float
+  rpe                 Int?
+
+  performedExercise PerformedExercise @relation(fields: [performedExerciseId], references: [id])
+}
+
+// Represents a user's review of a completed workout
+model WorkoutReview {
+  id               String   @id @default(cuid())
+  workoutSessionId String   @unique
+  userId           String
+  rating           Int
+  comment          String?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  workoutSession WorkoutSession @relation(fields: [workoutSessionId], references: [id])
+  user           User           @relation(fields: [userId], references: [id])
+}
+
+// Represents a nutrition plan created for a user
+model NutritionPlan {
+  id          String   @id @default(cuid())
+  userId      String
+  trainerId   String?
+  calories    Int
+  protein     Float
+  carbs       Float
+  fat         Float
+  startDate   DateTime
+  endDate     DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user           User       @relation(fields: [userId], references: [id])
+  trainer        Trainer?   @relation(fields: [trainerId], references: [id])
+  currentUsers   User[]     @relation("CurrentNutritionPlan")
+  mealSuggestions MealSuggestion[]
+}
+
+// Represents suggested meals as part of a nutrition plan
+model MealSuggestion {
+  id              String   @id @default(cuid())
+  nutritionPlanId String
+  name            String
+  description     String
+  calories        Int
+  protein         Float
+  carbs           Float
+  fat             Float
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  nutritionPlan NutritionPlan @relation(fields: [nutritionPlanId], references: [id])
+}
+
+// Represents a user's daily nutrition log
+model DailyNutritionLog {
+  id        String   @id @default(cuid())
+  userId    String
+  date      DateTime
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user    User     @relation(fields: [userId], references: [id])
+  meals   Meal[]
+  review  NutritionReview?
+}
+
+// Represents an individual meal logged by a user
+model Meal {
+  id                   String   @id @default(cuid())
+  name                 String
+  calories             Int
+  protein              Float
+  carbs                Float
+  fat                  Float
+  userId               String
+  dailyNutritionLogId  String
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+
+  user              User              @relation(fields: [userId], references: [id])
+  dailyNutritionLog DailyNutritionLog @relation(fields: [dailyNutritionLogId], references: [id])
+}
+
+// Represents a user's review of their daily nutrition
+model NutritionReview {
+  id                  String   @id @default(cuid())
+  dailyNutritionLogId String   @unique
+  userId              String
+  tasteRating         Int
+  satisfactionRating  Int
+  energyLevelRating   Int
+  comment             String?
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  dailyNutritionLog DailyNutritionLog @relation(fields: [dailyNutritionLogId], references: [id])
+  user              User              @relation(fields: [userId], references: [id])
+}
+
+// Represents a log entry for tracking a user's progress
+model ProgressLog {
+  id        String   @id @default(cuid())
+  userId    String
+  date      DateTime
+  weight    Float?
+  notes     String?
+  imageUrl  String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id])
+}
+
+// Represents a user's body measurements at a specific point in time
+model BodyMeasurement {
+  id        String   @id @default(cuid())
+  userId    String
+  date      DateTime
+  chest     Float?
+  waist     Float?
+  hips      Float?
+  thighs    Float?
+  biceps    Float?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id])
+}
+
+// Represents a personal record for a specific exercise
+model PersonalRecord {
+  id        String   @id @default(cuid())
+  userId    String
+  exerciseId String
+  weight    Float
+  reps      Int
+  date      DateTime
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user     User     @relation(fields: [userId], references: [id])
+  exercise Exercise @relation(fields: [exerciseId], references: [id])
+}
+
+// Represents a workout goal set by a user
+model WorkoutGoal {
+  id          String   @id @default(cuid())
+  userId      String
+  description  String
+  targetDate  DateTime
+  achieved    Boolean
+  achievedDate DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id])
+}
+
+// Represents a log of a user's sleep
+model SleepLog {
+  id        String   @id @default(cuid())
+  userId    String
+  date      DateTime
+  duration  Int
+  quality   Int
+  notes     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id])
+}
+
+enum Role {
+  user
+  trainer
+  admin
+}
+
+enum Gender {
+  male
+  female
+}
+
+enum ActivityLevel {
+  sedentary
+  light
+  moderate
+  active
+  very
+}

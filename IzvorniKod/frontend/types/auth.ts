@@ -29,6 +29,7 @@ export type AuthActions = {
   logout: () => void;
   setSession: (session: SessionWithRelations | null) => void;
   setUser: (user: UserBase | null) => void;
+  loading: boolean;
 };
 
 export type AuthContextType = AuthState & AuthActions;

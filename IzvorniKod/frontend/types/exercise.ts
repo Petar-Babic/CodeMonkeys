@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import { ExerciseCategoryBase } from "./exerciseCategory";
 import { MuscleGroupBase } from "./muscleGroup";
 import { PerformedExerciseBase } from "./performedExercise";
@@ -15,11 +16,23 @@ export type ExerciseBase = {
   isApproved: boolean;
   categoryId: string;
   primaryMuscleGroupId: string;
+=======
+export type ExerciseBase = {
+  id: string;
+  name: string;
+  description?: string;
+  gifUrl?: string;
+  createdById: string;
+  isApproved: boolean;
+  categoryId: string;
+  primaryMuscleGroupId: string[];
+>>>>>>> dev
   secondaryMuscleGroupIds: string[];
   createdAt: Date;
   updatedAt: Date;
 };
 
+<<<<<<< HEAD
 export type ExerciseWithRelations = ExerciseBase & {
   createdBy: UserBase; // Replace 'any' with actual User type
   category: ExerciseCategoryBase; // Replace 'any' with actual ExerciseCategory type
@@ -38,3 +51,13 @@ export type CreateExerciseInput = Omit<
 export type UpdateExerciseInput = Partial<
   Omit<ExerciseBase, "id" | "createdAt" | "updatedAt">
 >;
+=======
+export type CreateExerciseInput = Omit<
+  ExerciseBase,
+  "id" | "createdAt" | "updatedAt" | "isApproved"
+>;
+
+export type UpdateExerciseInput = Partial<
+  Omit<ExerciseBase, "createdAt" | "updatedAt">
+> & { id: string };
+>>>>>>> dev

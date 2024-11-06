@@ -4,13 +4,15 @@ import Image from "next/image";
 
 export default function SignInPage() {
   return (
-    <main className="absolute top-0 left-0 w-full h-screen overflow-hidden bg-black flex flex-col xl:flex-row items-start justify-start">
-      <div className="w-full  max-xl:top-0 h-screen max-xl:absolute flex flex-col items-center justify-center max-xl:space-y-20 xl:w-3/5 relative lg:w-1/2 xl:h-full xl:block">
+    <main className="absolute z-40  top-0 left-0 w-full h-screen overflow-hidden bg-black flex flex-col xl:flex-row items-start justify-start">
+      <div className="w-full  h-screen hidden xl:flex flex-col items-center justify-center max-xl:space-y-20 xl:w-3/5 relative lg:w-1/2 xl:h-full ">
         <Image
           src="/main-image-gym.webp"
-          alt="Login page image"
-          width={4000}
-          height={4000}
+          alt="Gym interior with equipment"
+          priority
+          quality={85}
+          fill
+          sizes="(max-width: 1280px) 100vw, 60vw"
           className="w-full h-[40vh] xl:h-screen object-cover block"
         />
       </div>{" "}
