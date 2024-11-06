@@ -17,7 +17,6 @@ const fetchWorkoutPlan = async (id: string): Promise<WorkoutPlanBase> => {
     userId: "1",
     trainerId: "2",
     createdById: "1",
-    isApproved: true,
     createdAt: new Date(),
     updatedAt: new Date(),
   };

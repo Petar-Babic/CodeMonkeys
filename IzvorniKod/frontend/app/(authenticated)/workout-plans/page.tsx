@@ -1,9 +1,3 @@
-<<<<<<< HEAD
-import React from "react";
-
-export default function WorkoutPlansPage() {
-  return <div className="w-full h-full"></div>;
-=======
 import PageTitle from "@/components/PageTitle";
 import UserWorkoutPlanCard from "@/components/UserWorkoutPlanCard";
 import WorkoutPlansList from "@/components/WorkouPlansList";
@@ -25,5 +19,4 @@ export default function WorkoutPlansPage() {
       </div>
     </div>
   );
->>>>>>> dev
 }
