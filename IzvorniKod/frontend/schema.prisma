@@ -21,6 +21,7 @@ model User {
   height               Float?
   weight               Float?
   gender               Gender?
+  hashedPassword       String?              // Dodajemo ovo polje
   activityLevel        ActivityLevel?
   currentNutritionPlan NutritionPlan?       @relation("CurrentNutritionPlan", fields: [currentNutritionPlanId], references: [id])
   currentNutritionPlanId String?

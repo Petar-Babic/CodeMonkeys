@@ -1,4 +1,3 @@
-// @/components/SignInForm.tsx
 "use client";
 
 import { useState } from "react";
@@ -19,8 +18,7 @@ import { Input } from "@/components/ui/input";
 import { ArrowRight, Loader2, Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
 import { FaGoogle, FaFacebook, FaApple } from "react-icons/fa";
-import { useAuthContext } from "@/contexts/AuthContext";
-import { nutritionPlans } from "@/data/nutritionPlan";
+import { signIn } from "next-auth/react";
 
 const formSchema = z.object({
   email: z.string().email({
@@ -33,7 +31,6 @@ const formSchema = z.object({
 
 export function SignInForm() {
   const router = useRouter();
-  const { login } = useAuthContext();
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
@@ -50,30 +47,21 @@ export function SignInForm() {
     setIsLoading(true);
 
     try {
-      // Simulate API call to authenticate user
-
-      // Call the login function from AuthContext
-      const response = await login({
+      const result = await signIn("credentials", {
+        redirect: false,
         email: values.email,
         password: values.password,
       });
 
-      console.log("Login successful:", response);
-
-      const userId = response.user.id;
-
-      const res = await getNutritionPlan(userId);
-
-      console.log("Nutrition Plan:", res);
-      if (res) {
-        router.push("/workouts");
+      if (result?.error) {
+        setError("Invalid email or password. Please try again.");
       } else {
-        router.push("/body-stats-and-goals");
+        // Successful login
+        router.push("/workouts");
       }
     } catch (error) {
       console.error("Login failed:", error);
-      setError("Invalid email or password. Please try again.");
-      // Here you might want to show an error message to the user
+      setError("An error occurred. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -82,44 +70,13 @@ export function SignInForm() {
   const handleSocialLogin = async (provider: string) => {
     setIsLoading(true);
     try {
-      // Implement social login logic here
-      console.log(`Logging in with ${provider}`);
-      // For now, we'll just simulate a delay
-
-      const response = await login({
-        email: "johndoe@example.com",
-        password: "johnjohn",
-      });
-
-      console.log(`${provider} login successful:`, response);
-
-      const userId = response.user.id;
-
-      const res = await getNutritionPlan(userId);
-
-      console.log("Nutrition Plan:", res);
-
-      if (res) {
-        router.push("/workouts");
-      } else {
-        router.push("/body-stats-and-goals");
-      }
+      await signIn(provider.toLowerCase(), { callbackUrl: "/workouts" });
     } catch (error) {
       setError("An error occurred. Please try again.");
       console.error(`${provider} login failed:`, error);
     } finally {
       setIsLoading(false);
     }
-  };
-
-  const getNutritionPlan = async (userId: string) => {
-    // Simulate API call to get user's nutrition plan
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-
-    // Find the nutrition plan for the given user
-    const nutritionPlan = nutritionPlans.find((plan) => plan.userId === userId);
-
-    return nutritionPlan ? true : false;
   };
 
   return (

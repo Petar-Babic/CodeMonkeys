@@ -35,7 +35,7 @@ export default function Home() {
         </p>
 
         <Link
-          href="/sign-up"
+          href="/workouts"
           className="bg-white flex space-x-5 font-semibold items-center justify-center py-3 px-6 rounded-sm text-black-foreground shadow hover:bg-white/90"
         >
           <span>Go to the app</span>

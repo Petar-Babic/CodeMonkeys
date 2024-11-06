@@ -30,6 +30,7 @@ export type AuthActions = {
   setSession: (session: SessionWithRelations | null) => void;
   setUser: (user: UserBase | null) => void;
   loading: boolean;
+  getNutritionPlan: (userId: string) => Promise<boolean>;
 };
 
 export type AuthContextType = AuthState & AuthActions;
