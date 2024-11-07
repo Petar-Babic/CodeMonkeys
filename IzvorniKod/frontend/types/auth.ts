@@ -1,5 +1,6 @@
 import { UserBase } from "./user";
 import { SessionWithRelations } from "./session";
+import { SignInResponse } from "next-auth/react";
 
 export type LoginCredentials = {
   email: string;
@@ -24,13 +25,13 @@ export type AuthState = {
 };
 
 export type AuthActions = {
-  login: (credentials: LoginCredentials) => Promise<SessionWithRelations>;
+  login: (credentials: LoginCredentials) => Promise<SignInResponse>;
   signUp: (credentials: SignUpCredentials) => Promise<void>;
   logout: () => void;
-  setSession: (session: SessionWithRelations | null) => void;
   setUser: (user: UserBase | null) => void;
   loading: boolean;
   getNutritionPlan: (userId: string) => Promise<boolean>;
+  socialLogin: (provider: string) => Promise<SignInResponse>;
 };
 
 export type AuthContextType = AuthState & AuthActions;

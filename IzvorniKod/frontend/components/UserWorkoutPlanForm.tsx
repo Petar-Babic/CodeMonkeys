@@ -81,6 +81,7 @@ export function UserWorkoutPlanForm() {
   const {
     userWorkoutPlan,
     updateUserWorkoutPlan,
+    createUserWorkoutPlan,
   }: {
     userWorkoutPlan: UserWorkoutPlanWithRelations | null;
     updateUserWorkoutPlan: (
@@ -120,8 +121,12 @@ export function UserWorkoutPlanForm() {
         userWorkouts: fields as UserWorkoutWithUserPlannedExercise[],
       };
 
-      // Update the workout plan
-      await updateUserWorkoutPlan(formattedData);
+      if (!userWorkoutPlan) {
+        await createUserWorkoutPlan(formattedData);
+      } else {
+        // Update the workout plan
+        await updateUserWorkoutPlan(formattedData);
+      }
 
       // Navigate to the workout plans page
       router.push("/workout-plans");
@@ -143,7 +148,9 @@ export function UserWorkoutPlanForm() {
   const handleUpdateWorkout = async (
     data: UserWorkoutWithUserPlannedExerciseUpdateInput
   ) => {
-    const index = fields.findIndex((workout) => workout.id === data.id);
+    const index = fields.findIndex(
+      (workout: UserWorkoutWithUserPlannedExercise) => workout.id === data.id
+    );
     if (index !== -1) {
       update(index, data);
     }

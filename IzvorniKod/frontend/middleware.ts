@@ -20,12 +20,11 @@ export const config = {
      * 4. /icons (inside /public)
      * 5. all root files inside /public (e.g. /favicon.ico)
      * 6. / (home page)
-     * 7. /workouts (workouts page)
-     * 8. /workout-plans (workout plans page)
-     * 9. /exercises (exercises page)
-     * 10. /profile (profile page)
-     * 11. /settings (settings page)
+     * 7. /sign-in
+     * 8. /sign-up
+     * 9. /privacy-policy
+     * 10. /terms-of-service
      */
-    "/((?!api|_next|fonts|icons|[\\w-]+\\.\\w+|workouts|workout-plans|exercises|profile|settings).*)",
+    "/((?!api|_next|fonts|icons|[\\w-]+\\.\\w+|$|sign-in|sign-up|privacy-policy|terms-of-service).*)",
   ],
 };

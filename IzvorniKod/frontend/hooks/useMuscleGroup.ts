@@ -7,15 +7,6 @@ import {
 import { muscleGroups as predefinedMuscleGroups } from "@/data/muscleGroup";
 // Predefined muscle groups
 
-// fetch all muscle groups
-const getMuscleGroupsAPI = async (): Promise<MuscleGroupBase[]> => {
-  // Simulate API delay
-  await new Promise((resolve) => setTimeout(resolve, 1000));
-
-  // Simulated logic (replace with actual API call)
-  return predefinedMuscleGroups;
-};
-
 export const useMuscleGroup = () => {
   const [muscleGroups, setMuscleGroups] = useState<MuscleGroupBase[]>(
     predefinedMuscleGroups
@@ -47,7 +38,8 @@ export const useMuscleGroup = () => {
   );
 
   const getAllMuscleGroups = useCallback(async () => {
-    const muscleGroups = await getMuscleGroupsAPI();
+    const muscleGroups = predefinedMuscleGroups;
+    await new Promise((resolve) => setTimeout(resolve, 1000));
     setMuscleGroups(muscleGroups);
     return muscleGroups;
   }, []);

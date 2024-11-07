@@ -28,6 +28,7 @@ import {
   UseUserWorkoutPlanType,
 } from "@/hooks/useUserWorkoutPlan";
 import { useAuthContext } from "./AuthContext";
+import { useRouter } from "next/navigation";
 
 type AppContextType = UseUserContextType &
   UseNutritionPlanContextType &
@@ -55,6 +56,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const { getUserWorkoutPlan } = userWorkoutPlanContext;
   const { getAllWorkoutPlans } = workoutPlanContext;
 
+  const router = useRouter();
+
   const { user } = useAuthContext();
 
   const userId = user?.id;
@@ -67,13 +70,19 @@ export function AppProvider({ children }: { children: ReactNode }) {
     setIsLoading(true);
     try {
       if (userId) {
+        const res = await getNutritionPlan(userId);
+        console.log("Nutrition plan res", res);
+        if (!res) {
+          router.push("/body-stats-and-goals");
+        }
         await Promise.all([
-          getNutritionPlan(userId),
           getAllMuscleGroups(),
           getAllExercises(),
           getUserWorkoutPlan(userId),
           getAllWorkoutPlans(),
         ]);
+        setIsLoading(false);
+      } else {
         setIsLoading(false);
       }
     } catch (error) {

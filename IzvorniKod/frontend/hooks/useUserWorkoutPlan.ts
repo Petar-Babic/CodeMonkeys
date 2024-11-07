@@ -16,33 +16,7 @@ import { workoutsWithExercises } from "@/data/workout";
 import { UserWorkoutWithUserPlannedExerciseBaseCreateInput } from "@/types/userWorkout";
 import { CreatePlannedExerciseInputForUserWorkout } from "@/types/plannedExercise";
 import { useAuthContext } from "@/contexts/AuthContext";
-
-// Simulated API call for creating a new user workout plan
-const createUserWorkoutPlanAPI = async (
-  data: CreateUserWorkoutPlanInput
-): Promise<UserWorkoutPlanWithRelations> => {
-  // Simulate API delay
-  await new Promise((resolve) => setTimeout(resolve, 1000));
-
-  // Simulated logic (replace with actual API call)
-  const newUserWorkoutPlan: UserWorkoutPlanBase = {
-    id: `userWorkoutPlan${initialUserWorkoutPlans.length + 1}`,
-    ...data,
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  };
-
-  // In a real application, you would add this to the database
-  // For this simulation, we're just returning the new plan
-  return {
-    ...newUserWorkoutPlan,
-    workoutPlan: workoutPlans.find(
-      (plan) => plan.id === newUserWorkoutPlan.workoutPlanId
-    ),
-    userWorkouts: [],
-    workoutSessions: [],
-  };
-};
+import { exercises as predefinedExercises } from "@/data/exercise";
 
 const getUserWorkoutPlanAPI = async (
   userId: string
@@ -58,33 +32,33 @@ const getUserWorkoutPlanAPI = async (
   return userWorkoutPlan;
 };
 
-// Simulated API call for updating a user workout plan
-const updateUserWorkoutPlanAPI = async (
-  data: UpdateUserWorkoutPlanInput
-): Promise<UserWorkoutPlanWithRelations> => {
-  // Simulate API delay
-  await new Promise((resolve) => setTimeout(resolve, 1000));
+// // Simulated API call for updating a user workout plan
+// const updateUserWorkoutPlanAPI = async (
+//   data: UpdateUserWorkoutPlanInput
+// ): Promise<UserWorkoutPlanWithRelations> => {
+//   // Simulate API delay
+//   await new Promise((resolve) => setTimeout(resolve, 1000));
 
-  // Find the user workout plan to update
-  const index = initialUserWorkoutPlans.findIndex(
-    (plan) => plan.id === data.id
-  );
+//   // Find the user workout plan to update
+//   const index = initialUserWorkoutPlans.findIndex(
+//     (plan) => plan.id === data.id
+//   );
 
-  if (index === -1) {
-    throw new Error("User workout plan not found");
-  }
+//   if (index === -1) {
+//     throw new Error("User workout plan not found");
+//   }
 
-  // Update the plan
-  const updatedPlan: UserWorkoutPlanWithRelations = {
-    ...initialUserWorkoutPlans[index],
-    ...data,
-    updatedAt: new Date(),
-  };
+//   // Update the plan
+//   const updatedPlan: UserWorkoutPlanWithRelations = {
+//     ...initialUserWorkoutPlans[index],
+//     ...data,
+//     updatedAt: new Date(),
+//   };
 
-  // In a real application, you would update this in the database
-  // For this simulation, we're just returning the updated plan
-  return updatedPlan;
-};
+//   // In a real application, you would update this in the database
+//   // For this simulation, we're just returning the updated plan
+//   return updatedPlan;
+// };
 
 // apply workout plan to user
 const applyWorkoutPlanToUserAPI = async (
@@ -156,10 +130,53 @@ export function useUserWorkoutPlan() {
       setIsLoadingUserWorkoutPlan(true);
       setError(null);
       try {
-        const newUserWorkoutPlan = await createUserWorkoutPlanAPI(data);
+        await new Promise((resolve) => setTimeout(resolve, 1000));
 
-        setUserWorkoutPlan(newUserWorkoutPlan);
-        return newUserWorkoutPlan;
+        const newUserWorkoutPlan: UserWorkoutPlanBase = {
+          id: `userWorkoutPlan${initialUserWorkoutPlans.length + 1}`,
+          ...data,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        };
+
+        const plan: UserWorkoutPlanWithRelations = {
+          ...newUserWorkoutPlan,
+          workoutPlan: workoutPlans.find(
+            (plan) => plan.id === newUserWorkoutPlan.workoutPlanId
+          ),
+          userWorkouts: data.userWorkouts.map((workout) => ({
+            ...workout,
+            id: `userWorkout${initialUserWorkoutPlans.length + 1}`,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+            exercises: workout.exercises.map((exercise) => ({
+              ...exercise,
+              id: `exercise${initialUserWorkoutPlans.length + 1}`,
+              userWorkoutId: `userWorkout${initialUserWorkoutPlans.length + 1}`,
+              createdAt: new Date(),
+              updatedAt: new Date(),
+              exercise: predefinedExercises.find(
+                (e) => e.id === exercise.exerciseId
+              ) || {
+                id: exercise.exerciseId,
+                name: "Exercise Name", // Replace with actual exercise name
+                description: "Exercise Description", // Replace with actual exercise description
+                createdById: "createdById", // Replace with actual createdById
+                isApproved: true, // Replace with actual approval status
+                categoryId: "categoryId", // Replace with actual categoryId
+                primaryMuscleGroupId: ["primaryMuscleGroupId"], // Replace with actual primaryMuscleGroupId
+                secondaryMuscleGroupId: "secondaryMuscleGroupId", // Replace with actual secondaryMuscleGroupId
+                secondaryMuscleGroupIds: [], // Replace with actual secondaryMuscleGroupIds
+                createdAt: new Date(), // Replace with actual createdAt
+                updatedAt: new Date(), // Replace with actual updatedAt
+              },
+            })),
+          })),
+          workoutSessions: [],
+        };
+
+        setUserWorkoutPlan(plan);
+        return plan;
       } catch (err) {
         setError(
           err instanceof Error ? err.message : "An unknown error occurred"
@@ -195,11 +212,27 @@ export function useUserWorkoutPlan() {
     async (data: UpdateUserWorkoutPlanInput) => {
       setIsLoadingUserWorkoutPlan(true);
       setError(null);
+      if (!userWorkoutPlan) {
+        throw new Error("User workout plan not found");
+      }
+
       try {
-        const updatedPlan = await updateUserWorkoutPlanAPI(data);
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+
+        const prevPlan = userWorkoutPlan;
+
+        console.log("Updating user workout plan:", data);
+
+        const updatedPlan: UserWorkoutPlanWithRelations = {
+          ...prevPlan,
+          ...data,
+          updatedAt: new Date(),
+        };
+
         setUserWorkoutPlan(updatedPlan);
         return updatedPlan;
       } catch (err) {
+        console.error("Error updating user workout plan:", err);
         setError(
           err instanceof Error ? err.message : "An unknown error occurred"
         );
@@ -208,7 +241,7 @@ export function useUserWorkoutPlan() {
         setIsLoadingUserWorkoutPlan(false);
       }
     },
-    []
+    [userWorkoutPlan]
   );
 
   const applyWorkoutPlanToUser = useCallback(

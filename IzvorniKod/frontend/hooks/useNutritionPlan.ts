@@ -6,44 +6,7 @@ import {
   NutritionPlanBase,
 } from "@/types/nutritionPlan";
 import { nutritionPlans as initialNutritionPlans } from "@/data/nutritionPlan";
-
-// Simulated API call for creating a new nutrition plan
-const createNutritionPlanAPI = async (
-  data: CreateNutritionPlanInput
-): Promise<NutritionPlanBase> => {
-  // Simulate API delay
-  await new Promise((resolve) => setTimeout(resolve, 1000));
-
-  // Simulated logic (replace with actual API call)
-  const newNutritionPlan: NutritionPlanBase = {
-    id: `nutrition${initialNutritionPlans.length + 1}`,
-    ...data,
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  };
-
-  // In a real application, you would add this to the database
-  // For this simulation, we're just returning the new plan
-  return newNutritionPlan;
-};
-
-const getNutritionPlanAPI = async (
-  userId: string
-): Promise<NutritionPlanBase> => {
-  // Simulate API delay
-  await new Promise((resolve) => setTimeout(resolve, 1000));
-
-  // Find the nutrition plan for the given user
-  const nutritionPlan = initialNutritionPlans.find(
-    (plan) => plan.userId === userId
-  );
-
-  if (!nutritionPlan) {
-    throw new Error("Nutrition plan not found");
-  }
-
-  return nutritionPlan;
-};
+import { useRouter } from "next/navigation";
 
 export function useNutritionPlan() {
   const [isLoadingNutritionalPlan, setIsLoadingNutritionalPlan] =
@@ -53,6 +16,8 @@ export function useNutritionPlan() {
     null
   );
 
+  const router = useRouter();
+
   useEffect(() => {
     console.log("Nutrition plan:", nutritionPlan);
   }, [nutritionPlan]);
@@ -61,7 +26,15 @@ export function useNutritionPlan() {
     async (data: CreateNutritionPlanInput) => {
       setError(null);
       try {
-        const newNutritionPlan = await createNutritionPlanAPI(data);
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+
+        // Simulated logic (replace with actual API call)
+        const newNutritionPlan: NutritionPlanBase = {
+          id: `nutrition${initialNutritionPlans.length + 1}`,
+          ...data,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        };
         setNutritionPlan(newNutritionPlan);
         return newNutritionPlan;
       } catch (err) {
@@ -82,16 +55,26 @@ export function useNutritionPlan() {
       console.log("Getting nutrition plan for user:", userId);
 
       try {
-        const plan = await getNutritionPlanAPI(userId);
-        setNutritionPlan(plan);
-        console.log("Nutrition Plan:", plan);
-        setIsLoadingNutritionalPlan(false);
-        return true;
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+
+        // Find the nutrition plan for the given user
+        const plan = initialNutritionPlans.find(
+          (plan) => plan.userId === userId
+        );
+        if (!plan) {
+          console.error("Nutrition plan not found for user:", userId);
+          return false;
+        } else {
+          setIsLoadingNutritionalPlan(false);
+          setNutritionPlan(plan);
+          console.log("Nutrition plan found:", plan);
+          return true;
+        }
       } catch (err) {
         console.error("Error getting nutrition plan:", err);
+        return false;
       } finally {
         setIsLoadingNutritionalPlan(false);
-        return false;
       }
     },
     []

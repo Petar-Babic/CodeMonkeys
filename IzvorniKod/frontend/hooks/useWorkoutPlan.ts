@@ -6,36 +6,6 @@ import {
 } from "@/types/workoutPlan";
 import { workoutPlans as predefinedWorkoutPlans } from "@/data/workoutPlan";
 
-// Simulated API call for creating a new workout plan
-const createWorkoutPlanAPI = async (
-  input: CreateWorkoutPlanInput
-): Promise<WorkoutPlanBase> => {
-  // Simulate API delay
-  await new Promise((resolve) => setTimeout(resolve, 1000));
-
-  // Simulated logic (replace with actual API call)
-  const newWorkoutPlan: WorkoutPlanBase = {
-    id: Date.now().toString(),
-    name: input.name,
-    userId: input.userId,
-    createdById: input.createdById,
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  };
-
-  return newWorkoutPlan;
-};
-
-// Simulated API call for getting all workout plans
-const getWorkoutPlansAPI = async (): Promise<WorkoutPlanBase[]> => {
-  // Simulate API delay
-  await new Promise((resolve) => setTimeout(resolve, 1000));
-
-  console.log("Getting all workout plans", predefinedWorkoutPlans);
-
-  return predefinedWorkoutPlans;
-};
-
 export const useWorkoutPlan = () => {
   const [workoutPlans, setWorkoutPlans] = useState<WorkoutPlanBase[]>([]);
 
@@ -43,9 +13,24 @@ export const useWorkoutPlan = () => {
 
   const createWorkoutPlan = useCallback(
     async (input: CreateWorkoutPlanInput): Promise<WorkoutPlanBase> => {
-      const newWorkoutPlan = await createWorkoutPlanAPI(input);
-      setWorkoutPlans((prevPlans) => [...prevPlans, newWorkoutPlan]);
-      return newWorkoutPlan;
+      try {
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+
+        // Simulated logic (replace with actual API call)
+        const newWorkoutPlan: WorkoutPlanBase = {
+          id: Date.now().toString(),
+          name: input.name,
+          userId: input.userId,
+          createdById: input.createdById,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        };
+        setWorkoutPlans((prevPlans) => [...prevPlans, newWorkoutPlan]);
+        return newWorkoutPlan;
+      } catch (err) {
+        console.error(err);
+        throw new Error("Failed to create workout plan");
+      }
     },
     []
   );
@@ -61,7 +46,8 @@ export const useWorkoutPlan = () => {
     WorkoutPlanBase[]
   > => {
     setWorkoutPlansLoading(true);
-    const plans = await getWorkoutPlansAPI();
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+    const plans = predefinedWorkoutPlans;
     setWorkoutPlans(plans);
     console.log("Plans", plans);
     setWorkoutPlansLoading(false);

@@ -6,79 +6,6 @@ import { UserBase } from "@/types/user";
 import { useState, useCallback, useEffect } from "react";
 import { useNutritionPlan } from "./useNutritionPlan";
 
-// Simulated API call for updating body stats and goals
-const bodyStatsAndGoalAPI = async (
-  userId: string,
-  data: BodyStatsAndGoalDataType,
-  nutritionPlanId: string
-): Promise<UserBase> => {
-  // Simulate API delay
-  await new Promise((resolve) => setTimeout(resolve, 1000));
-
-  // Simulated logic (replace with actual API call)
-  const updatedUser: UserBase = JSON.parse(
-    localStorage.getItem("session") || "{}"
-  ).user;
-  updatedUser.height = convertToCm(data.height, data.isHeightImperial);
-  updatedUser.weight = convertToKg(data.weight, data.isWeightImperial);
-  updatedUser.activityLevel = data.activityLevel;
-  updatedUser.gender = data.gender;
-  updatedUser.currentNutritionPlanId = nutritionPlanId;
-  updatedUser.updatedAt = new Date();
-
-  // Update local storage
-  const session = JSON.parse(localStorage.getItem("session") || "{}");
-  session.user = updatedUser;
-  localStorage.setItem("session", JSON.stringify(session));
-
-  return updatedUser;
-};
-
-const changeUserWeightAPI = async (
-  userId: string,
-  newWeight: number
-): Promise<UserBase> => {
-  // Simulate API delay
-  await new Promise((resolve) => setTimeout(resolve, 1000));
-
-  // Simulated logic (replace with actual API call)
-  const updatedUser: UserBase = JSON.parse(
-    localStorage.getItem("session") || "{}"
-  ).user;
-  updatedUser.weight = newWeight;
-
-  updatedUser.updatedAt = new Date();
-
-  // Update local storage
-  const session = JSON.parse(localStorage.getItem("session") || "{}");
-  session.user = updatedUser;
-  localStorage.setItem("session", JSON.stringify(session));
-
-  return updatedUser;
-};
-
-const changeUserHeightAPI = async (
-  userId: string,
-  newHeight: number
-): Promise<UserBase> => {
-  // Simulate API delay
-  await new Promise((resolve) => setTimeout(resolve, 1000));
-
-  // Simulated logic (replace with actual API call)
-  const updatedUser: UserBase = JSON.parse(
-    localStorage.getItem("session") || "{}"
-  ).user;
-  updatedUser.height = newHeight;
-  updatedUser.updatedAt = new Date();
-
-  // Update local storage
-  const session = JSON.parse(localStorage.getItem("session") || "{}");
-  session.user = updatedUser;
-  localStorage.setItem("session", JSON.stringify(session));
-
-  return updatedUser;
-};
-
 function convertToCm(value: number, isImperial: boolean): number {
   return isImperial ? value * 2.54 : value;
 }
@@ -116,13 +43,30 @@ export function useUser() {
           ),
         });
 
-        const updatedUser = await bodyStatsAndGoalAPI(
-          user.id,
-          data,
-          nutritionPlan.id
-        );
+        console.log("Nutrition plan:", nutritionPlan);
+
+        // const updatedUser = { ...user };
+        // updatedUser.height = convertToCm(data.height, data.isHeightImperial);
+        // updatedUser.weight = convertToKg(data.weight, data.isWeightImperial);
+        // updatedUser.activityLevel = data.activityLevel;
+        // updatedUser.gender = data.gender;
+        // updatedUser.currentNutritionPlanId = nutritionPlan.id;
+        // updatedUser.updatedAt = new Date();
+
+        const updatedUser = {
+          ...user,
+          height: convertToCm(data.height, data.isHeightImperial),
+          weight: convertToKg(data.weight, data.isWeightImperial),
+          activityLevel: data.activityLevel,
+          gender: data.gender,
+          currentNutritionPlanId: nutritionPlan.id,
+          updatedAt: new Date(),
+        };
+
         setUser(updatedUser);
+        console.log("Updated user:", updatedUser);
       } catch (err) {
+        console.error("Error setting body stats and goal:", err);
         setError(
           err instanceof Error ? err.message : "An unknown error occurred"
         );
@@ -139,8 +83,11 @@ export function useUser() {
       setIsLoading(true);
       setError(null);
       try {
-        const updatedUser = await changeUserWeightAPI(user.id, newWeight);
-        setUser(updatedUser);
+        setUser({
+          ...user,
+          weight: convertToKg(newWeight, false),
+          updatedAt: new Date(),
+        });
       } catch (err) {
         setError(
           err instanceof Error ? err.message : "An unknown error occurred"
@@ -158,8 +105,11 @@ export function useUser() {
       setIsLoading(true);
       setError(null);
       try {
-        const updatedUser = await changeUserHeightAPI(user.id, newHeight);
-        setUser(updatedUser);
+        setUser({
+          ...user,
+          height: convertToCm(newHeight, false),
+          updatedAt: new Date(),
+        });
       } catch (err) {
         setError(
           err instanceof Error ? err.message : "An unknown error occurred"

@@ -17,7 +17,11 @@ import {
 import { Input } from "@/components/ui/input";
 import { ArrowRight, Loader2, Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
-import { FaGoogle, FaFacebook, FaApple } from "react-icons/fa";
+import {
+  FaGoogle,
+  FaFacebook,
+  // FaApple
+} from "react-icons/fa";
 import { useAuthContext } from "@/contexts/AuthContext";
 
 const formSchema = z
@@ -40,12 +44,12 @@ const formSchema = z
 
 export function SignUpForm() {
   const router = useRouter();
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean[]>([false, false, false]);
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [showConfirmPassword, setShowConfirmPassword] =
     useState<boolean>(false);
 
-  const { signUp } = useAuthContext();
+  const { signUp, socialLogin } = useAuthContext();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -58,7 +62,7 @@ export function SignUpForm() {
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    setIsLoading(true);
+    setIsLoading([true, false, false]);
 
     try {
       // Here you would typically call your registration service
@@ -80,30 +84,29 @@ export function SignUpForm() {
     } catch (error) {
       console.error(error);
     } finally {
-      setIsLoading(false);
+      setIsLoading([false, false, false]);
     }
   }
 
-  const handleSocialLogin = async (provider: string) => {
-    setIsLoading(true);
+  const handleSocialLogin = async (provider: string, index: number) => {
+    setIsLoading([
+      ...isLoading.slice(0, index),
+      true,
+      ...isLoading.slice(index + 1),
+    ]);
     try {
-      // Implement social login logic here
-      console.log(`Logging in with ${provider}`);
-      // For now, we'll just simulate a delay
+      const result = await socialLogin(provider);
 
-      const response = await signUp({
-        name: "John Dode",
-        email: "johndoe@example.com",
-        password: "johnjohn",
-      });
+      if (result.error) {
+        console.error(result.error);
+        return;
+      }
 
-      console.log(`${provider} login successful:`, response);
-
-      setIsLoading(false);
-
-      router.push("/body-stats-and-goals");
+      router.push("/workouts");
     } catch (error) {
       console.error(`${provider} login failed:`, error);
+    } finally {
+      setIsLoading([false, false, false]);
     }
   };
 
@@ -124,22 +127,34 @@ export function SignUpForm() {
               <Button
                 variant="outlineWhite"
                 type="button"
-                onClick={() => handleSocialLogin("Google")}
+                onClick={() => handleSocialLogin("Google", 1)}
                 className="w-full text-white flex items-center justify-center"
               >
-                <FaGoogle />
-                Sign up with Google
+                {isLoading[1] ? (
+                  <Loader2 className="animate-spin" />
+                ) : (
+                  <>
+                    <FaGoogle />
+                    Sign up with Google
+                  </>
+                )}
               </Button>
               <Button
                 variant="outlineWhite"
                 type="button"
-                onClick={() => handleSocialLogin("Facebook")}
+                onClick={() => handleSocialLogin("Facebook", 2)}
                 className="w-full flex text-white items-center justify-center"
               >
-                <FaFacebook />
-                Sign up with Facebook
+                {isLoading[2] ? (
+                  <Loader2 className="animate-spin" />
+                ) : (
+                  <>
+                    <FaFacebook />
+                    Sign up with Facebook
+                  </>
+                )}
               </Button>
-              <Button
+              {/* <Button
                 variant="outlineWhite"
                 type="button"
                 onClick={() => handleSocialLogin("Apple")}
@@ -147,7 +162,7 @@ export function SignUpForm() {
               >
                 <FaApple />
                 Sign up with Apple
-              </Button>
+              </Button> */}
             </div>
             <div className="flex items-center mt-6">
               <div className="flex-grow border-t border-gray-600"></div>
@@ -257,9 +272,9 @@ export function SignUpForm() {
             variant="white"
             type="submit"
             className="w-full h-10"
-            disabled={isLoading}
+            disabled={isLoading[0]}
           >
-            {isLoading ? (
+            {isLoading[0] ? (
               <Loader2 className="animate-spin" />
             ) : (
               <>

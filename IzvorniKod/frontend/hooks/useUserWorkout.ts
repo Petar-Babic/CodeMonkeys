@@ -6,50 +6,6 @@ import {
   UserWorkoutWithUserPlannedExerciseWithoutCreatedAt,
 } from "@/types/userWorkout";
 
-// Simulated API calls
-const createUserWorkoutAPI = async (
-  data: CreateUserWorkoutInput
-): Promise<UserWorkoutWithUserPlannedExercise> => {
-  // Simulate API delay
-  await new Promise((resolve) => setTimeout(resolve, 1000));
-
-  // Simulated creation logic
-  const newUserWorkout: UserWorkoutWithUserPlannedExercise = {
-    id: `workout-${Date.now()}`,
-    ...data,
-    exercises: [],
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  };
-
-  return newUserWorkout;
-};
-
-const updateUserWorkoutAPI = async (
-  data: UpdateUserWorkoutInput
-): Promise<UserWorkoutWithUserPlannedExerciseWithoutCreatedAt> => {
-  // Simulate API delay
-  await new Promise((resolve) => setTimeout(resolve, 1000));
-
-  // Simulated update logic
-  const updatedUserWorkout: UserWorkoutWithUserPlannedExerciseWithoutCreatedAt =
-    {
-      ...data,
-      exercises: [],
-      updatedAt: new Date(),
-    } as UserWorkoutWithUserPlannedExerciseWithoutCreatedAt;
-
-  return updatedUserWorkout;
-};
-
-const deleteUserWorkoutAPI = async (id: string): Promise<void> => {
-  // Simulate API delay
-  await new Promise((resolve) => setTimeout(resolve, 1000));
-
-  // Simulated deletion logic
-  console.log(`User workout with id ${id} deleted`);
-};
-
 export const useUserWorkout = () => {
   const [userWorkouts, setUserWorkouts] = useState<
     UserWorkoutWithUserPlannedExercise[]
@@ -62,7 +18,16 @@ export const useUserWorkout = () => {
       setIsLoading(true);
       setError(null);
       try {
-        const newUserWorkout = await createUserWorkoutAPI(data);
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+
+        // Simulated creation logic
+        const newUserWorkout: UserWorkoutWithUserPlannedExercise = {
+          id: `workout-${Date.now()}`,
+          ...data,
+          exercises: [],
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        };
         setUserWorkouts((prevWorkouts) => [...prevWorkouts, newUserWorkout]);
         return newUserWorkout;
       } catch (err) {
@@ -80,7 +45,15 @@ export const useUserWorkout = () => {
       setIsLoading(true);
       setError(null);
       try {
-        const updatedUserWorkout = await updateUserWorkoutAPI(data);
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+
+        // Simulated update logic
+        const updatedUserWorkout: UserWorkoutWithUserPlannedExerciseWithoutCreatedAt =
+          {
+            ...data,
+            exercises: [],
+            updatedAt: new Date(),
+          } as UserWorkoutWithUserPlannedExerciseWithoutCreatedAt;
         setUserWorkouts((prevWorkouts) =>
           prevWorkouts.map((workout) =>
             workout.id === updatedUserWorkout.id
@@ -103,7 +76,6 @@ export const useUserWorkout = () => {
     setIsLoading(true);
     setError(null);
     try {
-      await deleteUserWorkoutAPI(id);
       setUserWorkouts((prevWorkouts) =>
         prevWorkouts.filter((workout) => workout.id !== id)
       );

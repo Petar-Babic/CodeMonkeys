@@ -17,8 +17,13 @@ import {
 import { Input } from "@/components/ui/input";
 import { ArrowRight, Loader2, Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
-import { FaGoogle, FaFacebook, FaApple } from "react-icons/fa";
-import { signIn } from "next-auth/react";
+import {
+  FaGoogle,
+  FaFacebook,
+  //  FaApple
+} from "react-icons/fa";
+import { signIn, SignInResponse } from "next-auth/react";
+import { useAuthContext } from "@/contexts/AuthContext";
 
 const formSchema = z.object({
   email: z.string().email({
@@ -31,9 +36,11 @@ const formSchema = z.object({
 
 export function SignInForm() {
   const router = useRouter();
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean[]>([false, false, false]);
+
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  const { login, socialLogin } = useAuthContext();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -44,38 +51,48 @@ export function SignInForm() {
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    setIsLoading(true);
+    setIsLoading([true, false, false]);
 
     try {
-      const result = await signIn("credentials", {
-        redirect: false,
+      const result: SignInResponse = await login({
         email: values.email,
         password: values.password,
       });
 
-      if (result?.error) {
-        setError("Invalid email or password. Please try again.");
-      } else {
-        // Successful login
-        router.push("/workouts");
+      if (result.error) {
+        setError(result.error);
+        return;
       }
+
+      router.push("/workouts");
     } catch (error) {
       console.error("Login failed:", error);
       setError("An error occurred. Please try again.");
     } finally {
-      setIsLoading(false);
+      setIsLoading([false, false, false]);
     }
   }
 
-  const handleSocialLogin = async (provider: string) => {
-    setIsLoading(true);
+  const handleSocialLogin = async (provider: string, index: number) => {
+    setIsLoading([
+      ...isLoading.slice(0, index),
+      true,
+      ...isLoading.slice(index + 1),
+    ]);
     try {
-      await signIn(provider.toLowerCase(), { callbackUrl: "/workouts" });
+      const result: SignInResponse = await socialLogin(provider);
+
+      if (result.error) {
+        setError(result.error);
+        return;
+      }
+
+      router.push("/workouts");
     } catch (error) {
       setError("An error occurred. Please try again.");
       console.error(`${provider} login failed:`, error);
     } finally {
-      setIsLoading(false);
+      setIsLoading([false, false, false]);
     }
   };
 
@@ -97,32 +114,50 @@ export function SignInForm() {
                 type="button"
                 variant="outlineWhite"
                 className="w-full text-white flex items-center justify-center"
-                onClick={() => handleSocialLogin("Google")}
-                disabled={isLoading}
+                onClick={() => handleSocialLogin("Google", 1)}
+                disabled={isLoading[1]}
               >
-                <FaGoogle />
-                Sign in with Google
+                {isLoading[1] ? (
+                  <Loader2 className="animate-spin" />
+                ) : (
+                  <>
+                    <FaGoogle />
+                    Sign in with Google
+                  </>
+                )}
               </Button>
               <Button
                 type="button"
                 variant="outlineWhite"
                 className="w-full flex text-white items-center justify-center"
-                onClick={() => handleSocialLogin("Facebook")}
-                disabled={isLoading}
+                onClick={() => handleSocialLogin("Facebook", 2)}
+                disabled={isLoading[2]}
               >
-                <FaFacebook />
-                Sign in with Facebook
+                {isLoading[2] ? (
+                  <Loader2 className="animate-spin" />
+                ) : (
+                  <>
+                    <FaFacebook />
+                    Sign in with Facebook
+                  </>
+                )}
               </Button>
-              <Button
+              {/* <Button
                 type="button"
                 variant="outlineWhite"
                 className="w-full secondary text-white flex items-center justify-center"
-                onClick={() => handleSocialLogin("Apple")}
-                disabled={isLoading}
+                onClick={() => handleSocialLogin("Apple", 3)}
+                disabled={isLoading[3]}
               >
-                <FaApple />
-                Sign in with Apple
-              </Button>
+                {isLoading[3] ? (
+                  <Loader2 className="animate-spin" />
+                ) : (
+                  <>
+                    <FaApple />
+                    Sign in with Apple
+                  </>
+                )}
+              </Button> */}
             </div>
             <div className="flex items-center mt-6">
               <div className="flex-grow border-t border-gray-600"></div>
@@ -141,7 +176,7 @@ export function SignInForm() {
                     placeholder="Enter your email"
                     {...field}
                     className="bg-transparent border-gray-600 text-white"
-                    disabled={isLoading}
+                    disabled={isLoading[0]}
                   />
                 </FormControl>
                 <FormMessage className="text-red-400" />
@@ -161,13 +196,13 @@ export function SignInForm() {
                       placeholder="Enter your password"
                       {...field}
                       className="bg-transparent border-gray-600 text-white"
-                      disabled={isLoading}
+                      disabled={isLoading[0]}
                     />
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
                       className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-200"
-                      disabled={isLoading}
+                      disabled={isLoading[0]}
                     >
                       {showPassword ? (
                         <EyeOff className="h-4 w-4" />
@@ -188,9 +223,9 @@ export function SignInForm() {
             variant="white"
             type="submit"
             className="w-full h-10"
-            disabled={isLoading}
+            disabled={isLoading[0]}
           >
-            {isLoading ? (
+            {isLoading[0] ? (
               <Loader2 className="animate-spin" />
             ) : (
               <span>Sign In</span>

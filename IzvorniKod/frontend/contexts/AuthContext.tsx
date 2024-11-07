@@ -8,7 +8,13 @@ import React, {
   useEffect,
   useCallback,
 } from "react";
-import { SessionProvider, signIn, signOut, useSession } from "next-auth/react";
+import {
+  SessionProvider,
+  signIn,
+  SignInResponse,
+  signOut,
+  useSession,
+} from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { UserBase } from "@/types/user";
 import { SessionWithRelations } from "@/types/session";
@@ -59,9 +65,14 @@ function useAuth(): AuthContextType {
     setLoading(status === "loading");
   }, [session, status]);
 
+  useEffect(() => {
+    console.log("User:", user);
+  }, [user]);
+
   const login = useCallback(
-    async (credentials: LoginCredentials): Promise<SessionWithRelations> => {
+    async (credentials: LoginCredentials): Promise<SignInResponse> => {
       try {
+        console.log("Credentials", credentials);
         const result = await signIn("credentials", {
           redirect: false,
           email: credentials.email,
@@ -72,16 +83,7 @@ function useAuth(): AuthContextType {
           throw new Error(result.error);
         }
 
-        const updatedSession = await fetch("/api/auth/session");
-        const sessionData = await updatedSession.json();
-
-        if (sessionData?.user) {
-          setUser(sessionData.user as UserBase);
-          setIsAuthenticated(true);
-          return sessionData as SessionWithRelations;
-        } else {
-          throw new Error("Failed to fetch user data");
-        }
+        return result as SignInResponse;
       } catch (error) {
         console.error("Login failed:", error);
         throw error;
@@ -115,6 +117,22 @@ function useAuth(): AuthContextType {
     [login]
   );
 
+  const socialLogin = useCallback(
+    async (provider: string): Promise<SignInResponse> => {
+      try {
+        const response = await signIn(provider.toLowerCase(), {
+          callbackUrl: "/workouts",
+        });
+
+        return response as SignInResponse;
+      } catch (error) {
+        console.error(`${provider} login failed:`, error);
+        throw error;
+      }
+    },
+    []
+  );
+
   const logout = useCallback(async () => {
     await signOut({ redirect: false });
     setUser(null);
@@ -146,9 +164,9 @@ function useAuth(): AuthContextType {
     login,
     signUp,
     logout,
-    setSession: () => {}, // This is now handled by NextAuth
     setUser,
     loading,
+    socialLogin,
     getNutritionPlan,
   };
 }

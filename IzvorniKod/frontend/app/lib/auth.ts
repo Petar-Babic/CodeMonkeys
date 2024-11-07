@@ -2,20 +2,20 @@ import { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
 import FacebookProvider from "next-auth/providers/facebook";
-
+import { SessionWithRelations } from "@/types/session";
 import "next-auth";
-import { backendUrl } from "@/data/backendUrl";
+// import { backendUrl } from "@/data/backendUrl";
 import { users } from "@/data/user";
 
 declare module "next-auth" {
-  interface Session {
+  interface Session extends SessionWithRelations {
+    accessToken: string;
     user: {
       id: string;
       name: string;
       email: string;
       role: string;
     };
-    accessToken: string;
   }
 
   interface User {
@@ -57,7 +57,7 @@ export const authOptions: NextAuthOptions = {
         } else {
           return null;
         }
-        // Make a request to your Java Spring backend to authenticate the user
+        // Make a request to your Java Spring backend to auhenticate the user
         // const response = await fetch(
         //   `${process.env.BACKEND_URL}/api/auth/login`,
         //   {
@@ -97,15 +97,14 @@ export const authOptions: NextAuthOptions = {
       clientSecret: process.env.FACEBOOK_CLIENT_SECRET!,
     }),
   ],
+  session: {
+    strategy: "jwt",
+  },
   pages: {
     signIn: "/sign-in",
-    signOut: "/sign-out",
-    error: "/error",
-    verifyRequest: "/verify-request",
-    newUser: "/sign-up",
   },
   callbacks: {
-    async jwt({ token, user, account }) {
+    jwt: async ({ token, user, account }) => {
       if (user) {
         token.id = user.id;
         token.role = user.role;
@@ -115,43 +114,23 @@ export const authOptions: NextAuthOptions = {
       }
       return token;
     },
-    async session({ session, token }) {
+    session: async ({ session, token }) => {
+      console.log("Token:", token);
       if (session.user) {
-        session.user.id = token.id as string;
-        session.user.role = token.role as string;
+        session.user.id = token.id;
+        session.user.role = token.role;
       }
       session.accessToken = token.accessToken as string;
+
+      console.log("Session:", session);
       return session;
     },
-    async signIn({ user, account, profile }) {
-      // if (account?.provider === "google" || account?.provider === "facebook") {
-      // Make a request to your Java Spring backend to create or authenticate the user
-      // const response = await fetch(`${backendUrl}/auth/social-login`, {
-      //   method: "POST",
-      //   headers: {
-      //     "Content-Type": "application/json",
-      //   },
-      //   body: JSON.stringify({
-      //     provider: account.provider,
-      //     providerId: account.providerAccountId,
-      //     email: profile?.email,
-      //     name: profile?.name,
-      //     image: profile?.image,
-      //   }),
-      // });
-      // if (!response.ok) {
-      //   return false;
-      // }
-      // const userData = await response.json();
-      // user.id = userData.id;
-      // user.role = userData.role;
-      // }
-
+    signIn: async ({ user, account, profile }) => {
+      console.log("Sign in user:", user);
+      console.log("Sign in account:", account);
+      console.log("Sign in profile:", profile);
       return true;
     },
-  },
-  session: {
-    strategy: "jwt",
   },
   secret: process.env.NEXTAUTH_SECRET,
 };

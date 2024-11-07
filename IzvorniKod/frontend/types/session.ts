@@ -3,7 +3,7 @@ import { UserBase } from "./user";
 // Session Types
 export type SessionBase = {
   id: string;
-  sessionToken: string;
+  accessToken?: string;
   userId: string;
   expires: Date;
 };

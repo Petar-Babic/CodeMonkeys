@@ -14,7 +14,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
 import { useAuthContext } from "@/contexts/AuthContext";
 
 export default function UserMenu() {
@@ -23,15 +22,10 @@ export default function UserMenu() {
 
   const handleLogout = async () => {
     logout();
-    router.push("/");
   };
 
   if (!isAuthenticated || !session?.user) {
-    return (
-      <Button variant="ghost" asChild>
-        <Link href="/sign-in">Log in</Link>
-      </Button>
-    );
+    return null;
   }
 
   const initials = session.user.name
@@ -47,9 +41,9 @@ export default function UserMenu() {
       <DropdownMenuTrigger asChild className="mx-4 focus:outline-none">
         <Button
           variant="ghost"
-          className="relative h-10 w-10 mx-4 rounded-full focus:ring-0 focus:ring-offset-0"
+          className="relative h-8 w-8 mx-4 rounded-full focus:ring-0 focus:ring-offset-0"
         >
-          <Avatar className="h-10 w-10">
+          <Avatar className="h-8 w-8">
             <AvatarImage
               src={session.user.image || undefined}
               alt={session.user.email || "User"}

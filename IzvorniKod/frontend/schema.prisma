@@ -21,7 +21,7 @@ model User {
   height               Float?
   weight               Float?
   gender               Gender?
-  hashedPassword       String?              // Dodajemo ovo polje
+  hashedPassword       String?             
   activityLevel        ActivityLevel?
   currentNutritionPlan NutritionPlan?       @relation("CurrentNutritionPlan", fields: [currentNutritionPlanId], references: [id])
   currentNutritionPlanId String?
@@ -31,7 +31,6 @@ model User {
   updatedAt            DateTime             @updatedAt
   activeWorkoutPlanId  String?              @unique
   accounts             Account[]
-  sessions             Session[]
   workoutPlans         UserWorkoutPlan[]    @relation("UserWorkoutPlans")
   activeWorkoutPlan    UserWorkoutPlan?     @relation("ActiveWorkoutPlan", fields: [activeWorkoutPlanId], references: [id])
   createdWorkoutPlans  WorkoutPlan[]        @relation("CreatedWorkoutPlans")
@@ -68,15 +67,6 @@ model Account {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
-}
-
-// Represents a user's session for authentication purposes
-model Session {
-  id           String   @id @default(cuid())
-  sessionToken String   @unique
-  userId       String
-  expires      DateTime
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 // Used for email verification process
