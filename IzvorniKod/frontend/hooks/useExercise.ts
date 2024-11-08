@@ -118,6 +118,7 @@ export const useExercise = () => {
 
   return {
     exercises,
+    setExercises,
     createExercise,
     getExerciseById,
     getAllExercises,
@@ -128,6 +129,7 @@ export const useExercise = () => {
 
 export type UseExerciseContextType = {
   exercises: ExerciseBase[];
+  setExercises: (exercises: ExerciseBase[]) => void;
   createExercise: (exerciseInput: CreateExerciseInput) => Promise<ExerciseBase>;
   getExerciseById: (id: string) => ExerciseBase | undefined;
   getAllExercises: () => Promise<ExerciseBase[]>;

@@ -83,6 +83,7 @@ export const useWorkoutPlan = () => {
 
   return {
     workoutPlans,
+    setWorkoutPlans,
     createWorkoutPlan,
     getWorkoutPlanById,
     getAllWorkoutPlans,
@@ -94,6 +95,7 @@ export const useWorkoutPlan = () => {
 
 export type UseWorkoutPlanContextType = {
   workoutPlans: WorkoutPlanBase[];
+  setWorkoutPlans: (workoutPlans: WorkoutPlanBase[]) => void;
   createWorkoutPlan: (
     input: CreateWorkoutPlanInput
   ) => Promise<WorkoutPlanBase>;

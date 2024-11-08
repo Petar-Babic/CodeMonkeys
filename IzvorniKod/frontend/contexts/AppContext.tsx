@@ -7,7 +7,6 @@ import React, {
   useState,
   useEffect,
   useMemo,
-  useCallback,
 } from "react";
 import { useUser, UseUserContextType } from "@/hooks/useUser";
 import {
@@ -27,8 +26,12 @@ import {
   useUserWorkoutPlan,
   UseUserWorkoutPlanType,
 } from "@/hooks/useUserWorkoutPlan";
-import { useAuthContext } from "./AuthContext";
-import { useRouter } from "next/navigation";
+
+import { ExerciseBase } from "@/types/exercise";
+import { MuscleGroupBase } from "@/types/muscleGroup";
+import { NutritionPlanBase } from "@/types/nutritionPlan";
+import { UserWorkoutPlanWithRelations } from "@/types/userWorkoutPlan";
+import { WorkoutPlanBase } from "@/types/workoutPlan";
 
 type AppContextType = UseUserContextType &
   UseNutritionPlanContextType &
@@ -41,7 +44,19 @@ type AppContextType = UseUserContextType &
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
-export function AppProvider({ children }: { children: ReactNode }) {
+export function AppProvider({
+  children,
+  initialData,
+}: {
+  children: ReactNode;
+  initialData: {
+    exercises: ExerciseBase[];
+    muscleGroups: MuscleGroupBase[];
+    nutritionPlan: NutritionPlanBase | null;
+    userWorkoutPlan: UserWorkoutPlanWithRelations | null;
+    workoutPlans: WorkoutPlanBase[];
+  };
+}) {
   const userContext = useUser();
   const nutritionPlanContext = useNutritionPlan();
   const exerciseContext = useExercise();
@@ -50,45 +65,28 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const userWorkoutPlanContext = useUserWorkoutPlan();
   const [isLoading, setIsLoading] = useState(true);
 
-  const { getAllMuscleGroups } = muscleGroupContext;
-  const { getAllExercises } = exerciseContext;
-  const { getNutritionPlan } = nutritionPlanContext;
-  const { getUserWorkoutPlan } = userWorkoutPlanContext;
-  const { getAllWorkoutPlans } = workoutPlanContext;
-
-  const router = useRouter();
-
-  const { user } = useAuthContext();
-
-  const userId = user?.id;
+  const { setExercises } = exerciseContext;
+  const { setMuscleGroups } = muscleGroupContext;
+  const { setWorkoutPlans } = workoutPlanContext;
+  const { setUserWorkoutPlan } = userWorkoutPlanContext;
+  const { setNutritionPlan } = nutritionPlanContext;
 
   useEffect(() => {
-    loadAppData();
-  }, [userId]);
+    setExercises(initialData.exercises);
+    setMuscleGroups(initialData.muscleGroups);
+    setWorkoutPlans(initialData.workoutPlans);
+    setUserWorkoutPlan(initialData.userWorkoutPlan);
+    setNutritionPlan(initialData.nutritionPlan);
 
-  const loadAppData = useCallback(async () => {
-    setIsLoading(true);
-    try {
-      if (userId) {
-        const res = await getNutritionPlan(userId);
-        console.log("Nutrition plan res", res);
-        if (!res) {
-          router.push("/body-stats-and-goals");
-        }
-        await Promise.all([
-          getAllMuscleGroups(),
-          getAllExercises(),
-          getUserWorkoutPlan(userId),
-          getAllWorkoutPlans(),
-        ]);
-        setIsLoading(false);
-      } else {
-        setIsLoading(false);
-      }
-    } catch (error) {
-      console.error("Error loading app data:", error);
-    }
-  }, [userId]);
+    setIsLoading(false);
+  }, [
+    initialData,
+    setExercises,
+    setMuscleGroups,
+    setWorkoutPlans,
+    setUserWorkoutPlan,
+    setNutritionPlan,
+  ]);
 
   const appContextValue = useMemo<AppContextType>(
     () => ({

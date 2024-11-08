@@ -65,6 +65,7 @@ export const useMuscleGroup = () => {
 
   return {
     muscleGroups,
+    setMuscleGroups,
     createMuscleGroup,
     getMuscleGroupById,
     getAllMuscleGroups,
@@ -75,6 +76,7 @@ export const useMuscleGroup = () => {
 
 export type UseMuscleGroupContextType = {
   muscleGroups: MuscleGroupBase[];
+  setMuscleGroups: (muscleGroups: MuscleGroupBase[]) => void;
   createMuscleGroup: (
     muscleGroupInput: CreateMuscleGroupInput
   ) => MuscleGroupBase;

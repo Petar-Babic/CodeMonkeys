@@ -6,7 +6,6 @@ import {
   NutritionPlanBase,
 } from "@/types/nutritionPlan";
 import { nutritionPlans as initialNutritionPlans } from "@/data/nutritionPlan";
-import { useRouter } from "next/navigation";
 
 export function useNutritionPlan() {
   const [isLoadingNutritionalPlan, setIsLoadingNutritionalPlan] =
@@ -15,8 +14,6 @@ export function useNutritionPlan() {
   const [nutritionPlan, setNutritionPlan] = useState<NutritionPlanBase | null>(
     null
   );
-
-  const router = useRouter();
 
   useEffect(() => {
     console.log("Nutrition plan:", nutritionPlan);

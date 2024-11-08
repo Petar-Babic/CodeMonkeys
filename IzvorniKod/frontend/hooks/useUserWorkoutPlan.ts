@@ -278,9 +278,9 @@ export function useUserWorkoutPlan() {
   return {
     isLoadingUserWorkoutPlan,
     error,
+    setUserWorkoutPlan,
     createUserWorkoutPlan,
     userWorkoutPlan,
-    setUserWorkoutPlan,
     getUserWorkoutPlan,
     updateUserWorkoutPlan,
     applyWorkoutPlanToUser,
