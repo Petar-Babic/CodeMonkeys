@@ -68,6 +68,8 @@ const applyWorkoutPlanToUserAPI = async (
   // Simulate API delay
   await new Promise((resolve) => setTimeout(resolve, 1000));
 
+  console.log("Applying workout plan to user:", workoutPlanId, userId);
+
   const workoutPlan = workoutPlans.find((plan) => plan.id === workoutPlanId);
   // Find the workouts for the workout plan
   const workoutPlanWorkouts = workoutsWithExercises.filter(
@@ -100,7 +102,6 @@ const applyWorkoutPlanToUserAPI = async (
 
   const userWorkoutPlan: CreateUserWorkoutPlanInput = {
     name: workoutPlan.name,
-    userId: userId,
     workoutPlanId: workoutPlanId,
     userWorkouts: userWorkouts,
   };
@@ -137,6 +138,7 @@ export function useUserWorkoutPlan() {
           ...data,
           createdAt: new Date(),
           updatedAt: new Date(),
+          userId: userId || "userId", // Replace with actual userId
         };
 
         const plan: UserWorkoutPlanWithRelations = {

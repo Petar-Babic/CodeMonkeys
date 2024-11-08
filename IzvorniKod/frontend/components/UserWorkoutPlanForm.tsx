@@ -40,6 +40,7 @@ import {
 import {
   UserWorkoutPlanWithRelations,
   UpdateUserWorkoutPlanInput,
+  CreateUserWorkoutPlanInput,
 } from "@/types/userWorkoutPlan";
 import { useAppContext } from "@/contexts/AppContext";
 import { Loader2 } from "lucide-react";
@@ -87,6 +88,9 @@ export function UserWorkoutPlanForm() {
     updateUserWorkoutPlan: (
       data: UpdateUserWorkoutPlanInput
     ) => Promise<UserWorkoutPlanWithRelations>;
+    createUserWorkoutPlan: (
+      data: CreateUserWorkoutPlanInput
+    ) => Promise<UserWorkoutPlanWithRelations>;
   } = useAppContext();
 
   const form = useForm<FormValues>({
@@ -122,7 +126,29 @@ export function UserWorkoutPlanForm() {
       };
 
       if (!userWorkoutPlan) {
-        await createUserWorkoutPlan(formattedData);
+        const data: CreateUserWorkoutPlanInput = {
+          ...values,
+          userWorkouts: fields.map((field) => ({
+            ...field,
+            exercises: field.exercises.map((exercise) => ({
+              ...exercise,
+              exercise: {
+                id: exercise.exerciseId,
+                name: "",
+                createdById: "",
+                isApproved: false,
+                categoryId: "",
+                primaryMuscleGroupId: [""],
+                secondaryMuscleGroupIds: [],
+                equipmentIds: [],
+                createdAt: new Date(),
+                updatedAt: new Date(),
+              }, // Add appropriate exercise details here
+            })),
+          })) as UserWorkoutWithUserPlannedExerciseCreateInput[],
+        };
+
+        await createUserWorkoutPlan(data);
       } else {
         // Update the workout plan
         await updateUserWorkoutPlan(formattedData);
@@ -148,9 +174,7 @@ export function UserWorkoutPlanForm() {
   const handleUpdateWorkout = async (
     data: UserWorkoutWithUserPlannedExerciseUpdateInput
   ) => {
-    const index = fields.findIndex(
-      (workout: UserWorkoutWithUserPlannedExercise) => workout.id === data.id
-    );
+    const index = fields.findIndex((workout) => workout.id === data.id);
     if (index !== -1) {
       update(index, data);
     }

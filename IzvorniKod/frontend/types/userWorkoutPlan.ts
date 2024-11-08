@@ -16,7 +16,7 @@ export type UserWorkoutPlanBase = {
 
 export type CreateUserWorkoutPlanInput = Omit<
   UserWorkoutPlanBase,
-  "id" | "createdAt" | "updatedAt"
+  "id" | "createdAt" | "updatedAt" | "userId"
 > & { userWorkouts: UserWorkoutWithUserPlannedExerciseBaseCreateInput[] };
 
 export type UpdateUserWorkoutPlanInput = Partial<

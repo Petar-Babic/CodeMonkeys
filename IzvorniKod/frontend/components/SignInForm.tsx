@@ -22,7 +22,7 @@ import {
   FaFacebook,
   //  FaApple
 } from "react-icons/fa";
-import { signIn, SignInResponse } from "next-auth/react";
+import { SignInResponse } from "next-auth/react";
 import { useAuthContext } from "@/contexts/AuthContext";
 
 const formSchema = z.object({
