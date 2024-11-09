@@ -12,6 +12,7 @@ import { workoutPlans } from "@/data/workoutPlan";
 import { NutritionPlanBase } from "@/types/nutritionPlan";
 import { UserWorkoutPlanWithRelations } from "@/types/userWorkoutPlan";
 import { WorkoutPlanBase } from "@/types/workoutPlan";
+import NutritionPlanRedirect from "./NutritionPlanRedirect";
 
 const getInitialData = async (
   userId: string
@@ -52,6 +53,19 @@ export default async function AppLayoutComponent({
   userId: string;
 }>) {
   const initialData = await getInitialData(userId);
+
+  if (!initialData.nutritionPlan) {
+    return (
+      <AuthProvider>
+        <AppProvider initialData={initialData}>
+          <div className="flex bg-black flex-col min-h-screen">
+            <NutritionPlanRedirect nutritionPlan={initialData.nutritionPlan} />
+            {children}
+          </div>
+        </AppProvider>
+      </AuthProvider>
+    );
+  }
 
   return (
     <AuthProvider>

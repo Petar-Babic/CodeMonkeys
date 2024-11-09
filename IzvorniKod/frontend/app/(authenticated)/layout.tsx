@@ -1,7 +1,7 @@
 import { Suspense } from "react";
-import Loading from "./loading";
-import AppLayoutComponent from "@/components/AppLayout";
+import AppLayoutComponent from "@/components/AppLayoutComponent";
 import { getSession } from "next-auth/react";
+import LoadingAppScreen from "@/components/LoadingAppScreen";
 
 export default async function AppLayout({
   children,
@@ -16,7 +16,7 @@ export default async function AppLayout({
   }
 
   return (
-    <Suspense fallback={<Loading />}>
+    <Suspense fallback={<LoadingAppScreen />}>
       <AppLayoutComponent userId={session.userId}>
         {children}
       </AppLayoutComponent>
