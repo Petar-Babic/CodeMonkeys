@@ -33,13 +33,15 @@ const getInitialData = async (
   const userWorkoutPlan =
     userWorkoutPlans.find((plan) => plan.userId === userId) || null;
 
-  const nutritionPlan =
-    nutritionPlans.find((plan) => plan.userId === userId) || null;
+  const nutritionPlan = nutritionPlans[0];
+
+  // get the random boolean value
+  const randomBoolean = Math.random() < 0.5;
 
   return {
     exercises: filteredExercises,
     muscleGroups: predefinedMuscleGroups,
-    nutritionPlan,
+    nutritionPlan: randomBoolean ? null : nutritionPlan,
     userWorkoutPlan,
     workoutPlans,
   };
@@ -53,6 +55,9 @@ export default async function AppLayoutComponent({
   userId: string;
 }>) {
   const initialData = await getInitialData(userId);
+
+  console.log("nutritionPlan", initialData.nutritionPlan);
+  console.log("userId", userId);
 
   if (!initialData.nutritionPlan) {
     return (

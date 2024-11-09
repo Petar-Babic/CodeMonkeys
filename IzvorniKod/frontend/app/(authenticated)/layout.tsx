@@ -1,14 +1,16 @@
 import { Suspense } from "react";
 import AppLayoutComponent from "@/components/AppLayoutComponent";
-import { getSession } from "next-auth/react";
 import LoadingAppScreen from "@/components/LoadingAppScreen";
+import { getServerSession } from "next-auth";
 
 export default async function AppLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const session = await getSession();
+  const session = await getServerSession();
+
+  const userId = session?.user.id;
 
   if (!session) {
     // Redirect to login or show an error
@@ -17,9 +19,7 @@ export default async function AppLayout({
 
   return (
     <Suspense fallback={<LoadingAppScreen />}>
-      <AppLayoutComponent userId={session.userId}>
-        {children}
-      </AppLayoutComponent>
+      <AppLayoutComponent userId={userId ?? ""}>{children}</AppLayoutComponent>
     </Suspense>
   );
 }

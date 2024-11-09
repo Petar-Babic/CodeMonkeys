@@ -33,6 +33,7 @@ export function useNutritionPlan() {
           updatedAt: new Date(),
         };
         setNutritionPlan(newNutritionPlan);
+
         return newNutritionPlan;
       } catch (err) {
         setError(
