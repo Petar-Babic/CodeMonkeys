@@ -1,4 +1,4 @@
-package hr.fer.progi.gym_fitness_tracker;
+package GymFitnessTrackerApplication;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -11,3 +11,4 @@ public class GymFitnessTrackerApplication {
 	}
 
 }
+
