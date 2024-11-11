@@ -10,7 +10,8 @@ name: Java CI with Maven
 
 on:
   push:
-    branches: [ "main", "dev" ]
+    branches: [ "dev" ]
+    paths: ['IzvorniKod/backend/**']
 
 jobs:
   build:
