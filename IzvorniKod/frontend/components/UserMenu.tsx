@@ -30,10 +30,10 @@ export default function UserMenu() {
 
   const initials = session.user.name
     ? session.user.name
-        .split(" ")
-        .map((n) => n[0])
-        .join("")
-        .toUpperCase()
+      .split(" ")
+      .map((n) => n[0])
+      .join("")
+      .toUpperCase()
     : "??";
 
   return (
@@ -80,7 +80,7 @@ export default function UserMenu() {
         <DropdownMenuItem
           className="pl-4 flex items-center cursor-pointer"
           onClick={() => {
-            router.push("/app/profile");
+            router.push("/profile");
           }}
         >
           <User className="w-4 h-4 mr-2" />

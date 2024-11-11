@@ -62,18 +62,15 @@ export default function Navigation({
   return (
     <TooltipProvider delayDuration={0}>
       <div
-        className={`flex ${
-          orientation === "vertical"
+        className={`flex ${orientation === "vertical"
             ? "flex-col w-[60px] h-full"
             : "w-full h-[60px]"
-        } items-center bg-background p-3 ${
-          orientation === "vertical" ? "border-r" : "border-t"
-        }`}
+          } items-center bg-background p-3 ${orientation === "vertical" ? "border-r" : "border-t"
+          }`}
       >
         <div
-          className={`flex ${
-            orientation === "vertical" ? "flex-col" : "justify-around w-full"
-          } gap-3`}
+          className={`flex ${orientation === "vertical" ? "flex-col" : "justify-around w-full"
+            } gap-3`}
         >
           {navItems.map((item) => (
             <Tooltip key={item.href}>
