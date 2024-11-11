@@ -102,6 +102,8 @@ function useAuth(): AuthContextType {
           body: JSON.stringify(credentials),
         });
 
+        console.log("Sign up response", response);
+
         if (!response.ok) {
           throw new Error("Sign up failed");
         }
