@@ -119,11 +119,10 @@ export default function WorkoutPage() {
     },
   ];
 
-
   return (
-    <div className="w-full h-screen bg-black flex flex-col items-center justify-start relative">
+    <div className="w-full h-screen flex flex-col items-center justify-start relative">
       <h1 className="text-4xl font-bold text-white mt-16 text-center">
-        Choose today's workout
+        Choose today&apos;s workout
       </h1>
 
       {/* Workouts List */}
@@ -137,7 +136,9 @@ export default function WorkoutPage() {
       </div>
 
       {/* Completed Workouts Section */}
-      <h2 className="text-4xl text-gray-400 mt-12 text-center">Completed Workouts</h2>
+      <h2 className="text-4xl text-gray-800 mt-12 text-center">
+        Completed Workouts
+      </h2>
       <div className="w-full max-w-4xl flex flex-wrap justify-center gap-6 px-4 mt-6">
         {completedWorkouts.map((workout) => (
           <CompletedWorkoutsCard key={workout.id} workout={workout} />
@@ -146,4 +147,3 @@ export default function WorkoutPage() {
     </div>
   );
 }
-
