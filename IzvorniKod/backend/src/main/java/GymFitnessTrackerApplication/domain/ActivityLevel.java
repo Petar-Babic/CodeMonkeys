@@ -1,7 +1,9 @@
 package GymFitnessTrackerApplication.domain;
 
 public enum ActivityLevel {
-    BEGINNER,
-    INTERMEDIATE,
-    PROFESSIONAL,
+    SEDENTARY,
+    LIGHT,
+    MODERATE,
+    ACTIVE,
+    VERY
 }
