@@ -5,7 +5,7 @@ import Image from "next/image";
 
 export default function LoadingAppScreen() {
   return (
-    <div className="fixed z-50 inset-0 flex-col space-y-10 bg-black flex items-center justify-center">
+    <div className="absolute z-50 top-0 left-0 w-full h-full flex-col space-y-10 bg-black flex items-center justify-center">
       <Image
         src="/logo.png"
         width={400}

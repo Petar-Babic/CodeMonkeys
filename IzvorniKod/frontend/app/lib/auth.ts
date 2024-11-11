@@ -4,8 +4,6 @@ import GoogleProvider from "next-auth/providers/google";
 import FacebookProvider from "next-auth/providers/facebook";
 import { SessionWithRelations } from "@/types/session";
 import "next-auth";
-// import { backendUrl } from "@/data/backendUrl";
-import { users } from "@/data/user";
 
 declare module "next-auth" {
   interface Session extends SessionWithRelations {
@@ -47,45 +45,37 @@ export const authOptions: NextAuthOptions = {
           return null;
         }
 
-        if (credentials.email === "luka.kordic.zg@gmail.com") {
+        try {
+          const response = await fetch(
+            `${process.env.BACKEND_URL}/api/auth/login`,
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                email: credentials.email,
+                password: credentials.password,
+              }),
+            }
+          );
+
+          if (!response.ok) {
+            return null;
+          }
+
+          const user = await response.json();
+
           return {
-            id: users[0].id,
-            email: users[0].email,
-            name: users[0].name,
-            role: users[0].role,
+            id: user.id,
+            email: user.email,
+            name: user.name,
+            role: user.role,
           };
-        } else {
+        } catch (error) {
+          console.error("Authentication error:", error);
           return null;
         }
-        // Make a request to your Java Spring backend to auhenticate the user
-        // const response = await fetch(
-        //   `${process.env.BACKEND_URL}/api/auth/login`,
-        //   {
-        //     method: "POST",
-        //     headers: {
-        //       "Content-Type": "application/json",
-        //     },
-        //     body: JSON.stringify({
-        //       email: credentials.email,
-        //       password: credentials.password,
-        //     }),
-        //   }
-        // );
-
-        // console.log(response);
-
-        // if (!response.ok) {
-        //   return null;
-        // }
-
-        // const user = await response.json();
-
-        // return {
-        //   id: user.id,
-        //   email: user.email,
-        //   name: user.name,
-        //   role: user.role,
-        // };
       },
     }),
     GoogleProvider({
@@ -115,20 +105,44 @@ export const authOptions: NextAuthOptions = {
       return token;
     },
     session: async ({ session, token }) => {
-      // console.log("Token:", token);
       if (session.user) {
         session.user.id = token.id;
         session.user.role = token.role;
       }
       session.accessToken = token.accessToken as string;
-
-      // console.log("Session:", session);
       return session;
     },
     signIn: async ({ user, account, profile }) => {
-      console.log("Sign in user:", user);
-      console.log("Sign in account:", account);
-      console.log("Sign in profile:", profile);
+      console.log("Sign in callback", user, account, profile);
+      if (account?.provider === "google" || account?.provider === "facebook") {
+        try {
+          const response = await fetch(
+            `${process.env.BACKEND_URL}/api/auth/signup`,
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                name: user.name,
+                email: user.email,
+                registrationMethod: account.provider,
+              }),
+            }
+          );
+
+          if (!response.ok) {
+            throw new Error("Failed to register user with social login");
+          }
+
+          const data = await response.json();
+          user.id = data.id;
+          user.role = data.role || "user";
+        } catch (error) {
+          console.error("Social login error:", error);
+          return false;
+        }
+      }
       return true;
     },
   },
