@@ -77,7 +77,7 @@ public class MyUser{
 //    }
 
     public Role getRole() {
-        return role;
+        return role != null ? role : Role.USER; // Default to USER if role is null
     }
 
     public void setRole(Role role) {
@@ -147,4 +147,19 @@ public class MyUser{
 //    public void setUpdatedAt(LocalDateTime updatedAt) {
 //        this.updatedAt = updatedAt;
 //    }
+
+
+    @Override
+    public String toString() {
+        return "MyUser{" +
+                "id=" + id +
+                ", password='" + password + '\'' +
+                ", name='" + name + '\'' +
+                ", email='" + email + '\'' +
+                ", role=" + role +
+                ", height=" + height +
+                ", weight=" + weight +
+                '}';
+    }
+    
 }

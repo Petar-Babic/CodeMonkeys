@@ -4,8 +4,8 @@ import GoogleProvider from "next-auth/providers/google";
 import FacebookProvider from "next-auth/providers/facebook";
 import { SessionWithRelations } from "@/types/session";
 import "next-auth";
-// import { backendUrl } from "@/data/backendUrl";
-import { users } from "@/data/user";
+import { Session } from "next-auth";
+import { backendUrl } from "@/data/backendUrl";
 
 declare module "next-auth" {
   interface Session extends SessionWithRelations {
@@ -23,6 +23,7 @@ declare module "next-auth" {
     name: string;
     email: string;
     role: string;
+    accessToken?: string;
   }
 }
 
@@ -47,45 +48,34 @@ export const authOptions: NextAuthOptions = {
           return null;
         }
 
-        if (credentials.email === "luka.kordic.zg@gmail.com") {
+        try {
+          const response = await fetch(`${backendUrl}/api/auth/login`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              email: credentials.email,
+              password: credentials.password,
+            }),
+          });
+
+          if (!response.ok) {
+            return null;
+          }
+
+          const data = await response.json();
           return {
-            id: users[0].id,
-            email: users[0].email,
-            name: users[0].name,
-            role: users[0].role,
+            id: data.id,
+            email: data.email,
+            name: data.name,
+            role: data.role,
+            accessToken: data.token, // Assuming the backend returns a token
           };
-        } else {
+        } catch (error) {
+          console.error("Authentication error:", error);
           return null;
         }
-        // Make a request to your Java Spring backend to auhenticate the user
-        // const response = await fetch(
-        //   `${process.env.BACKEND_URL}/api/auth/login`,
-        //   {
-        //     method: "POST",
-        //     headers: {
-        //       "Content-Type": "application/json",
-        //     },
-        //     body: JSON.stringify({
-        //       email: credentials.email,
-        //       password: credentials.password,
-        //     }),
-        //   }
-        // );
-
-        // console.log(response);
-
-        // if (!response.ok) {
-        //   return null;
-        // }
-
-        // const user = await response.json();
-
-        // return {
-        //   id: user.id,
-        //   email: user.email,
-        //   name: user.name,
-        //   role: user.role,
-        // };
       },
     }),
     GoogleProvider({
@@ -97,40 +87,33 @@ export const authOptions: NextAuthOptions = {
       clientSecret: process.env.FACEBOOK_CLIENT_SECRET!,
     }),
   ],
-  session: {
-    strategy: "jwt",
+  callbacks: {
+    async jwt({ token, user }) {
+      if (user) {
+        token.id = user.id;
+        token.email = user.email;
+        token.name = user.name;
+        token.role = user.role;
+        token.accessToken = user.accessToken;
+      }
+      return token;
+    },
+    async session({ session, token }) {
+      session.user = {
+        id: token.id,
+        email: token.email,
+        name: token.name,
+        role: token.role,
+      } as Session["user"];
+      session.accessToken = token.accessToken || "";
+      return session;
+    },
   },
   pages: {
     signIn: "/sign-in",
   },
-  callbacks: {
-    jwt: async ({ token, user, account }) => {
-      if (user) {
-        token.id = user.id;
-        token.role = user.role;
-      }
-      if (account) {
-        token.accessToken = account.access_token;
-      }
-      return token;
-    },
-    session: async ({ session, token }) => {
-      // console.log("Token:", token);
-      if (session.user) {
-        session.user.id = token.id;
-        session.user.role = token.role;
-      }
-      session.accessToken = token.accessToken as string;
-
-      // console.log("Session:", session);
-      return session;
-    },
-    signIn: async ({ user, account, profile }) => {
-      console.log("Sign in user:", user);
-      console.log("Sign in account:", account);
-      console.log("Sign in profile:", profile);
-      return true;
-    },
+  session: {
+    strategy: "jwt",
   },
   secret: process.env.NEXTAUTH_SECRET,
 };

@@ -25,6 +25,12 @@ public class MyUserServiceJpa implements MyUserService {
         return userRepository.save(user);
     }
 
+    @Override
+    public MyUser getMyUser(String email) {
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + email));
+    }
+
 
 //    @Override
 //    public UserDetails loadUserByEmail(String username) throws UsernameNotFoundException {

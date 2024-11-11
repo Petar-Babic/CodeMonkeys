@@ -36,7 +36,7 @@ const getInitialData = async (
   const nutritionPlan = nutritionPlans[0];
 
   // get the random boolean value
-  const randomBoolean = Math.random() < 0.5;
+  const randomBoolean = Math.random() < 0;
 
   return {
     exercises: filteredExercises,
