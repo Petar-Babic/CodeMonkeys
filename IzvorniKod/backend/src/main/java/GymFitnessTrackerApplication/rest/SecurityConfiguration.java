@@ -43,7 +43,7 @@ public class SecurityConfiguration {
                     registry.requestMatchers("/user/**").hasRole("USER");
                     registry.anyRequest().authenticated();
         })
-        .formLogin(AbstractAuthenticationFilterConfigurer::permitAll)
+        //.formLogin(AbstractAuthenticationFilterConfigurer::permitAll)
         .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
         .build();
     }
