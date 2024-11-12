@@ -16,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -29,6 +30,8 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import GymFitnessTrackerApplication.webtoken.JwtResponse;
+import  GymFitnessTrackerApplication.webtoken.ErrorResponse;
 
 @RestController
 @RequestMapping("/")
@@ -86,17 +89,30 @@ public class RController {
                 return jwtService.generateToken(myUserDetailService.loadUserByUsername(signupForm.getEmail()));
             }else throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"Unsuccessfull signup");
     }
-
     @PostMapping("/api/auth/login")
-    public String authenticateAndGetToken(@RequestBody LoginForm loginForm) {
-        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
-                loginForm.email(), loginForm.password() ));
+    public ResponseEntity<?> authenticateAndGetToken(@RequestBody LoginForm loginForm) {
+        try {
+            Authentication authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(loginForm.email(), loginForm.password()));
 
-        if (authentication.isAuthenticated()) {
-            return jwtService.generateToken(myUserDetailService.loadUserByUsername(loginForm.email()));
-        } else {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid email or password");
+            if (authentication.isAuthenticated()) {
+                MyUser user = userService.getMyUser(loginForm.email());
+                String token = jwtService.generateToken(myUserDetailService.loadUserByUsername(loginForm.email()));
+                return ResponseEntity.ok(new JwtResponse(token, user.getId().toString(), user.getName(), user.getEmail()));
+            } else {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                        .body(new ErrorResponse(0, "Invalid credentials", List.of("Invalid email or password")));
+            }
+        }catch (AuthenticationException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(new ErrorResponse(0, "Invalid credentials", List.of("Invalid email or password")));
+        } catch (Exception ex) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ErrorResponse(0, "Internal Server Error", List.of("An unexpected error occurred")));
         }
     }
+
+
+
 
 }
