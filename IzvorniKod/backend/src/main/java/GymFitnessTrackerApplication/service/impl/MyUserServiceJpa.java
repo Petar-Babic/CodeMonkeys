@@ -3,6 +3,7 @@ package GymFitnessTrackerApplication.service.impl;
 import GymFitnessTrackerApplication.dao.MyUserRepository;
 import GymFitnessTrackerApplication.domain.MyUser;
 import GymFitnessTrackerApplication.service.MyUserService;
+import GymFitnessTrackerApplication.service.UserAlreadyExistsException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -22,6 +23,9 @@ public class MyUserServiceJpa implements MyUserService {
 
     @Override
     public MyUser createMyUser(MyUser user) {
+        if (userRepository.countByEmail(user.getEmail()) > 0)
+            throw new UserAlreadyExistsException("User with that email address already exists");
+
         return userRepository.save(user);
     }
 
