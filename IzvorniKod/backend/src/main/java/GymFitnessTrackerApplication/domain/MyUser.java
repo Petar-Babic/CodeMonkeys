@@ -1,9 +1,11 @@
 package GymFitnessTrackerApplication.domain;
 
+import GymFitnessTrackerApplication.webtoken.SignupForm;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.time.LocalDateTime;
 
@@ -150,6 +152,16 @@ public class MyUser{
         this.updatedAt = updatedAt;
     }
 
+    public MyUser(){}
+
+    //konstruktor sa podatcima iz signup forme
+    public MyUser(@RequestBody SignupForm signupForm){
+        email=signupForm.getEmail();
+        name = signupForm.getName();
+        password = signupForm.getEncodedPass();
+        this.setCreatedAt(LocalDateTime.now());
+        this.role = Role.USER;
+    }
 
     @Override
     public String toString() {
