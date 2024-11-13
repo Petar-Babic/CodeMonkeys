@@ -75,7 +75,7 @@ public class RController {
         user.setUpdatedAt(LocalDateTime.now());
         return userService.createMyUser(user);
     }
-     */
+
     @PostMapping("/api/auth/signup")
     public String createUser(@RequestBody SignupForm signupForm) throws Throwable
     {
@@ -89,6 +89,36 @@ public class RController {
                 return jwtService.generateToken(myUserDetailService.loadUserByUsername(signupForm.getEmail()));
             }else throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"Unsuccessfull signup");
     }
+
+
+     */
+    @PostMapping("/api/auth/signup")
+    public ResponseEntity<?> registerAndGetToken(@RequestBody SignupForm signupForm)   {
+        try {
+            signupForm.Encode(passwordEncoder.encode(signupForm.getPassword()));
+            MyUser newUser = userService.createMyUser(signupForm);
+            // kreirana instanca novog usera
+
+            Authentication authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(signupForm.getEmail(), signupForm.getPassword()));
+
+            if (authentication.isAuthenticated()) {
+                MyUser user = userService.getMyUser(signupForm.getEmail());
+                String token = jwtService.generateToken(myUserDetailService.loadUserByUsername(signupForm.getEmail()));
+                return ResponseEntity.ok(new JwtResponse(token, user.getId().toString(), user.getName(), user.getEmail()));
+            } else {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                        .body(new ErrorResponse(0, "Invalid credentials", List.of("Invalid email or password")));
+            }
+        }catch ( UserAlreadyExistsException ex) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new ErrorResponse(0, "User already exists", List.of("There exists a user with this email in the DB")));
+        } catch (Exception ex) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ErrorResponse(0, "Internal Server Error", List.of("An unexpected error occurred")));
+        }
+    }
+
     @PostMapping("/api/auth/login")
     public ResponseEntity<?> authenticateAndGetToken(@RequestBody LoginForm loginForm) {
         try {
@@ -111,6 +141,18 @@ public class RController {
                     .body(new ErrorResponse(0, "Internal Server Error", List.of("An unexpected error occurred")));
         }
     }
+
+    @PostMapping("/api/auth/refresh")
+    public String refreshToken(){
+        return "Osvjezen token";
+    }
+
+    @PostMapping("/api/auth/logout")
+    public String logout(){
+        return "logged out ";
+    }
+
+
 
 
 
