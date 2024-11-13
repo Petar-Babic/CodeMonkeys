@@ -49,7 +49,12 @@ public class RController {
 
     @GetMapping("/")
     public String handleHome() {
-        return "Welcome to ADMIN home!";
+        return "Welcome to  home!";
+    }
+
+    @GetMapping("/test")
+    public String handleTestHome() {
+        return "Welcome to test home!";
     }
 
 
