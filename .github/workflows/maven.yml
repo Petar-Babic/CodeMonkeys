@@ -35,4 +35,4 @@ jobs:
     - name: Execute Jar File
       run: sudo kill $(sudo lsof -t -i:8080) & java -jar /home/admin/actions-runner/_work/CodeMonkeys/CodeMonkeys/IzvorniKod/backend/target/gym-fitness-tracker-0.0.1-SNAPSHOT.jar &
     - name: Eddit permissions
-      run: sudo chmod -R 777 actions-runner/_work/
+      run: sudo chmod -R 777 /home/admin/actions-runner/_work/CodeMonkeys
