@@ -47,6 +47,16 @@ public class RController {
     @Autowired
     AuthenticationManager authenticationManager;
 
+    @GetMapping("/")
+    public String handleHome() {
+        return "Welcome to  home!";
+    }
+
+    @GetMapping("/test")
+    public String handleTestHome() {
+        return "Welcome to test home!";
+    }
+
 
     @GetMapping("/admin/home")
     public String handleAdminHome() {
