@@ -80,7 +80,7 @@ export function SignUpForm() {
       // Simulate a delay
       await new Promise((resolve) => setTimeout(resolve, 1000));
 
-      router.push("/body-stats-and-goals");
+      router.push("/workouts");
     } catch (error) {
       console.error(error);
     } finally {

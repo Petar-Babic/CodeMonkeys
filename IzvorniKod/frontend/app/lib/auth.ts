@@ -70,7 +70,7 @@ export const authOptions: NextAuthOptions = {
             email: data.email,
             name: data.name,
             role: data.role,
-            accessToken: data.token, // Assuming the backend returns a token
+            accessToken: data.token,
           };
         } catch (error) {
           console.error("Authentication error:", error);
@@ -88,6 +88,36 @@ export const authOptions: NextAuthOptions = {
     }),
   ],
   callbacks: {
+    async signIn({ user, account }) {
+      if (account?.provider === "google" || account?.provider === "facebook") {
+        try {
+          const response = await fetch(`${backendUrl}/api/auth/oauth`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              provider: account.provider,
+              token: account.access_token,
+            }),
+          });
+
+          if (!response.ok) {
+            return false;
+          }
+
+          const data = await response.json();
+          user.id = data.id;
+          user.role = data.role;
+          user.accessToken = data.token;
+          return true;
+        } catch (error) {
+          console.error("OAuth authentication error:", error);
+          return false;
+        }
+      }
+      return true;
+    },
     async jwt({ token, user }) {
       if (user) {
         token.id = user.id;
@@ -96,13 +126,16 @@ export const authOptions: NextAuthOptions = {
         token.role = user.role;
         token.accessToken = user.accessToken;
       }
+
+      console.log("JWT token", token);
+
       return token;
     },
     async session({ session, token }) {
       session.user = {
         id: token.id,
-        email: token.email,
-        name: token.name,
+        email: token.email as string,
+        name: token.name as string,
         role: token.role,
       } as Session["user"];
       session.accessToken = token.accessToken || "";
