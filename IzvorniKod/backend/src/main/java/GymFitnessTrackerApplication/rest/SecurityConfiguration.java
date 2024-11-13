@@ -38,12 +38,24 @@ public class SecurityConfiguration {
         return http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(registry -> {
-                    registry.requestMatchers("/home", "/sign-up", "/sign-in").permitAll();
-                    registry.requestMatchers("/admin/**").hasRole("ADMIN");
+                    registry.requestMatchers("/home","/get", "/api/auth/signup", "/api/auth/login").permitAll();
+                    registry.requestMatchers("/admin/**").hasRole("ADMIN"); 
                     registry.requestMatchers("/user/**").hasRole("USER");
                     registry.anyRequest().authenticated();
         })
-        //.formLogin(AbstractAuthenticationFilterConfigurer::permitAll)
+//        .formLogin(form -> form
+//                    .loginPage("/api/auth")
+//                    .permitAll()
+//        )
+        .logout(logout -> logout
+                .logoutUrl("/api/auth/logout")
+                .logoutSuccessUrl("/api/auth/login?logout")
+                .invalidateHttpSession(true)
+                .clearAuthentication(true)
+        )
+//        .oauth2Login(oauth2 -> oauth2
+//                .loginPage("api/auth/signup")
+//        )
         .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
         .build();
     }

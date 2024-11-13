@@ -1,1 +1,1 @@
-export const backendUrl = "https://api.gymprogresstracker.com/v1";
+export const backendUrl = process.env.BACKEND_URL || "http://localhost:8080";

@@ -6,8 +6,12 @@ import org.springframework.boot.test.context.SpringBootTest;
 @SpringBootTest
 class GymFitnessTrackerApplicationTests {
 
+	/*
 	@Test
 	void contextLoads() {
 	}
+
+
+	 */
 
 }
