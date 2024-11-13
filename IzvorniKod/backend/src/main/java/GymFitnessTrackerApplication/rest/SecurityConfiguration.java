@@ -32,7 +32,7 @@ public class SecurityConfiguration {
     private MyUserDetailsService userDetailService;
     @Autowired
     private JwtAuthenticationFilter jwtAuthenticationFilter;
-gi    @Autowired
+    @Autowired
     private CustomOAuthLoginSuccessHandler CustomOAuthLoginSuccessHandler;
 //    @Autowired
 //    private CustomOAuthLoginFailureHandler CustomOAuthLoginFailureHandler;
