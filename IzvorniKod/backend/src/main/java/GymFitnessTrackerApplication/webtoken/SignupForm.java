@@ -1,5 +1,7 @@
 package GymFitnessTrackerApplication.webtoken;
 
+import GymFitnessTrackerApplication.domain.RegistrationMethod;
+
 import javax.swing.*;
 
 public class SignupForm{
@@ -43,4 +45,5 @@ public class SignupForm{
     public String getEncodedPass() {
         return encodedPass;
     }
+
 }
