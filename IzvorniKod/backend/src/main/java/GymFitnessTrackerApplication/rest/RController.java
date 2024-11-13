@@ -75,33 +75,6 @@ public class RController {
         return users.toString();
     }
 
-    /*Korda verzija
-    @PostMapping("/api/auth/signup")
-    public MyUser createUser(@RequestBody MyUser user) {
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        if(user.getRole()==null){ user.setRole(Role.USER); }
-        user.setEmailVerified(LocalDateTime.now());
-        user.setCreatedAt(LocalDateTime.now());
-        user.setUpdatedAt(LocalDateTime.now());
-        return userService.createMyUser(user);
-    }
-
-    @PostMapping("/api/auth/signup")
-    public String createUser(@RequestBody SignupForm signupForm) throws Throwable
-    {
-            signupForm.Encode(passwordEncoder.encode(signupForm.getPassword()));
-            MyUser newUser = userService.createMyUser(signupForm);
-            //return ResponseEntity.status(HttpStatus.CREATED).body(newUser);
-
-            Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
-                signupForm.getEmail(), signupForm.getPassword() ));
-            if(authentication.isAuthenticated()){
-                return jwtService.generateToken(myUserDetailService.loadUserByUsername(signupForm.getEmail()));
-            }else throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"Unsuccessfull signup");
-    }
-
-
-     */
     @PostMapping("/api/auth/signup")
     public ResponseEntity<?> registerAndGetToken(@RequestBody SignupForm signupForm)   {
         try {

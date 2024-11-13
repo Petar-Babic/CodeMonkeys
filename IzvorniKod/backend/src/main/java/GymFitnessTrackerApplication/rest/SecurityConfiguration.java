@@ -32,30 +32,28 @@ public class SecurityConfiguration {
     private MyUserDetailsService userDetailService;
     @Autowired
     private JwtAuthenticationFilter jwtAuthenticationFilter;
+gi    @Autowired
+    private CustomOAuthLoginSuccessHandler CustomOAuthLoginSuccessHandler;
+//    @Autowired
+//    private CustomOAuthLoginFailureHandler CustomOAuthLoginFailureHandler;
+//    @Autowired
+//    private CustomOAuth2Service customOAuth2Service;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(registry -> {
-                    registry.requestMatchers("/test","/get","/", "/api/auth/signup", "/api/auth/login").permitAll();
+                    registry.requestMatchers("/home","/get", "/api/auth/signup", "/api/auth/login").permitAll();
                     registry.requestMatchers("/admin/**").hasRole("ADMIN"); 
                     registry.requestMatchers("/user/**").hasRole("USER");
                     registry.anyRequest().authenticated();
         })
-//        .formLogin(form -> form
-//                    .loginPage("/api/auth")
-//                    .permitAll()
-//        )
-        .logout(logout -> logout
-                .logoutUrl("/api/auth/logout")
-                .logoutSuccessUrl("/api/auth/login?logout")
-                .invalidateHttpSession(true)
-                .clearAuthentication(true)
-        )
-//        .oauth2Login(oauth2 -> oauth2
-//                .loginPage("api/auth/signup")
-//        )
+        .oauth2Login(oauth ->oauth
+                    .successHandler(CustomOAuthLoginSuccessHandler)
+                    //.failureHandler(CustomOAuthLoginFailureHandler)
+                .permitAll())
+
         .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
         .build();
     }
