@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Pie } from "react-chartjs-2";
 import {
   Chart as ChartJS,
@@ -20,17 +20,30 @@ const NutritionPage = () => {
   });
 
   const [meals, setMeals] = useState([
-    { id: 1, name: "Breakfast", calories: 500 },
-    { id: 2, name: "Lunch", calories: 700 },
-    { id: 3, name: "Dinner", calories: 600 },
-    { id: 4, name: "Snack", calories: 300 },
+    { 
+      id: 1, 
+      name: "Breakfast", 
+      calories: 500, 
+      foods: [
+        { id: 1, name: "Eggs", protein: 12, carbs: 1, fats: 10, calories: 150 },
+        { id: 2, name: "Toast", protein: 5, carbs: 20, fats: 2, calories: 120 }
+      ]
+    },
+    { id: 2, name: "Lunch", calories: 700, foods: [] },
+    { id: 3, name: "Dinner", calories: 600, foods: [] },
   ]);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [currentMeal, setCurrentMeal] = useState<{ id: number; name: string; calories: number }>({
+  const [currentMeal, setCurrentMeal] = useState<{ 
+    id: number; 
+    name: string; 
+    calories: number; 
+    foods: { id: number; name: string; protein: number; carbs: number; fats: number; calories: number }[] 
+  }>({
     id: 0,
     name: "",
     calories: 0,
+    foods: [],
   });
 
   const totalCalories = macros.protein * 4 + macros.carbs * 4 + macros.fats * 9;
@@ -66,8 +79,8 @@ const NutritionPage = () => {
     },
   };
 
-  const openModal = (meal?: { id: number; name: string; calories: number }) => {
-    setCurrentMeal(meal || { id: 0, name: "", calories: 0 });
+  const openModal = (meal?: { id: number; name: string; calories: number; foods: { id: number; name: string; protein: number; carbs: number; fats: number; calories: number }[] }) => {
+    setCurrentMeal(meal || { id: 0, name: "", calories: 0, foods: [] });
     setIsModalOpen(true);
   };
 
@@ -96,6 +109,16 @@ const NutritionPage = () => {
 
   const deleteMeal = (id: number) => {
     setMeals((prevMeals) => prevMeals.filter((meal) => meal.id !== id));
+  };
+
+  const addFoodManually = () => {
+    // Logic to add food manually here
+    alert("Add Food Manually clicked");
+  };
+
+  const scanBarcode = () => {
+    // Logic to scan barcode here
+    alert("Scan Barcode clicked");
   };
 
   return (
@@ -155,12 +178,12 @@ const NutritionPage = () => {
       {isModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-10">
           <div className="bg-white p-8 rounded-md shadow-md w-full max-w-md relative">
-          <button
-            onClick={closeModal}
-            className="absolute top-2 right-2 text-gray-500 hover:text-gray-700 font-bold text-2xl p-1"
-          >
-            &times;
-          </button>
+            <button
+              onClick={closeModal}
+              className="absolute top-2 right-2 text-gray-500 hover:text-gray-700 font-bold text-2xl p-1"
+            >
+              &times;
+            </button>
             <h2 className="text-2xl font-bold mb-4">
               {currentMeal.id ? "Edit Meal" : "Add Meal"}
             </h2>
@@ -175,7 +198,7 @@ const NutritionPage = () => {
               />
             </div>
             <div className="mb-4">
-              <label className="block text-gray-700">Calories</label>
+              <label className="block text-gray-700">Total Calories</label>
               <input
                 type="text" 
                 inputMode="numeric" 
@@ -185,21 +208,66 @@ const NutritionPage = () => {
                 className="p-2 border border-gray-300 rounded-md w-full"
               />
             </div>
-            <div className="flex justify-between">
+
+            {/* Food Table with Calories */}
+            {currentMeal.foods.length > 0 && (
+              <table className="macro-table w-full mt-4">
+                <thead>
+                  <tr>
+                    <th>Food</th>
+                    <th>Calories</th>
+                    <th>Protein (g)</th>
+                    <th>Carbs (g)</th>
+                    <th>Fats (g)</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {currentMeal.foods.map((food) => (
+                    <tr key={food.id}>
+                      <td>{food.name}</td>
+                      <td>{food.calories}</td>
+                      <td>{food.protein}</td>
+                      <td>{food.carbs}</td>
+                      <td>{food.fats}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
+
+            {/* Action Buttons */}
+            <div className="mt-4 flex justify-between">
+              <div className="flex">
+                <button
+                  onClick={addFoodManually}
+                  className="bg-green-500 text-white p-2 rounded-md shadow-md hover:bg-green-700"
+                >
+                  Add Custom Food
+                </button>
+                <button
+                  onClick={scanBarcode}
+                  className="bg-yellow-500 text-white p-2 rounded-md shadow-md hover:bg-yellow-700 ml-2"
+                >
+                  Scan Barcode
+                </button>
+              </div>
+            </div>
+
+            <div className="mt-2 flex justify-between">
+              <button
+                onClick={saveMeal}
+                className="bg-blue-500 text-white p-2 rounded-md shadow-md hover:bg-blue-700"
+              >
+                Save Meal
+              </button>
               {currentMeal.id && (
                 <button
                   onClick={() => deleteMeal(currentMeal.id)}
-                  className="bg-red-500 text-white p-2 rounded-md shadow-md hover:bg-red-600"
+                  className="bg-red-500 text-white p-2 rounded-md shadow-md hover:bg-red-700"
                 >
-                  Delete
+                  Delete Meal
                 </button>
               )}
-              <button
-                onClick={saveMeal}
-                className="bg-green-500 text-white p-2 rounded-md shadow-md hover:bg-green-600 ml-auto"
-              >
-                Save
-              </button>
             </div>
           </div>
         </div>
