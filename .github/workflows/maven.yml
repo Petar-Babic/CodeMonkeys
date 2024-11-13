@@ -12,6 +12,8 @@ on:
   workflow_dispatch: 
   push:
     branches: [ "dev" ]
+    paths:
+      - 'IzvorniKod/backend/**'
 
 jobs:
   build:
