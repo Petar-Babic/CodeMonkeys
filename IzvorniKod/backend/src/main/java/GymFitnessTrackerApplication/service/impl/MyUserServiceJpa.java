@@ -46,6 +46,7 @@ public class MyUserServiceJpa implements MyUserService {
         MyUser newUser = new MyUser();
         newUser.setName(oauthForm.name());
         newUser.setEmail(oauthForm.email());
+        newUser.setPassword("-");
         newUser.setEmailVerified(LocalDateTime.now());
         newUser.setCreatedAt(LocalDateTime.now());
         newUser.setUpdatedAt(LocalDateTime.now());

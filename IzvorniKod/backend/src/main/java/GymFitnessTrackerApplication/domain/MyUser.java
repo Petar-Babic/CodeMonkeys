@@ -19,6 +19,7 @@ public class MyUser{
     String name;
     @Column(unique = true, nullable = false)
     String email;
+
     String password;
     Role role;
     Float height;
