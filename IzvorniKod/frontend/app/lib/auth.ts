@@ -16,6 +16,7 @@ declare module "next-auth" {
       email: string;
       role: string;
       provider?: string;
+      image?: string;
     };
   }
 
@@ -68,6 +69,8 @@ export const authOptions: NextAuthOptions = {
           }
 
           const data = await response.json();
+          console.log(data);
+
           return {
             id: data.id,
             email: data.email,
@@ -105,6 +108,9 @@ export const authOptions: NextAuthOptions = {
   ],
   callbacks: {
     async signIn({ user, account, profile }) {
+      console.log("user", user);
+      console.log("account", account);
+      console.log("profile", profile);
       if (account?.provider === "google" || account?.provider === "facebook") {
         try {
           // Raspakiranje OAuth tokena na frontendu
@@ -113,12 +119,14 @@ export const authOptions: NextAuthOptions = {
             return false;
           }
 
+          console.log("user.image" + user?.image);
+
           const decodedToken = {
             oauthProvider: account.provider,
             oauthId: profile.sub || profile.email,
             email: profile.email,
             name: profile.name,
-            image: profile.image,
+            image: user?.image,
           };
 
           const response = await fetch(`${backendUrl}/api/auth/oauth`, {
@@ -134,10 +142,16 @@ export const authOptions: NextAuthOptions = {
           }
 
           const data = await response.json();
-          user.id = data.userInfo.id;
-          user.role = data.userInfo.role;
+
+          console.log(data);
+
+          user.id = data.id;
+          user.role = data.role;
           user.accessToken = data.token;
           user.provider = account.provider;
+          user.email = data.email;
+          user.name = data.name;
+          user.image = user.image;
           return true;
         } catch (error) {
           console.error("OAuth authentication error:", error);
@@ -158,14 +172,19 @@ export const authOptions: NextAuthOptions = {
       return token;
     },
     async session({ session, token }) {
+      console.log(session);
+
       session.user = {
         id: token.id,
         email: token.email as string,
         name: token.name as string,
         role: token.role,
         provider: token.provider,
+        image: session.user.image,
       } as Session["user"];
+
       session.accessToken = token.accessToken || "";
+
       return session;
     },
   },

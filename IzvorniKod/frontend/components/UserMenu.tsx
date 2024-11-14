@@ -30,11 +30,13 @@ export default function UserMenu() {
 
   const initials = session.user.name
     ? session.user.name
-      .split(" ")
-      .map((n) => n[0])
-      .join("")
-      .toUpperCase()
+        .split(" ")
+        .map((n) => n[0])
+        .join("")
+        .toUpperCase()
     : "??";
+
+  console.log("session", session);
 
   return (
     <DropdownMenu>

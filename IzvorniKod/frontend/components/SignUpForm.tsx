@@ -23,6 +23,7 @@ import {
   // FaApple
 } from "react-icons/fa";
 import { useAuthContext } from "@/contexts/AuthContext";
+import { SignInResponse } from "next-auth/react";
 
 const formSchema = z
   .object({
@@ -95,10 +96,9 @@ export function SignUpForm() {
       ...isLoading.slice(index + 1),
     ]);
     try {
-      const result = await socialLogin(provider);
+      const result: SignInResponse = await socialLogin(provider);
 
       if (result.error) {
-        console.error(result.error);
         return;
       }
 
