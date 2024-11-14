@@ -23,6 +23,22 @@ jobs:
       - uses: actions/checkout@v4
         with:
           ref: dev
+
+      - name: Update db url
+        run: sed -i 's|<db_url>|${{ secrets.DB_URL }}|' IzvorniKod/backend/src/main/resources/application.properties
+      - name: Update db username
+        run: sed -i 's/<db_username>/${{ secrets.DB_USERNAME }}/' IzvorniKod/backend/src/main/resources/application.properties
+      - name: Update db password
+        run: sed -i 's/<db_password>/${{ secrets.DB_PASSWORD }}/' IzvorniKod/backend/src/main/resources/application.properties
+      - name: Update google client ID
+        run: sed -i 's/<google_id>/${{ secrets.GOOGLE_CLIENT_ID }}/' IzvorniKod/backend/src/main/resources/application.properties
+      - name: Update google client secret
+        run: sed -i 's/<google_secret>/${{ secrets.GOOGLE_CLIENT_SECRET }}/' IzvorniKod/backend/src/main/resources/application.properties
+      - name: Update facebook client ID
+        run: sed -i 's/<facebook_secret>/${{ secrets.FACEBOOK_CLIENT_ID }}/' IzvorniKod/backend/src/main/resources/application.properties
+      - name: Update facebook cleint secret
+        run: sed -i 's/<facebook_secret>/${{ secrets.FACEBOOK_CLIENT_SECRET }}/' IzvorniKod/backend/src/main/resources/application.properties
+      
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
