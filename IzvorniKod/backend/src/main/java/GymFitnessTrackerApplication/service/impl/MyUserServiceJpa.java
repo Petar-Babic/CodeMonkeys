@@ -2,8 +2,10 @@ package GymFitnessTrackerApplication.service.impl;
 
 import GymFitnessTrackerApplication.dao.MyUserRepository;
 import GymFitnessTrackerApplication.domain.MyUser;
+import GymFitnessTrackerApplication.domain.Role;
 import GymFitnessTrackerApplication.service.MyUserService;
 import GymFitnessTrackerApplication.service.UserAlreadyExistsException;
+import GymFitnessTrackerApplication.webtoken.OAuthForm;
 import GymFitnessTrackerApplication.webtoken.SignupForm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -31,11 +33,27 @@ public class MyUserServiceJpa implements MyUserService {
 
         MyUser newUser = new MyUser(signupForm);
         newUser.setEmailVerified(LocalDateTime.now());
-        newUser.setCreatedAt(LocalDateTime.now());
         newUser.setUpdatedAt(LocalDateTime.now());
 
         return userRepository.save(newUser);
     }
+
+    @Override
+    public MyUser createMyUser(@RequestBody OAuthForm oauthForm) {
+        if (userRepository.countByEmail(oauthForm.email()) > 0)
+            throw new UserAlreadyExistsException("User with that email address already exists");
+
+        MyUser newUser = new MyUser();
+        newUser.setName(oauthForm.name());
+        newUser.setEmail(oauthForm.email());
+        newUser.setEmailVerified(LocalDateTime.now());
+        newUser.setCreatedAt(LocalDateTime.now());
+        newUser.setUpdatedAt(LocalDateTime.now());
+        newUser.setRole(Role.USER);
+
+        return userRepository.save(newUser);
+    }
+
 
     @Override
     public MyUser getMyUser(String email) {

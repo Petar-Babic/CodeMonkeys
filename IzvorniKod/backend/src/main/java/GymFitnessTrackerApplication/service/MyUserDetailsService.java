@@ -1,4 +1,4 @@
-package GymFitnessTrackerApplication.rest;
+package GymFitnessTrackerApplication.service;
 
 import GymFitnessTrackerApplication.dao.MyUserRepository;
 import GymFitnessTrackerApplication.domain.MyUser;

@@ -1,9 +1,7 @@
 package GymFitnessTrackerApplication.rest;
 
+import GymFitnessTrackerApplication.service.MyUserDetailsService;
 import GymFitnessTrackerApplication.webtoken.JwtAuthenticationFilter;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -13,16 +11,12 @@ import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configurers.AbstractAuthenticationFilterConfigurer;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-
-import java.io.IOException;
 
 @Configuration
 @EnableWebSecurity
@@ -32,28 +26,18 @@ public class SecurityConfiguration {
     private MyUserDetailsService userDetailService;
     @Autowired
     private JwtAuthenticationFilter jwtAuthenticationFilter;
-    @Autowired
-    private CustomOAuthLoginSuccessHandler CustomOAuthLoginSuccessHandler;
-//    @Autowired
-//    private CustomOAuthLoginFailureHandler CustomOAuthLoginFailureHandler;
-//    @Autowired
-//    private CustomOAuth2Service customOAuth2Service;
+
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(registry -> {
-                    registry.requestMatchers("/home","/get", "/api/auth/signup", "/api/auth/login").permitAll();
+                    registry.requestMatchers("/home","/get", "/api/auth/**").permitAll();
                     registry.requestMatchers("/admin/**").hasRole("ADMIN"); 
                     registry.requestMatchers("/user/**").hasRole("USER");
                     registry.anyRequest().authenticated();
         })
-        .oauth2Login(oauth ->oauth
-                    .successHandler(CustomOAuthLoginSuccessHandler)
-                    //.failureHandler(CustomOAuthLoginFailureHandler)
-                .permitAll())
-
         .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
         .build();
     }
