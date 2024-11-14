@@ -15,6 +15,7 @@ declare module "next-auth" {
       name: string;
       email: string;
       role: string;
+      provider?: string;
     };
   }
 
@@ -24,6 +25,7 @@ declare module "next-auth" {
     email: string;
     role: string;
     accessToken?: string;
+    provider?: string;
   }
 }
 
@@ -32,6 +34,7 @@ declare module "next-auth/jwt" {
     id: string;
     role: string;
     accessToken?: string;
+    provider?: string;
   }
 }
 
@@ -81,25 +84,49 @@ export const authOptions: NextAuthOptions = {
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID!,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+      authorization: {
+        params: {
+          prompt: "consent",
+          access_type: "offline",
+          response_type: "code",
+          scope: "openid email profile",
+        },
+      },
     }),
     FacebookProvider({
       clientId: process.env.FACEBOOK_CLIENT_ID!,
       clientSecret: process.env.FACEBOOK_CLIENT_SECRET!,
+      authorization: {
+        params: {
+          scope: "email,public_profile",
+        },
+      },
     }),
   ],
   callbacks: {
-    async signIn({ user, account }) {
+    async signIn({ user, account, profile }) {
       if (account?.provider === "google" || account?.provider === "facebook") {
         try {
+          // Raspakiranje OAuth tokena na frontendu
+          if (!profile) {
+            console.error("Profile is undefined");
+            return false;
+          }
+
+          const decodedToken = {
+            oauthProvider: account.provider,
+            oauthId: profile.sub || profile.email,
+            email: profile.email,
+            name: profile.name,
+            image: profile.image,
+          };
+
           const response = await fetch(`${backendUrl}/api/auth/oauth`, {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
             },
-            body: JSON.stringify({
-              provider: account.provider,
-              token: account.access_token,
-            }),
+            body: JSON.stringify(decodedToken),
           });
 
           if (!response.ok) {
@@ -107,9 +134,10 @@ export const authOptions: NextAuthOptions = {
           }
 
           const data = await response.json();
-          user.id = data.id;
-          user.role = data.role;
+          user.id = data.userInfo.id;
+          user.role = data.userInfo.role;
           user.accessToken = data.token;
+          user.provider = account.provider;
           return true;
         } catch (error) {
           console.error("OAuth authentication error:", error);
@@ -118,17 +146,15 @@ export const authOptions: NextAuthOptions = {
       }
       return true;
     },
-    async jwt({ token, user }) {
+    async jwt({ token, user, account }) {
       if (user) {
         token.id = user.id;
         token.email = user.email;
         token.name = user.name;
         token.role = user.role;
         token.accessToken = user.accessToken;
+        token.provider = account?.provider;
       }
-
-      console.log("JWT token", token);
-
       return token;
     },
     async session({ session, token }) {
@@ -137,6 +163,7 @@ export const authOptions: NextAuthOptions = {
         email: token.email as string,
         name: token.name as string,
         role: token.role,
+        provider: token.provider,
       } as Session["user"];
       session.accessToken = token.accessToken || "";
       return session;
