@@ -24,6 +24,22 @@ jobs:
     - uses: actions/checkout@v4
       with:
           ref: dev
+          
+    - name: Update db url
+      run: sed -i 's/<db_url>/${{ secrets.DB_URL }}/' /home/admin/actions-runner/_work/CodeMonkeys/CodeMonkeys/IzvorniKod/backend/src/main/resources
+    - name: Update db username
+      run: sed -i 's/<db_username>/${{ secrets.DB_USERNAME }}/' /home/admin/actions-runner/_work/CodeMonkeys/CodeMonkeys/IzvorniKod/backend/src/main/resources
+    - name: Update db password
+      run: sed -i 's/<db_password>/${{ secrets.DB_PASSWORD }}/' /home/admin/actions-runner/_work/CodeMonkeys/CodeMonkeys/IzvorniKod/backend/src/main/resources
+    - name: Update google client ID
+      run: sed -i 's/<google_id>/${{ secrets.GOOGLE_CLIENT_ID }}/' /home/admin/actions-runner/_work/CodeMonkeys/CodeMonkeys/IzvorniKod/backend/src/main/resources
+    - name: Update google client secret
+      run: sed -i 's/<google_secret>/${{ secrets.GOOGLE_CLIENT_SECRET }}/' /home/admin/actions-runner/_work/CodeMonkeys/CodeMonkeys/IzvorniKod/backend/src/main/resources
+    - name: Update facebook client ID
+      run: sed -i 's/<facebook_secret>/${{ secrets.FACEBOOK_CLIENT_ID }}/' /home/admin/actions-runner/_work/CodeMonkeys/CodeMonkeys/IzvorniKod/backend/src/main/resources
+    - name: Update facebook cleint secret
+      run: sed -i 's/<facebook_secret>/${{ secrets.FACEBOOK_CLIENT_SECRET }}/' /home/admin/actions-runner/_work/CodeMonkeys/CodeMonkeys/IzvorniKod/backend/src/main/resources
+
     - name: Set up JDK 17
       uses: actions/setup-java@v4
       with:
