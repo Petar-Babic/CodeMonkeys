@@ -43,23 +43,31 @@ public class AuthController {
             String email = oAuthForm.email();
             String name = oAuthForm.name();
             String image = oAuthForm.image();
-            try{
-                MyUser user = myUserService.getMyUser(email);
-                //ako postoji vrati token
-                String token = jwtService.generateToken(myUserDetailService.loadUserByUsername(email));
-                ResponseEntity.ok(new JwtResponse(token, user.getId().toString(), name, email));
 
-                return ResponseEntity.ok(new JwtResponse(token, user.getId().toString(), user.getName(), user.getEmail()));
-            } catch (UsernameNotFoundException e){
-                //stvori novog u bazi
-                MyUser user = myUserService.createMyUser(oAuthForm);
-                String token = jwtService.generateToken(myUserDetailService.loadUserByUsername(email));
-                return ResponseEntity.ok(new JwtResponse(token, user.getId().toString(), user.getName(), user.getEmail()));
+            MyUser user = myUserService.getMyUser(email);
+            if(user == null){
+                throw new UsernameNotFoundException("User not found");
             }
-        }catch ( UserAlreadyExistsException ex) {
+            //ako postoji vrati token
+            String token = jwtService.generateToken(myUserDetailService.loadUserByUsername(email));
+
+            return ResponseEntity.ok(new JwtResponse(token, user.getId().toString(), name, email));
+
+        }catch (UsernameNotFoundException e){
+            //stvori novog u bazi
+            String email = oAuthForm.email();
+            String name = oAuthForm.name();
+            String image = oAuthForm.image();
+            MyUser newUser = myUserService.createMyUser(oAuthForm);
+            String token = jwtService.generateToken(myUserDetailService.loadUserByUsername(email));
+            return ResponseEntity.ok(new JwtResponse(token, newUser.getId().toString(), name, email));
+        }
+
+        catch ( AuthenticationException ex) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(new ErrorResponse(0, "Invalid email", List.of("Invalid email sent")));
         } catch (Exception ex) {
+            System.out.println(ex.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(new ErrorResponse(0, "Internal Server Error", List.of("An unexpected error occurred")));
         }
