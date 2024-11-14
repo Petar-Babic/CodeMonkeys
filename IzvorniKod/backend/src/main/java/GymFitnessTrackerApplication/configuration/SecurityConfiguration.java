@@ -1,4 +1,4 @@
-package GymFitnessTrackerApplication.rest;
+package GymFitnessTrackerApplication.configuration;
 
 import GymFitnessTrackerApplication.service.MyUserDetailsService;
 import GymFitnessTrackerApplication.webtoken.JwtAuthenticationFilter;

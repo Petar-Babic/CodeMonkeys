@@ -1,5 +1,6 @@
 package GymFitnessTrackerApplication.webtoken;
 
+import GymFitnessTrackerApplication.service.JwtService;
 import GymFitnessTrackerApplication.service.MyUserDetailsService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

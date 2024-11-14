@@ -1,4 +1,4 @@
-package GymFitnessTrackerApplication.webtoken;
+package GymFitnessTrackerApplication.service;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -27,7 +27,6 @@ public class JwtService {
                 .signWith(generateKey())
                 .compact();
     }
-
     private SecretKey generateKey() {
         byte[] decodedKey = Base64.getDecoder().decode(SECRET);
         return Keys.hmacShaKeyFor(decodedKey);

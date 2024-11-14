@@ -2,12 +2,9 @@ package GymFitnessTrackerApplication.rest;
 
 
 import GymFitnessTrackerApplication.domain.MyUser;
-import GymFitnessTrackerApplication.service.MyUserDetailsService;
 import GymFitnessTrackerApplication.service.MyUserService;
-import GymFitnessTrackerApplication.webtoken.JwtService;
+import GymFitnessTrackerApplication.service.JwtService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;

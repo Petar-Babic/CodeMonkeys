@@ -2,6 +2,7 @@ package GymFitnessTrackerApplication.rest;
 
 
 import GymFitnessTrackerApplication.domain.MyUser;
+import GymFitnessTrackerApplication.service.JwtService;
 import GymFitnessTrackerApplication.service.MyUserDetailsService;
 import GymFitnessTrackerApplication.service.MyUserService;
 import GymFitnessTrackerApplication.service.UserAlreadyExistsException;
