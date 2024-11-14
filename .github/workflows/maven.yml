@@ -26,7 +26,7 @@ jobs:
           ref: dev
           
     - name: Update db url
-      run: sed -i 's/<db_url>/${{ secrets.DB_URL }}/' /home/admin/actions-runner/_work/CodeMonkeys/CodeMonkeys/IzvorniKod/backend/src/main/resources
+      run: sed -i 's|<db_url>|${{ secrets.DB_URL }}/' /home/admin/actions-runner/_work/CodeMonkeys/CodeMonkeys/IzvorniKod/backend/src/main/resources
     - name: Update db username
       run: sed -i 's/<db_username>/${{ secrets.DB_USERNAME }}/' /home/admin/actions-runner/_work/CodeMonkeys/CodeMonkeys/IzvorniKod/backend/src/main/resources
     - name: Update db password
