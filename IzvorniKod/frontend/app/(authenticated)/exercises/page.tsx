@@ -1,28 +1,29 @@
-"use client"; 
+"use client";
 
-import React, { useState, useEffect } from "react"; 
-import { muscleGroups as predefinedMuscleGroups } from "@/data/muscleGroup"; 
-import ExerciseCategory from "@/components/ExerciseMuscleGroups"; 
+import React, { useState, useEffect } from "react";
+import { muscleGroups as predefinedMuscleGroups } from "@/data/muscleGroup";
+import ExerciseCategory from "@/components/ExerciseMuscleGroups";
 import PageTitle from "@/components/PageTitle";
+import { MuscleGroupBase } from "@/types/muscleGroup";
 
 const simulateFetchData = () => {
   return new Promise((resolve) => {
     setTimeout(() => {
       resolve(predefinedMuscleGroups);
-    }, 1000); 
+    }, 1000);
   });
 };
 
 export default function ExercisesPage() {
-  const [muscleGroups, setMuscleGroups] = useState<any[]>([]); 
+  const [muscleGroups, setMuscleGroups] = useState<MuscleGroupBase[]>([]);
 
   useEffect(() => {
     const fetchData = async () => {
-      const data = await simulateFetchData(); 
-      setMuscleGroups(data as any); 
+      const data = (await simulateFetchData()) as MuscleGroupBase[];
+      setMuscleGroups(data);
     };
 
-    fetchData(); 
+    fetchData();
   }, []);
 
   return (

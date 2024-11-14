@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import React, { useState, useEffect } from "react";
@@ -19,7 +20,7 @@ export default function MuscleGroupPage() {
   const [filteredExercises, setFilteredExercises] = useState(exercises);
   const [selectedExercise, setSelectedExercise] = useState<any>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isAddExerciseModalOpen, setIsAddExerciseModalOpen] = useState(false); 
+  const [isAddExerciseModalOpen, setIsAddExerciseModalOpen] = useState(false);
 
   useEffect(() => {
     if (group) {
@@ -41,7 +42,7 @@ export default function MuscleGroupPage() {
     setIsModalOpen(false);
     setSelectedExercise(null);
   };
-  
+
   const openAddExerciseModal = () => setIsAddExerciseModalOpen(true);
   const closeAddExerciseModal = () => setIsAddExerciseModalOpen(false);
 
@@ -53,7 +54,13 @@ export default function MuscleGroupPage() {
     <div className="p-4 pt-12 xl:pt-4 space-y-7 relative">
       <MuscleGroupDetail name={group.name} description={group.description} />
       <SearchBar searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
-      <ExerciseList exercises={filteredExercises} openModal={openModal} />
+      <ExerciseList
+        exercises={filteredExercises.map((exercise) => ({
+          ...exercise,
+          description: exercise.description || "No description available",
+        }))}
+        openModal={openModal}
+      />
 
       {isModalOpen && selectedExercise && (
         <ExerciseModal exercise={selectedExercise} closeModal={closeModal} />
@@ -65,7 +72,8 @@ export default function MuscleGroupPage() {
 
       <button
         onClick={openAddExerciseModal}
-        className="fixed bottom-20 right-6 xl:bottom-6 bg-black text-white py-3 px-6 rounded shadow-lg text-lg hover:bg-gray-800">
+        className="fixed bottom-20 right-6 xl:bottom-6 bg-black text-white py-3 px-6 rounded shadow-lg text-lg hover:bg-gray-800"
+      >
         Add Exercise
       </button>
     </div>
