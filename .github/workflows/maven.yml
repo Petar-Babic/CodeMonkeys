@@ -9,7 +9,7 @@
 name: Java CI with Maven
 
 on:
-  workflow_dispatch: 
+  workflow_dispatch:
   push:
     branches: [ "dev" ]
     paths:
@@ -17,12 +17,11 @@ on:
 
 jobs:
   build:
-
     runs-on: self-hosted
 
     steps:
-    - uses: actions/checkout@v4
-      with:
+      - uses: actions/checkout@v4
+        with:
           ref: dev
           
     - name: Update db url
