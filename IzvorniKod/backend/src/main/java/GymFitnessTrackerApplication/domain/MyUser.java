@@ -27,8 +27,10 @@ public class MyUser{
     // jebem ti mater
     // zasto je sve krcato
 
+    /*
     Float height;
     Float weight;
+     */
     Gender gender;
     String image;
     ActivityLevel activityLevel;
@@ -94,6 +96,7 @@ public class MyUser{
         this.role = role;
     }
 
+    /*
     public Float getHeight() {
         return height;
     }
@@ -109,6 +112,7 @@ public class MyUser{
     public void setWeight(Float weight) {
         this.weight = weight;
     }
+*/
 
     public Gender getGender() {
         return gender;
@@ -117,6 +121,7 @@ public class MyUser{
     public void setGender(Gender gender) {
         this.gender = gender;
     }
+
 
     public ActivityLevel getActivityLevel() {
         return activityLevel;
@@ -179,8 +184,8 @@ public class MyUser{
                 ", name='" + name + '\'' +
                 ", email='" + email + '\'' +
                 ", role=" + role +
-                ", height=" + height +
-                ", weight=" + weight +
+              //  ", height=" + height +
+              //  ", weight=" + weight +
                 '}';
     }
     

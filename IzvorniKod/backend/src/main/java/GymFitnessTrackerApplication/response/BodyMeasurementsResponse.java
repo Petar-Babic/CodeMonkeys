@@ -28,4 +28,44 @@ public class BodyMeasurementsResponse {
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
     }
+
+    public String getId() {
+        return id;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public LocalDateTime getDate() {
+        return date;
+    }
+
+    public float getChest() {
+        return chest;
+    }
+
+    public float getWaist() {
+        return waist;
+    }
+
+    public float getHips() {
+        return hips;
+    }
+
+    public float getThighs() {
+        return thighs;
+    }
+
+    public float getBiceps() {
+        return biceps;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
 }
