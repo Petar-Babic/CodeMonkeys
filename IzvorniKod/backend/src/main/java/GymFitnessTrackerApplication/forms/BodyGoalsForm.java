@@ -29,6 +29,7 @@ public class BodyGoalsForm {
         this.weight=weight;
         this.goalWeight=goalWeight;
         this.activityLevel=activityLevel;
+        this.gender=gender;
         this.protein=protein;
         this.carbs=carbs;
         this.fat=fat;

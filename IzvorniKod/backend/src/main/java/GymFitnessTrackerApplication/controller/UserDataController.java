@@ -1,14 +1,15 @@
 package GymFitnessTrackerApplication.controller;
 
+import GymFitnessTrackerApplication.dao.MyStatsGoalsRepo;
 import GymFitnessTrackerApplication.domain.Measurement;
 import GymFitnessTrackerApplication.domain.MyUser;
+import GymFitnessTrackerApplication.domain.StatsGoals;
+import GymFitnessTrackerApplication.forms.BodyGoalsForm;
 import GymFitnessTrackerApplication.forms.BodyMeasurementForm;
+import GymFitnessTrackerApplication.response.BodyGoalsResponse;
 import GymFitnessTrackerApplication.response.BodyMeasurementsResponse;
 import GymFitnessTrackerApplication.response.ErrorResponse;
-import GymFitnessTrackerApplication.service.JwtService;
-import GymFitnessTrackerApplication.service.MyMeasurementsService;
-import GymFitnessTrackerApplication.service.MyUserDetailsService;
-import GymFitnessTrackerApplication.service.MyUserService;
+import GymFitnessTrackerApplication.service.*;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +30,10 @@ public class UserDataController {
 
     @Autowired
     private  MyMeasurementsService myMeasurementsService;
+    @Autowired
+    private MyGoalsStatsService myGoalsStatsService;
+    @Autowired
+    private MyStatsGoalsRepo statsRepo;
 
     @Autowired
     private MyUserService myUserService;
@@ -56,10 +61,31 @@ public class UserDataController {
         }
     }
 
-    @PostMapping("/api/user/body-stats-and-goals")
-    public String goalz(){
-        return "Goalz";
+    @PostMapping("/body-stats-and-goals")
+    public String setBodyGoals(){
+        return "Postavljeni body goals";
     }
+    /*public ResponseEntity<?> setBodyGoals(@RequestBody BodyGoalsForm bodyGoalsForm,@RequestHeader("Authorization") String auth)
+    {
+        try{
+            String email= jwtService.extractEmail(auth.trim().substring(7));
+            MyUser user = (MyUser) myUserService.getMyUser(email);
+            StatsGoals statsGoals = myGoalsStatsService.createGoals(user,bodyGoalsForm);
+            statsRepo.save(statsGoals);
+
+            return ResponseEntity.status(HttpStatus.valueOf(200)).body(new BodyGoalsResponse(user.getId().toString(),statsGoals.getHeight(),statsGoals.getWeight(),statsGoals.getGoalWeight(),statsGoals.getActivityLevel().name(), statsGoals.getGender().name(),statsGoals.getTimelineWeeks(),statsGoals.getProtein(),statsGoals.getCarbs(),statsGoals.getFat(),statsGoals.getCalories(),statsGoals.getCreatedAt(),statsGoals.getCreatedAt()));
+
+        }catch(UsernameNotFoundException e){
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(new ErrorResponse(0, "Unauthorized request", List.of("Invalid email sent")));
+        }catch (ExpiredJwtException ex){
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(new ErrorResponse(0, "Unauthorized request", List.of("JWT expired")));
+        } catch (Exception ex) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ErrorResponse(0, "Internal Server Error", List.of(ex.toString())));
+        }
+    }*/
 
     @GetMapping("/info")
     public String info(){

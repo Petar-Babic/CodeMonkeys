@@ -13,16 +13,25 @@ public class StatsGoals {
 
 
     @Id
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "userId", referencedColumnName = "id")
-    private MyUser userId;
+    private Long userId;
+
+    @OneToOne
+    @MapsId
+    @JoinColumn(name = "Id")
+    private MyUser user;
 
     Float height;
 
     Float weight;
 
+    Float goalWeight;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     ActivityLevel activityLevel;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     Gender gender;
 
     Integer timelineWeeks;
@@ -39,12 +48,12 @@ public class StatsGoals {
 
     ZonedDateTime updatedAt;
 
-    public MyUser getUserId() {
-        return userId;
+    public String getUserId() {
+        return userId.toString();
     }
 
     public void setUserId(MyUser userId) {
-        this.userId = userId;
+        this.userId = userId.getId();
     }
 
     public Float getHeight() {
@@ -67,16 +76,16 @@ public class StatsGoals {
         return activityLevel;
     }
 
-    public void setActivityLevel(ActivityLevel activityLevel) {
-        this.activityLevel = activityLevel;
+    public void setActivityLevel(String activityLevel) {
+        this.activityLevel = ActivityLevel.valueOf(activityLevel.toUpperCase());
     }
 
     public Gender getGender() {
         return gender;
     }
 
-    public void setGender(Gender gender) {
-        this.gender = gender;
+    public void setGender(String gender) {
+        this.gender = Gender.valueOf(gender.toUpperCase());
     }
 
     public Integer getTimelineWeeks() {
@@ -135,22 +144,30 @@ public class StatsGoals {
         this.updatedAt = updatedAt;
     }
 
+    public Float getGoalWeight() {
+        return goalWeight;
+    }
+
+    public void setGoalWeight(Float goalWeight) {
+        this.goalWeight = goalWeight;
+    }
+
     public StatsGoals(){
 
     }
 
-    public StatsGoals(MyUser user, @RequestBody BodyGoalsForm bg,ZonedDateTime time){
-        this.userId=user;
-        this.activityLevel = ActivityLevel.valueOf(bg.getActivityLevel());
+    public StatsGoals(MyUser user, @RequestBody BodyGoalsForm bg){
+        this.user=user;
+        this.userId=user.getId();
+        this.activityLevel = ActivityLevel.valueOf(bg.getActivityLevel().toUpperCase());
         this.calories=bg.getCalories();
         this.carbs=bg.getCarbs();
         this.fat = bg.getFat();
         this.protein=bg.getProtein();
-        this.gender=Gender.valueOf(bg.getGender());
+        this.gender=Gender.valueOf(bg.getGender().toUpperCase());
         this.height=bg.getHeight();
         this.timelineWeeks=bg.getTimelineWeeks();
         this.weight=bg.getWeight();
-        this.createdAt=time;
-        this.updatedAt=time;
+        this.goalWeight=bg.getGoalWeight();
     }
 }

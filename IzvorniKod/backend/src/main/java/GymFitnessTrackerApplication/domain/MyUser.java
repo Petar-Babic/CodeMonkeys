@@ -1,10 +1,7 @@
 package GymFitnessTrackerApplication.domain;
 
 import GymFitnessTrackerApplication.forms.SignupForm;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import java.time.LocalDateTime;
@@ -13,8 +10,12 @@ import java.time.LocalDateTime;
 public class MyUser{
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
+
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private StatsGoals statsGoals;
+
 
     String name;
     @Column(unique = true, nullable = false)
@@ -191,5 +192,5 @@ public class MyUser{
               //  ", weight=" + weight +
                 '}';
     }
-    
+
 }
