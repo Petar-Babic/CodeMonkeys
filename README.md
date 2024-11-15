@@ -1,5 +1,5 @@
 # Gym Progress Tracking App
-
+https://gymprogress.lukakordic.me/
 # Opis projekta
 
 Nakon analize postojećih rješenja za praćenje napretka u fitnessu, primijetili smo da trenutno ne postoji besplatna, ali ni kvalitetna plaćena verzija koja bi kvalitetno zadovoljila potrebe korisnika, zbog čega smo osmislili ideju za GYM Progress Tracker.
