@@ -1,4 +1,4 @@
-package GymFitnessTrackerApplication.webtoken;
+package GymFitnessTrackerApplication.forms;
 
 import GymFitnessTrackerApplication.domain.RegistrationMethod;
 

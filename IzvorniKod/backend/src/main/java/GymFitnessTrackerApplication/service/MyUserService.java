@@ -1,10 +1,8 @@
 package GymFitnessTrackerApplication.service;
 
 import GymFitnessTrackerApplication.domain.MyUser;
-import GymFitnessTrackerApplication.webtoken.OAuthForm;
-import GymFitnessTrackerApplication.webtoken.SignupForm;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import GymFitnessTrackerApplication.forms.OAuthForm;
+import GymFitnessTrackerApplication.forms.SignupForm;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;

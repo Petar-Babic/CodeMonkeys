@@ -1,6 +1,6 @@
 package GymFitnessTrackerApplication.domain;
 
-import GymFitnessTrackerApplication.webtoken.SignupForm;
+import GymFitnessTrackerApplication.forms.SignupForm;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -22,6 +22,11 @@ public class MyUser{
 
     String password;
     Role role;
+
+    // korda ti si idiot
+    // jebem ti mater
+    // zasto je sve krcato
+
     Float height;
     Float weight;
     Gender gender;
@@ -161,7 +166,9 @@ public class MyUser{
         name = signupForm.getName();
         password = signupForm.getEncodedPass();
         this.setCreatedAt(LocalDateTime.now());
+        // for purposes of testing
         this.role = Role.USER;
+        this.activityLevel=ActivityLevel.SEDENTARY;
     }
 
     @Override

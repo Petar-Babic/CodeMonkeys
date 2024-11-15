@@ -1,4 +1,4 @@
-package GymFitnessTrackerApplication.webtoken;
+package GymFitnessTrackerApplication.response;
 
 public class JwtResponse {
     private String token;

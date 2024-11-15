@@ -1,4 +1,4 @@
-package GymFitnessTrackerApplication.webtoken;
+package GymFitnessTrackerApplication.response;
 
 import java.util.List;
 

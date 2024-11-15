@@ -1,12 +1,16 @@
-package GymFitnessTrackerApplication.rest;
+package GymFitnessTrackerApplication.controller;
 
 
 import GymFitnessTrackerApplication.domain.MyUser;
+import GymFitnessTrackerApplication.forms.LoginForm;
+import GymFitnessTrackerApplication.forms.OAuthForm;
+import GymFitnessTrackerApplication.forms.SignupForm;
+import GymFitnessTrackerApplication.response.ErrorResponse;
+import GymFitnessTrackerApplication.response.JwtResponse;
 import GymFitnessTrackerApplication.service.JwtService;
 import GymFitnessTrackerApplication.service.MyUserDetailsService;
 import GymFitnessTrackerApplication.service.MyUserService;
 import GymFitnessTrackerApplication.service.UserAlreadyExistsException;
-import GymFitnessTrackerApplication.webtoken.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

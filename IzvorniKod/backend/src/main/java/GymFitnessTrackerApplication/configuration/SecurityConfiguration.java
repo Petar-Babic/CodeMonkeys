@@ -1,7 +1,6 @@
 package GymFitnessTrackerApplication.configuration;
 
 import GymFitnessTrackerApplication.service.MyUserDetailsService;
-import GymFitnessTrackerApplication.webtoken.JwtAuthenticationFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

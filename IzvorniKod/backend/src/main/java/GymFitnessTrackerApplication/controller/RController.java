@@ -1,4 +1,4 @@
-package GymFitnessTrackerApplication.rest;
+package GymFitnessTrackerApplication.controller;
 
 
 import GymFitnessTrackerApplication.domain.MyUser;
