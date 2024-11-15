@@ -3,20 +3,21 @@ package GymFitnessTrackerApplication.response;
 import org.springframework.cglib.core.Local;
 
 import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 
 public class BodyMeasurementsResponse {
     public String id;
     public String userId;
-    public LocalDateTime date;
+    public ZonedDateTime date;
     public float chest;
     public float waist;
     public float hips;
     public float thighs;
     public float biceps;
-    public LocalDateTime createdAt;
-    public LocalDateTime updatedAt;
+    public ZonedDateTime createdAt;
+    public ZonedDateTime updatedAt;
 
-    public BodyMeasurementsResponse(String id, String userId, LocalDateTime date, float chest, float waist, float hips, float thighs, float biceps, LocalDateTime createdAt, LocalDateTime updatedAt) {
+    public BodyMeasurementsResponse(String id, String userId, ZonedDateTime date, float chest, float waist, float hips, float thighs, float biceps, ZonedDateTime createdAt, ZonedDateTime updatedAt) {
         this.id = id;
         this.userId = userId;
         this.date = date;
@@ -37,7 +38,7 @@ public class BodyMeasurementsResponse {
         return userId;
     }
 
-    public LocalDateTime getDate() {
+    public ZonedDateTime getDate() {
         return date;
     }
 
@@ -61,11 +62,11 @@ public class BodyMeasurementsResponse {
         return biceps;
     }
 
-    public LocalDateTime getCreatedAt() {
+    public ZonedDateTime getCreatedAt() {
         return createdAt;
     }
 
-    public LocalDateTime getUpdatedAt() {
+    public ZonedDateTime getUpdatedAt() {
         return updatedAt;
     }
 }
