@@ -31,9 +31,9 @@ public class MyUser{
     Float height;
     Float weight;
      */
-    Gender gender;
+   // Gender gender;
     String image;
-    ActivityLevel activityLevel;
+   // ActivityLevel activityLevel;
     String currentNutritionPlanId;
     Long trainerId;
     LocalDateTime emailVerified;
@@ -114,6 +114,7 @@ public class MyUser{
     }
 */
 
+    /*
     public Gender getGender() {
         return gender;
     }
@@ -130,6 +131,8 @@ public class MyUser{
     public void setActivityLevel(ActivityLevel activityLevel) {
         this.activityLevel = activityLevel;
     }
+
+     */
 
     public String getCurrentNutritionPlanId() {
         return currentNutritionPlanId;
@@ -173,7 +176,7 @@ public class MyUser{
         this.setCreatedAt(LocalDateTime.now());
         // for purposes of testing
         this.role = Role.USER;
-        this.activityLevel=ActivityLevel.SEDENTARY;
+       // this.activityLevel=ActivityLevel.SEDENTARY;
     }
 
     @Override
