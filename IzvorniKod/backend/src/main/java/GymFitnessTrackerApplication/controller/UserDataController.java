@@ -43,13 +43,13 @@ public class UserDataController {
 
         }catch(UsernameNotFoundException e){
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(new ErrorResponse(0, "Unauthorized request", List.of("Invalid email sent")));
+                    .body(new ErrorResponse(0,"Invalid email sent"));
         }catch (ExpiredJwtException ex){
            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(new ErrorResponse(0, "Unauthorized request", List.of("JWT expired")));
+                    .body(new ErrorResponse(0,"JWT expired"));
         } catch (Exception ex) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new ErrorResponse(0, "Internal Server Error", List.of("An unexpected error occurred")));
+                    .body(new ErrorResponse(0, "Internal Server Error"));
         }
     }
 

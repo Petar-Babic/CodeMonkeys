@@ -120,14 +120,14 @@ public class AuthController {
                 return ResponseEntity.ok(new JwtResponse(token, user.getId().toString(), user.getName(), user.getEmail()));
             } else {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                        .body(new ErrorResponse(0, "Invalid credentials", List.of("Invalid email or password")));
+                        .body(new ErrorResponse(0, "Invalid email or password"));
             }
         }catch (AuthenticationException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(new ErrorResponse(0, "Invalid credentials", List.of("Invalid email or password")));
+                    .body(new ErrorResponse(0, "Invalid email or password"));
         } catch (Exception ex) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new ErrorResponse(0, "Internal Server Error", List.of("An unexpected error occurred")));
+                    .body(new ErrorResponse(0, "Internal Server Error"));
         }
     }
 
