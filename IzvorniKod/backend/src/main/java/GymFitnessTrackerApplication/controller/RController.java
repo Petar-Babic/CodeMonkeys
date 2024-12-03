@@ -1,7 +1,7 @@
 package GymFitnessTrackerApplication.controller;
 
 
-import GymFitnessTrackerApplication.domain.MyUser;
+import GymFitnessTrackerApplication.model.domain.MyUser;
 import GymFitnessTrackerApplication.service.MyUserService;
 import GymFitnessTrackerApplication.service.JwtService;
 import org.springframework.beans.factory.annotation.Autowired;

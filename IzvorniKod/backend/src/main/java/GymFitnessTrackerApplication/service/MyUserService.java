@@ -1,8 +1,8 @@
 package GymFitnessTrackerApplication.service;
 
-import GymFitnessTrackerApplication.domain.MyUser;
-import GymFitnessTrackerApplication.forms.OAuthForm;
-import GymFitnessTrackerApplication.forms.SignupForm;
+import GymFitnessTrackerApplication.model.domain.MyUser;
+import GymFitnessTrackerApplication.model.forms.OAuthForm;
+import GymFitnessTrackerApplication.model.forms.SignupForm;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;

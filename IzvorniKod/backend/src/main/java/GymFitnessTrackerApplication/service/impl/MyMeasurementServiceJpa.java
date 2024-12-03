@@ -1,17 +1,15 @@
 package GymFitnessTrackerApplication.service.impl;
 
-import GymFitnessTrackerApplication.dao.MyMeasurementRepo;
-import GymFitnessTrackerApplication.domain.Measurement;
-import GymFitnessTrackerApplication.domain.MyUser;
-import GymFitnessTrackerApplication.forms.BodyMeasurementForm;
+import GymFitnessTrackerApplication.model.dao.MyMeasurementRepo;
+import GymFitnessTrackerApplication.model.domain.Measurement;
+import GymFitnessTrackerApplication.model.domain.MyUser;
+import GymFitnessTrackerApplication.model.forms.BodyMeasurementForm;
 import GymFitnessTrackerApplication.service.MyMeasurementsService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.StreamingHttpOutputMessage;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
-import java.util.Map;
 
 @Service
 public class MyMeasurementServiceJpa implements MyMeasurementsService {

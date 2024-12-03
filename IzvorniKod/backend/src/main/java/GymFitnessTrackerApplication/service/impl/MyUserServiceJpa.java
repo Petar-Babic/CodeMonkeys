@@ -1,12 +1,12 @@
 package GymFitnessTrackerApplication.service.impl;
 
-import GymFitnessTrackerApplication.dao.MyUserRepository;
-import GymFitnessTrackerApplication.domain.MyUser;
-import GymFitnessTrackerApplication.domain.Role;
+import GymFitnessTrackerApplication.model.dao.MyUserRepository;
+import GymFitnessTrackerApplication.model.domain.MyUser;
+import GymFitnessTrackerApplication.model.domain.Role;
 import GymFitnessTrackerApplication.service.MyUserService;
-import GymFitnessTrackerApplication.service.UserAlreadyExistsException;
-import GymFitnessTrackerApplication.forms.OAuthForm;
-import GymFitnessTrackerApplication.forms.SignupForm;
+import GymFitnessTrackerApplication.exception.UserAlreadyExistsException;
+import GymFitnessTrackerApplication.model.forms.OAuthForm;
+import GymFitnessTrackerApplication.model.forms.SignupForm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;

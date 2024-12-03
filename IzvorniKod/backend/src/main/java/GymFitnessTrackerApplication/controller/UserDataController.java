@@ -1,27 +1,19 @@
 package GymFitnessTrackerApplication.controller;
 
-import GymFitnessTrackerApplication.dao.MyStatsGoalsRepo;
-import GymFitnessTrackerApplication.domain.Measurement;
-import GymFitnessTrackerApplication.domain.MyUser;
-import GymFitnessTrackerApplication.domain.StatsGoals;
-import GymFitnessTrackerApplication.forms.BodyGoalsForm;
-import GymFitnessTrackerApplication.forms.BodyMeasurementForm;
-import GymFitnessTrackerApplication.response.BodyGoalsResponse;
-import GymFitnessTrackerApplication.response.BodyMeasurementsResponse;
-import GymFitnessTrackerApplication.response.ErrorResponse;
+import GymFitnessTrackerApplication.model.dao.MyStatsGoalsRepo;
+import GymFitnessTrackerApplication.model.domain.Measurement;
+import GymFitnessTrackerApplication.model.domain.MyUser;
+import GymFitnessTrackerApplication.model.forms.BodyMeasurementForm;
+import GymFitnessTrackerApplication.model.response.BodyMeasurementsResponse;
+import GymFitnessTrackerApplication.model.response.ErrorResponse;
 import GymFitnessTrackerApplication.service.*;
 import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.MalformedJwtException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController

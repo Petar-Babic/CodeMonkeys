@@ -1,16 +1,16 @@
 package GymFitnessTrackerApplication.controller;
 
 
-import GymFitnessTrackerApplication.domain.MyUser;
-import GymFitnessTrackerApplication.forms.LoginForm;
-import GymFitnessTrackerApplication.forms.OAuthForm;
-import GymFitnessTrackerApplication.forms.SignupForm;
-import GymFitnessTrackerApplication.response.ErrorResponse;
-import GymFitnessTrackerApplication.response.JwtResponse;
+import GymFitnessTrackerApplication.model.domain.MyUser;
+import GymFitnessTrackerApplication.model.forms.LoginForm;
+import GymFitnessTrackerApplication.model.forms.OAuthForm;
+import GymFitnessTrackerApplication.model.forms.SignupForm;
+import GymFitnessTrackerApplication.model.response.ErrorResponse;
+import GymFitnessTrackerApplication.model.response.JwtResponse;
 import GymFitnessTrackerApplication.service.JwtService;
 import GymFitnessTrackerApplication.service.MyUserDetailsService;
 import GymFitnessTrackerApplication.service.MyUserService;
-import GymFitnessTrackerApplication.service.UserAlreadyExistsException;
+import GymFitnessTrackerApplication.exception.UserAlreadyExistsException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -70,11 +70,11 @@ public class AuthController {
 
         catch ( AuthenticationException ex) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(new ErrorResponse(0, "Invalid email", List.of("Invalid email sent")));
+                    .body(new ErrorResponse(0, "Invalid email"));
         } catch (Exception ex) {
             System.out.println(ex.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new ErrorResponse(0, "Internal Server Error", List.of("An unexpected error occurred")));
+                    .body(new ErrorResponse(0, "Internal Server Error"));
         }
 
 
@@ -96,14 +96,14 @@ public class AuthController {
                 return ResponseEntity.ok(new JwtResponse(token, user.getId().toString(), user.getName(), user.getEmail()));
             } else {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                        .body(new ErrorResponse(0, "Invalid credentials", List.of("User with this email already exists")));
+                        .body(new ErrorResponse(0, "User with this email already exists"));
             }
         }catch (UserAlreadyExistsException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(new ErrorResponse(0, "Invalid credentials", List.of("User with this email already exists")));
+                    .body(new ErrorResponse(0, "User with this email already exists"));
         } catch (Exception ex) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new ErrorResponse(0, "Internal Server Error", List.of("An unexpected error occurred")));
+                    .body(new ErrorResponse(0, "Internal Server Error"));
         }
     }
 
