@@ -19,6 +19,8 @@ public class JwtService {
     private static final String SECRET = "799AF37F810D29185B919E78D773D6DB98904D2F9437657FE636D0EDB08871DABE9C7E088E15E03D5992BB14861B3C0ED2271072AEF28BA6ACBC0B961E3AA866";
     private static final long VALIDITY = TimeUnit.MINUTES.toMillis(15);
 
+    private static final long REFRESH_VALIDITY = TimeUnit.DAYS.toMillis(5);
+
     public String generateToken(UserDetails userDetails) {
         return Jwts.builder()
                 .subject(userDetails.getUsername())

@@ -1,10 +1,19 @@
 package GymFitnessTrackerApplication.exception;
 
 
+import org.hibernate.exception.ConstraintViolationException;
+import org.springframework.dao.DataAccessResourceFailureException;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.QueryTimeoutException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.transaction.TransactionSystemException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
+
+import java.sql.SQLSyntaxErrorException;
 
 @ControllerAdvice
 public class CustomExceptionHandler {
@@ -17,6 +26,53 @@ public class CustomExceptionHandler {
      */
     @ExceptionHandler(UserAlreadyExistsException.class)
     public ResponseEntity<String> handleUserAlreadyExists(UserAlreadyExistsException ex) {
-        return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>("User with this email already exists", HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(Exception.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ResponseEntity<String> serverError(){
+        return new ResponseEntity<>("Internal server error",HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @ExceptionHandler(UsernameNotFoundException.class)
+    public  ResponseEntity<String> handleUsernameNotFound(UsernameNotFoundException ex ){
+        return new ResponseEntity<>("User not found with email",HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<String> handleDataIntegrityViolation(DataIntegrityViolationException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body("Invalid data: " + ex.getRootCause().getMessage());
+    }
+
+    @ExceptionHandler(SQLSyntaxErrorException.class)
+    public ResponseEntity<String> handleSQLSyntaxError(SQLSyntaxErrorException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body("SQL syntax error: " + ex.getMessage());
+    }
+
+    @ExceptionHandler(QueryTimeoutException.class)
+    public ResponseEntity<String> handleQueryTimeout(QueryTimeoutException ex) {
+        return ResponseEntity.status(HttpStatus.REQUEST_TIMEOUT)
+                .body("Database query timed out. Please try again later.");
+    }
+
+    @ExceptionHandler(TransactionSystemException.class)
+    public ResponseEntity<String> handleTransactionSystem(TransactionSystemException ex) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body("Transaction failed: " + ex.getMostSpecificCause().getMessage());
+    }
+
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<String> handleConstraintViolation(ConstraintViolationException ex) {
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body("Constraint violation: " + ex.getMessage());
+    }
+
+    @ExceptionHandler(DataAccessResourceFailureException.class)
+    public ResponseEntity<String> handleDataAccessResourceFailure(DataAccessResourceFailureException ex) {
+        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE)
+                .body("Database access failed: " + ex.getMessage());
     }
 }

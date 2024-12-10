@@ -2,11 +2,13 @@ package GymFitnessTrackerApplication.controller;
 
 
 import GymFitnessTrackerApplication.model.domain.MyUser;
+import GymFitnessTrackerApplication.model.domain.RegistrationMethod;
 import GymFitnessTrackerApplication.model.forms.LoginForm;
 import GymFitnessTrackerApplication.model.forms.OAuthForm;
 import GymFitnessTrackerApplication.model.forms.SignupForm;
 import GymFitnessTrackerApplication.model.response.ErrorResponse;
 import GymFitnessTrackerApplication.model.response.JwtResponse;
+import GymFitnessTrackerApplication.service.AuthService;
 import GymFitnessTrackerApplication.service.JwtService;
 import GymFitnessTrackerApplication.service.MyUserDetailsService;
 import GymFitnessTrackerApplication.service.MyUserService;
@@ -20,10 +22,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -31,7 +30,7 @@ import java.util.List;
 @RequestMapping("/api/auth")
 public class AuthController {
 
-    @Autowired
+   /* @Autowired
     private MyUserService myUserService;
     @Autowired
     private JwtService jwtService;
@@ -42,7 +41,22 @@ public class AuthController {
     @Autowired
     AuthenticationManager authenticationManager;
 
-    @PostMapping("/oauth")
+    */
+    @Autowired
+    AuthService authService;
+    @PostMapping("/login")
+    public ResponseEntity<?> login(@RequestBody LoginForm loginForm){
+        JwtResponse odg = authService.loginaj(loginForm);
+        return  ResponseEntity.ok(odg);
+    }
+
+    @PostMapping("/signup")
+    public ResponseEntity<?> signup(@RequestBody SignupForm signupForm){
+        JwtResponse noviUser = authService.signup(signupForm);
+        return ResponseEntity.ok(noviUser);
+    }
+
+   /* @PostMapping("/oauth")
     public ResponseEntity<?> authenticateWithOAuth(@RequestBody OAuthForm oAuthForm){
         try{
             String email = oAuthForm.email();
@@ -107,36 +121,15 @@ public class AuthController {
         }
     }
 
-    @PostMapping("/login")
-    public ResponseEntity<?> authenticateAndGetToken(@RequestBody LoginForm loginForm) {
-        try {
-            Authentication authentication = authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(loginForm.email(), loginForm.password()));
 
+    */
 
-            if (authentication.isAuthenticated()) {
-                MyUser user = myUserService.getMyUser(loginForm.email());
-                String token = jwtService.generateToken(myUserDetailService.loadUserByUsername(loginForm.email()));
-                return ResponseEntity.ok(new JwtResponse(token, user.getId().toString(), user.getName(), user.getEmail()));
-            } else {
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                        .body(new ErrorResponse(0, "Invalid email or password"));
-            }
-        }catch (AuthenticationException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(new ErrorResponse(0, "Invalid email or password"));
-        } catch (Exception ex) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new ErrorResponse(0, "Internal Server Error"));
-        }
-    }
-
-    @PostMapping("/api/auth/refresh")
+    @PostMapping("/refresh")
     public String refreshToken(){
         return "Osvjezen token";
     }
 
-    @PostMapping("/api/auth/logout")
+    @PostMapping("/logout")
     public String logout(){
         return "logged out ";
     }

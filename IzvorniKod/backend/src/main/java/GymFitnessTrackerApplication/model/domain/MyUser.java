@@ -177,7 +177,7 @@ public class MyUser{
         this.setCreatedAt(LocalDateTime.now());
         // for purposes of testing
         this.role = Role.USER;
-       // this.activityLevel=ActivityLevel.SEDENTARY;
+        //this.activityLevel=ActivityLevel.SEDENTARY;
     }
 
     @Override
