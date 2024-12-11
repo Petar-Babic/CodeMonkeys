@@ -2,6 +2,8 @@
 https://gymprogress.lukakordic.me/
 # Opis projekta
 
+> Ovaj projekt rezultat je timskog rada razvijenog u sklopu projektnog zadatka kolegija [Programsko inženjerstvo](https://www.fer.unizg.hr/predmet/proinz) na Fakultetu elektrotehnike i računarstva Sveučilišta u Zagrebu.
+
 Nakon analize postojećih rješenja za praćenje napretka u fitnessu, primijetili smo da trenutno ne postoji besplatna, ali ni kvalitetna plaćena verzija koja bi kvalitetno zadovoljila potrebe korisnika, zbog čega smo osmislili ideju za GYM Progress Tracker.
 
 Omogućili bi praćenje napretka u teretani te pružali korisnicima intuitivne i personalizirane funkcionalnosti, s posebnim fokusom na progressive overload i RPE skalu. Progressive overload je ključan princip u teretani jer osigurava kontinuiran napredak u snazi i mišićnoj masi. Povećavanjem težine, broja ponavljanja ili intenziteta vježbi, tijelo se stalno prilagođava većim opterećenjima, što vodi do boljih rezultata. Praćenjem RPE skale te progressive overload-a kroz našu aplikaciju, korisnici bi mogli precizno vidjeti gdje napreduju i identificirati područja koja trebaju dodatno razmatranje u vezi plana treninga. Ovakav uvid omogućava planiranje budućih treninga s ciljem optimizacije rezultata.
