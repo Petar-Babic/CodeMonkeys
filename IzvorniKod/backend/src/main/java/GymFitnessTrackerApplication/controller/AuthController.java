@@ -2,17 +2,18 @@ package GymFitnessTrackerApplication.controller;
 
 
 import GymFitnessTrackerApplication.model.domain.MyUser;
+import GymFitnessTrackerApplication.model.domain.RefreshToken;
 import GymFitnessTrackerApplication.model.domain.RegistrationMethod;
 import GymFitnessTrackerApplication.model.forms.LoginForm;
 import GymFitnessTrackerApplication.model.forms.OAuthForm;
 import GymFitnessTrackerApplication.model.forms.SignupForm;
 import GymFitnessTrackerApplication.model.response.ErrorResponse;
 import GymFitnessTrackerApplication.model.response.JwtResponse;
-import GymFitnessTrackerApplication.service.AuthService;
-import GymFitnessTrackerApplication.service.JwtService;
-import GymFitnessTrackerApplication.service.MyUserDetailsService;
-import GymFitnessTrackerApplication.service.MyUserService;
+import GymFitnessTrackerApplication.service.*;
 import GymFitnessTrackerApplication.exception.UserAlreadyExistsException;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,37 +25,55 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.CookieStore;
+import java.util.Arrays;
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
 
-   /* @Autowired
-    private MyUserService myUserService;
-    @Autowired
-    private JwtService jwtService;
-    @Autowired
-    private MyUserDetailsService myUserDetailService;
-    @Autowired
-    PasswordEncoder passwordEncoder;
-    @Autowired
-    AuthenticationManager authenticationManager;
-
-    */
     @Autowired
     AuthService authService;
+
+    @Autowired
+    RefreshTokenService refreshTokenService;
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginForm loginForm){
+    public ResponseEntity<?> login(@RequestBody LoginForm loginForm, HttpServletResponse res,HttpServletRequest req){
         JwtResponse odg = authService.loginaj(loginForm);
+        RefreshToken token = refreshTokenService.getToken(loginForm.email(),"mail");
+        res.addCookie(new Cookie("Refresh",token.getToken()));
         return  ResponseEntity.ok(odg);
     }
 
     @PostMapping("/signup")
-    public ResponseEntity<?> signup(@RequestBody SignupForm signupForm){
+    public ResponseEntity<?> signup(@RequestBody SignupForm signupForm,HttpServletResponse res){
         JwtResponse noviUser = authService.signup(signupForm);
+        RefreshToken token= refreshTokenService.createToken(signupForm.getEmail());
+        res.addCookie(new Cookie("Refresh",token.getToken()));
         return ResponseEntity.ok(noviUser);
     }
+
+    @PostMapping("/oauth")
+    public ResponseEntity<?> oauthLogin(@RequestBody OAuthForm oAuthForm){
+        return
+                ResponseEntity.ok("Its so jover");
+    }
+
+    @PostMapping("/refresh")
+    public ResponseEntity<?> refreshToken(HttpServletRequest request){
+        String notFound= "Refresh cookie not found";
+        String value =  Arrays.stream(request.getCookies())
+                .filter(cookie -> "Refresh".equals(cookie.getName()))
+                .map(Cookie::getValue)
+                .findFirst()
+                .orElse(notFound);
+
+        if(value.equals(notFound))
+            return ResponseEntity.status(403).body(notFound);
+        return  ResponseEntity.status(200).body(value);
+    }
+
 
    /* @PostMapping("/oauth")
     public ResponseEntity<?> authenticateWithOAuth(@RequestBody OAuthForm oAuthForm){
@@ -124,10 +143,6 @@ public class AuthController {
 
     */
 
-    @PostMapping("/refresh")
-    public String refreshToken(){
-        return "Osvjezen token";
-    }
 
     @PostMapping("/logout")
     public String logout(){

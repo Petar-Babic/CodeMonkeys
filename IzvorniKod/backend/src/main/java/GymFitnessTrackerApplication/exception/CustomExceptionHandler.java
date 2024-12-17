@@ -1,6 +1,9 @@
 package GymFitnessTrackerApplication.exception;
 
 
+import io.jsonwebtoken.ExpiredJwtException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -75,4 +78,18 @@ public class CustomExceptionHandler {
         return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE)
                 .body("Database access failed: " + ex.getMessage());
     }
+
+    @ExceptionHandler(RefreshTokenExpiredException.class)
+        public ResponseEntity<String> handleUserAlreadyExists(RefreshTokenExpiredException ex) {
+            return new ResponseEntity<>(ex.getMessage(), HttpStatus.UNAUTHORIZED);
+        }
+
+
+    /*
+
+    tehnicki implementacija refresh tokena moze biti napravljena pomocu hvatanja IoException i gledanja statusa pa slanja
+    optimiacija
+    --- ali korda design je frontend
+    
+     */
 }

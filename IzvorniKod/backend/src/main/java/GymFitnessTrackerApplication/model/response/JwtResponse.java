@@ -2,8 +2,6 @@ package GymFitnessTrackerApplication.model.response;
 
 public class JwtResponse {
     private String token;
-
-    private String refreshToken;
     private String id;
     private String name;
     private String email;
@@ -30,5 +28,6 @@ public class JwtResponse {
     public String getEmail() {
         return email;
     }
+
 }
 
