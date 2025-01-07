@@ -1,5 +1,6 @@
 package GymFitnessTrackerApplication.service;
 
+import GymFitnessTrackerApplication.exception.NonExistantToken;
 import GymFitnessTrackerApplication.exception.RefreshTokenExpiredException;
 import GymFitnessTrackerApplication.model.dao.MyStatsGoalsRepo;
 import GymFitnessTrackerApplication.model.dao.MyUserRepository;
@@ -21,10 +22,7 @@ import java.sql.Ref;
 import java.text.CollationKey;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.Arrays;
-import java.util.Optional;
-import java.util.Random;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 public class RefreshTokenService {
@@ -46,10 +44,25 @@ public class RefreshTokenService {
         return refreshTokenRepo.findByMyUser(user);
     }
 
-    public String forsakeToken(String token){
-        refreshTokenRepo.deleteByToken(token);
-        return "Izbrisan cookie";
+
+    @Transactional
+    public String forsakeToken(HttpServletRequest req) throws NonExistantToken {
+        if (req.getCookies() != null) {
+            for (Cookie c : req.getCookies()) {
+                if ("Refresh".equals(c.getName())) { // Avoid potential NullPointerException
+                    String token = c.getValue();
+                    Optional<RefreshToken> ref = findByToken(token);
+
+                    ref.orElseThrow(() -> new NonExistantToken("Token not found in database"));
+                    refreshTokenRepo.delete(ref.get());
+
+                    return "Invalidated key";
+                }
+            }
+        }
+        throw new NonExistantToken("No refresh token cookie found");
     }
+
     public RefreshToken createToken(String username){
         MyUser user = myUserService.getMyUser(username);
         //bullshiting

@@ -10,6 +10,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.QueryTimeoutException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mail.MailException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.transaction.TransactionSystemException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -83,6 +84,16 @@ public class CustomExceptionHandler {
         public ResponseEntity<String> handleUserAlreadyExists(RefreshTokenExpiredException ex) {
             return new ResponseEntity<>(ex.getMessage(), HttpStatus.UNAUTHORIZED);
         }
+
+    @ExceptionHandler(NonExistantToken.class)
+    public ResponseEntity<String> handleTokenDoesntExist(NonExistantToken ex) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.UNAUTHORIZED);
+    }
+
+    @ExceptionHandler(MailException.class)
+    public String handleMailException(MailException mx){
+        return new String(mx.getMessage());
+    }
 
 
     /*

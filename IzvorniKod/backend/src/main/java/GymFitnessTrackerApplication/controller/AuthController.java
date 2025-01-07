@@ -1,6 +1,7 @@
 package GymFitnessTrackerApplication.controller;
 
 
+import GymFitnessTrackerApplication.exception.NonExistantToken;
 import GymFitnessTrackerApplication.model.domain.MyUser;
 import GymFitnessTrackerApplication.model.domain.RefreshToken;
 import GymFitnessTrackerApplication.model.domain.RegistrationMethod;
@@ -71,6 +72,9 @@ public class AuthController {
 
         if(value.equals(notFound))
             return ResponseEntity.status(403).body(notFound);
+        else{
+
+        }
         return  ResponseEntity.status(200).body(value);
     }
 
@@ -145,7 +149,13 @@ public class AuthController {
 
 
     @PostMapping("/logout")
-    public String logout(){
-        return "logged out ";
+    public ResponseEntity<?> logout(HttpServletRequest req) throws NonExistantToken{
+        String out = null;
+        try {
+            out = refreshTokenService.forsakeToken(req);
+        } catch (NonExistantToken e) {
+            throw new NonExistantToken(e.getMessage());
+        }
+        return ResponseEntity.ok(out);
     }
 }

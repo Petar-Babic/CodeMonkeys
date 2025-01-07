@@ -46,6 +46,14 @@ public class AuthService {
         return new JwtResponse(token,user.getId().toString(),user.getName(), user.getEmail());
     }
 
+    //treba biti jwtResponse da se vrati Jwt TOken
+    public String refreshLogin(String refreshToken){
+       /*
+       impl
+        */
+        return "refreshed login";
+    }
+
     public JwtResponse signup(SignupForm signupForm){
         signupForm.Encode(passwordEncoder.encode(signupForm.getPassword()));
         MyUser noviUser = myUserService.createMyUser(signupForm);
