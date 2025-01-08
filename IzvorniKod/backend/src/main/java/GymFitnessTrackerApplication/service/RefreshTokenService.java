@@ -25,6 +25,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.*;
 
 @Service
+@Transactional
 public class RefreshTokenService {
 
     @Autowired
@@ -77,12 +78,12 @@ public class RefreshTokenService {
         if(tip.equals("mail")){
             MyUser user = myUserService.getMyUser(value);
             Optional<RefreshToken> token = findByUser(user);
-            if(token.isEmpty() || expired(token.get().getToken())){
+            if(token.isEmpty() || Expired(token.get().getToken())){
                 if(token.isEmpty()){
                     tok = new RefreshToken(generirajToken(),Instant.now().plus(expiryTime,ChronoUnit.DAYS),user);
                     return refreshTokenRepo.save(tok);
                 }
-                 refreshTokenRepo.deleteByMyUser(token.get().getMyUser());
+                refreshTokenRepo.deleteByMyUser(token.get().getMyUser());
                 tok = new RefreshToken(generirajToken(),Instant.now().plus(expiryTime,ChronoUnit.DAYS),user);
                 return refreshTokenRepo.save(tok);
             }
@@ -98,13 +99,13 @@ public class RefreshTokenService {
             return false;
         return true;
     }
-    public boolean expired(String token){
+    public boolean Expired(String token){
         if(!isValid(token))
             return false;
         RefreshToken tok = refreshTokenRepo.findByToken(token).get();
         if(tok.getExpiry().isAfter(Instant.now()))
-            return true;
-        return false;
+            return false;
+        return true;
     }
 
     public String generirajToken(){

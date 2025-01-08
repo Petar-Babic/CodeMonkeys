@@ -12,6 +12,7 @@ import GymFitnessTrackerApplication.model.response.ErrorResponse;
 import GymFitnessTrackerApplication.model.response.JwtResponse;
 import GymFitnessTrackerApplication.service.*;
 import GymFitnessTrackerApplication.exception.UserAlreadyExistsException;
+import io.jsonwebtoken.Jwt;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -55,12 +56,6 @@ public class AuthController {
         return ResponseEntity.ok(noviUser);
     }
 
-    @PostMapping("/oauth")
-    public ResponseEntity<?> oauthLogin(@RequestBody OAuthForm oAuthForm){
-        return
-                ResponseEntity.ok("Its so jover");
-    }
-
     @PostMapping("/refresh")
     public ResponseEntity<?> refreshToken(HttpServletRequest request){
         String notFound= "Refresh cookie not found";
@@ -70,53 +65,23 @@ public class AuthController {
                 .findFirst()
                 .orElse(notFound);
 
-        if(value.equals(notFound))
+        // ako nema tokena
+        // ili ako je dobiveni token ili invalid ili istjekao
+        if(value.equals(notFound) || (!refreshTokenService.isValid(value) || !refreshTokenService.Expired(value)))
             return ResponseEntity.status(403).body(notFound);
-        else{
-
-        }
-        return  ResponseEntity.status(200).body(value);
+        JwtResponse refreshLogin = authService.refreshLogin(value);
+        return  ResponseEntity.status(200).body(refreshLogin);
     }
 
 
-   /* @PostMapping("/oauth")
-    public ResponseEntity<?> authenticateWithOAuth(@RequestBody OAuthForm oAuthForm){
-        try{
-            String email = oAuthForm.email();
-            String name = oAuthForm.name();
-            String image = oAuthForm.image();
-
-            MyUser user = myUserService.getMyUser(email);
-            if(user == null){
-                throw new UsernameNotFoundException("User not found");
-            }
-            //ako postoji vrati token
-            String token = jwtService.generateToken(myUserDetailService.loadUserByUsername(email));
-
-            return ResponseEntity.ok(new JwtResponse(token, user.getId().toString(), name, email));
-
-        }catch (UsernameNotFoundException e){
-            //stvori novog u bazi
-            String email = oAuthForm.email();
-            String name = oAuthForm.name();
-            String image = oAuthForm.image();
-            MyUser newUser = myUserService.createMyUser(oAuthForm);
-            String token = jwtService.generateToken(myUserDetailService.loadUserByUsername(email));
-            return ResponseEntity.ok(new JwtResponse(token, newUser.getId().toString(), name, email));
-        }
-
-        catch ( AuthenticationException ex) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(new ErrorResponse(0, "Invalid email"));
-        } catch (Exception ex) {
-            System.out.println(ex.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new ErrorResponse(0, "Internal Server Error"));
-        }
-
-
+   @PostMapping("/oauth")
+    public ResponseEntity<?> authenticateWithOAuth(@RequestBody OAuthForm oAuthForm,HttpServletResponse res){
+        JwtResponse jwt = authService.oauth(oAuthForm);
+        RefreshToken token = refreshTokenService.getToken(oAuthForm.email(),"mail");
+        res.addCookie(new Cookie("Refresh",token.getToken()));
+        return ResponseEntity.status(200).body(jwt);
     }
-
+    /*
     @PostMapping("/signup")
     public ResponseEntity<?> registerAndGetToken(@RequestBody SignupForm signupForm)   {
         try {

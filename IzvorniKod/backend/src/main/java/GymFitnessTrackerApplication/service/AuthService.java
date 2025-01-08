@@ -3,6 +3,7 @@ package GymFitnessTrackerApplication.service;
 import GymFitnessTrackerApplication.model.domain.MyUser;
 import GymFitnessTrackerApplication.model.domain.RefreshToken;
 import GymFitnessTrackerApplication.model.forms.LoginForm;
+import GymFitnessTrackerApplication.model.forms.OAuthForm;
 import GymFitnessTrackerApplication.model.forms.SignupForm;
 import GymFitnessTrackerApplication.model.response.JwtResponse;
 import io.jsonwebtoken.Jwt;
@@ -14,6 +15,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -37,6 +39,9 @@ public class AuthService {
     @Autowired
     private AuthenticationManager authenticationManager;
 
+    @Autowired
+    private RefreshTokenService refreshTokenService;
+
     public JwtResponse loginaj(LoginForm loginForm){
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(loginForm.email(),loginForm.password()));
@@ -47,11 +52,11 @@ public class AuthService {
     }
 
     //treba biti jwtResponse da se vrati Jwt TOken
-    public String refreshLogin(String refreshToken){
-       /*
-       impl
-        */
-        return "refreshed login";
+    public JwtResponse refreshLogin(String refreshToken){
+       RefreshToken refrToken = refreshTokenService.getToken(refreshToken,"mail");
+        MyUser user = refrToken.getMyUser();
+        String token = jwtService.generateToken(myUserDetailsService.loadUserByUsername(user.getEmail().toString()));
+        return new JwtResponse(token,user.getId().toString(), user.getName(), user.getEmail());
     }
 
     public JwtResponse signup(SignupForm signupForm){
@@ -62,6 +67,21 @@ public class AuthService {
         //refresh token implementacija
 
         return new JwtResponse(token,noviUser.getId().toString(),noviUser.getName(),noviUser.getEmail());
+    }
+
+    public JwtResponse oauth(OAuthForm oAuthForm){
+        String email = oAuthForm.email();
+        String name = oAuthForm.name();
+        String image = oAuthForm.image();
+        MyUser user;
+        try{
+            user = myUserService.getMyUser(email);
+            if(user == null) throw new UsernameNotFoundException("Nepostoji user");
+        }catch (UsernameNotFoundException ex){
+            user = myUserService.createMyUser(oAuthForm);
+        }
+        String token = jwtService.generateToken(myUserDetailsService.loadUserByUsername(email));
+        return new JwtResponse(token,user.getId().toString(),name,email);
     }
 
 }
