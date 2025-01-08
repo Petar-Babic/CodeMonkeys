@@ -8,6 +8,7 @@ import GymFitnessTrackerApplication.model.domain.RegistrationMethod;
 import GymFitnessTrackerApplication.model.forms.LoginForm;
 import GymFitnessTrackerApplication.model.forms.OAuthForm;
 import GymFitnessTrackerApplication.model.forms.SignupForm;
+import GymFitnessTrackerApplication.model.response.EmailResponse;
 import GymFitnessTrackerApplication.model.response.ErrorResponse;
 import GymFitnessTrackerApplication.model.response.JwtResponse;
 import GymFitnessTrackerApplication.service.*;
@@ -40,6 +41,7 @@ public class AuthController {
 
     @Autowired
     RefreshTokenService refreshTokenService;
+
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginForm loginForm, HttpServletResponse res,HttpServletRequest req){
         JwtResponse odg = authService.loginaj(loginForm);

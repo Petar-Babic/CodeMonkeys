@@ -5,6 +5,7 @@ import GymFitnessTrackerApplication.model.domain.RefreshToken;
 import GymFitnessTrackerApplication.model.forms.LoginForm;
 import GymFitnessTrackerApplication.model.forms.OAuthForm;
 import GymFitnessTrackerApplication.model.forms.SignupForm;
+import GymFitnessTrackerApplication.model.response.EmailResponse;
 import GymFitnessTrackerApplication.model.response.JwtResponse;
 import io.jsonwebtoken.Jwt;
 import io.jsonwebtoken.security.Password;
@@ -42,6 +43,9 @@ public class AuthService {
     @Autowired
     private RefreshTokenService refreshTokenService;
 
+    @Autowired
+    private EmailService emailService;
+
     public JwtResponse loginaj(LoginForm loginForm){
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(loginForm.email(),loginForm.password()));
@@ -65,7 +69,7 @@ public class AuthService {
 
         String token = jwtService.generateToken(myUserDetailsService.loadUserByUsername(signupForm.getEmail()));
         //refresh token implementacija
-
+        emailService.sendSimpleMail(new EmailResponse(signupForm.getEmail(),"Registracija na našu platformu","Hvala vam"+signupForm.getName()+ ", na prijavi na našu platorfmu :) \n Sad go for those gains ;) \n", "N/A"));
         return new JwtResponse(token,noviUser.getId().toString(),noviUser.getName(),noviUser.getEmail());
     }
 
@@ -79,6 +83,8 @@ public class AuthService {
             if(user == null) throw new UsernameNotFoundException("Nepostoji user");
         }catch (UsernameNotFoundException ex){
             user = myUserService.createMyUser(oAuthForm);
+            emailService.sendSimpleMail(new EmailResponse(oAuthForm.email(),"Registracija na našu platformu","Hvala vam"+oAuthForm.name()+ ", na prijavi na našu platorfmu :) \n Sad go for those gains ;) \n", "N/A"));
+
         }
         String token = jwtService.generateToken(myUserDetailsService.loadUserByUsername(email));
         return new JwtResponse(token,user.getId().toString(),name,email);

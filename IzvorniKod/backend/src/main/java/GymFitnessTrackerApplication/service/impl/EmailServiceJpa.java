@@ -16,7 +16,7 @@ public class EmailServiceJpa implements EmailService {
 
     @Value("${spring.mail.username}") private String sender;
 
-    public String sendSimpleMail(EmailResponse details){
+    public void sendSimpleMail(EmailResponse details){
             SimpleMailMessage message = new SimpleMailMessage();
             message.setFrom(sender);
             message.setTo(details.getRecipient());
@@ -24,7 +24,6 @@ public class EmailServiceJpa implements EmailService {
             message.setText(details.getMessage());
 
             javaMailSender.send(message);
-            return "Poslan mail";
     }
 
     public String sendAttachmentMail(EmailResponse details){
