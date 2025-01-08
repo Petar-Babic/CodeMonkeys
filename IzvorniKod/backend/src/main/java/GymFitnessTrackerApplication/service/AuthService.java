@@ -69,7 +69,7 @@ public class AuthService {
 
         String token = jwtService.generateToken(myUserDetailsService.loadUserByUsername(signupForm.getEmail()));
         //refresh token implementacija
-        emailService.sendSimpleMail(new EmailResponse(signupForm.getEmail(),"Registracija na našu platformu","Hvala vam"+signupForm.getName()+ ", na prijavi na našu platorfmu :) \n Sad go for those gains ;) \n", "N/A"));
+        emailService.sendHTMLMail(new EmailResponse(signupForm.getEmail(),"Registracija na našu platformu","Hvala vam"+signupForm.getName()+ ", na prijavi na našu platorfmu :) \n Sad go for those gains ;) \n", "N/A"));
         return new JwtResponse(token,noviUser.getId().toString(),noviUser.getName(),noviUser.getEmail());
     }
 

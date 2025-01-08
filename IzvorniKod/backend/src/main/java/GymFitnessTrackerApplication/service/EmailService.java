@@ -1,6 +1,7 @@
 package GymFitnessTrackerApplication.service;
 
 import GymFitnessTrackerApplication.model.response.EmailResponse;
+import jakarta.mail.MessagingException;
 
 public interface EmailService {
 
@@ -11,5 +12,5 @@ public interface EmailService {
     String sendAttachmentMail(EmailResponse details);
 
     // AKO SE STIGNE DA DODE LJEPSI MAIL
-    String sendHTMLMail(EmailResponse details);
+    void sendHTMLMail(EmailResponse details);
 }
