@@ -27,6 +27,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.reactive.function.client.WebClient;
 
 import java.net.CookieStore;
 import java.util.Arrays;
@@ -42,6 +43,16 @@ public class AuthController {
     @Autowired
     RefreshTokenService refreshTokenService;
 
+    @Autowired
+    EmailService emailService;
+
+    private final WebClient webClient;
+
+    public AuthController(WebClient.Builder webClientBuilder) {
+        this.webClient = webClientBuilder.baseUrl("http://localhost:8080").build(); // Adjust as needed
+    }
+
+
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginForm loginForm, HttpServletResponse res,HttpServletRequest req){
         JwtResponse odg = authService.loginaj(loginForm);
@@ -55,6 +66,14 @@ public class AuthController {
         JwtResponse noviUser = authService.signup(signupForm);
         RefreshToken token= refreshTokenService.createToken(signupForm.getEmail());
         res.addCookie(new Cookie("Refresh",token.getToken()));
+
+        // magija
+        webClient.get()
+                .uri("/api/auth/send-mail?recep=" + signupForm.getEmail())
+                .retrieve()
+                .bodyToMono(String.class)
+                .subscribe();
+
         return ResponseEntity.ok(noviUser);
     }
 
@@ -82,6 +101,13 @@ public class AuthController {
         RefreshToken token = refreshTokenService.getToken(oAuthForm.email(),"mail");
         res.addCookie(new Cookie("Refresh",token.getToken()));
         return ResponseEntity.status(200).body(jwt);
+    }
+
+    @GetMapping("/send-mail")
+    public ResponseEntity<String> sendMail(@RequestParam String recep)
+    {
+        emailService.sendHTMLMail(new EmailResponse(recep,"Registracija na našu platformu","Hvala vam na prijavi na našu platorfmu :) \n Sad go for those gains ;) \n", "N/A"));
+        return ResponseEntity.ok("Email sent to "+recep);
     }
     /*
     @PostMapping("/signup")
