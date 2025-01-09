@@ -731,11 +731,10 @@ const NutritionPage = () => {
       ),
     }));
     
-    setIsEditing(false);
+    setEditingFoodId(null);
   }
 
-  const [isEditing, setIsEditing] = useState(false);
-  let newValue = 0;
+  const [editingFoodId, setEditingFoodId] = useState<number | null>(null);
 
   //Food modal----------------------------------------------------------------------------------------------------------------------------------------------------------
   const fields: { label: string; name: keyof Food }[] = [
@@ -814,7 +813,6 @@ const NutritionPage = () => {
   const handleFoodInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
   
-    // List of all numeric fields in the Food type
     const numericFields = [
       "id",
       "servingSize",
@@ -871,7 +869,7 @@ const NutritionPage = () => {
       return updatedMeal;
     });
 
-    closeFoodModal(); // Close the modal after adding food
+    closeFoodModal();
   };
 
   const addFood = () => {
@@ -1054,9 +1052,7 @@ const NutritionPage = () => {
           const range = goalRanges[name as keyof Goals] ?? "exact";
           const isPercentage = goalFields.find((field) => field.name === name)?.isPercentage ?? false;
 
-          // Display logic based on goal being set
           const content = goal > 0 ? (
-            // Goal is set: apply color logic
             <>
               <h2 className="text-xl font-semibold">{label}</h2>
               <p className={`text-xl font-semibold ${
@@ -1467,22 +1463,21 @@ const NutritionPage = () => {
                       {currentMeal.foods.map((food) => (
                         <tr key={food.id}>
                           <td className="px-4 py-2">{food.name}</td>
-                          <td className="px-4 py-2 flex items-center space-x-2">
-                            {isEditing ? (
+                          <td className="px-4 py-2 flex justify-between items-center">
+                            {editingFoodId ? (
                               <>
                                 <input
                                   type="text"
                                   inputMode="text"
-                                  value={food.servingSize}
+                                  value={servingSize}
                                   onChange={(e) => {
-                                    newValue = Number(e.target.value); // Get the input value as a number
                                     setServingSize(Number(e.target.value));
                                   }}
                                   className="w-16 border border-gray-300 rounded px-2"
                                 />
                                 <span> ({food.servingSizeType})</span>
                                 <button
-                                  onClick={() => handleSave(food, newValue)}
+                                  onClick={() => handleSave(food, servingSize)}
                                   className="bg-green-500 text-white px-2 py-1 rounded-md hover:bg-green-700"
                                 >
                                   ✓
@@ -1494,7 +1489,7 @@ const NutritionPage = () => {
                                   {food.servingSize} ({food.servingSizeType})
                                 </span>
                                 <button
-                                  onClick={() => setIsEditing(true)}
+                                  onClick={() => setEditingFoodId(food.id)}
                                   className="bg-gray-200 text-gray-600 px-2 py-1 rounded-md hover:bg-gray-300"
                                 >
                                   ✎
