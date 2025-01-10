@@ -9,11 +9,11 @@ public class RefreshToken {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long id;
+    private Long id;
 
-    String token;
+    private String token;
 
-    Instant expiry;
+    private Instant expiry;
 
     @OneToOne
     @JoinColumn(name = "user_id", referencedColumnName = "id")

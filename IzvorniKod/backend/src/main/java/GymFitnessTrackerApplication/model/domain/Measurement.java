@@ -13,24 +13,24 @@ public class Measurement {
 
     @Id
     @GeneratedValue
-    Long measurementId;
+    private Long measurementId;
 
     @ManyToOne(cascade =  CascadeType.ALL)
-     MyUser myuser;
+    private MyUser myuser;
 
-    Date date;
+    private Date date;
 
-    Float chest;
-    Float waist;
-    Float hips;
+    private Float chest;
+    private Float waist;
+    private Float hips;
 
-    Float thighs;
+    private Float thighs;
 
-    Float biceps;
+    private Float biceps;
 
-    ZonedDateTime created_at;
+    private ZonedDateTime created_at;
 
-    ZonedDateTime updated_at;
+    private ZonedDateTime updated_at;
 
 
     public Long getMeasurementId() {

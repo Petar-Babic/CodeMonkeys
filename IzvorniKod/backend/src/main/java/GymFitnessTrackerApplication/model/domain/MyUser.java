@@ -11,18 +11,18 @@ public class MyUser{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long id;
+    private Long id;
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private StatsGoals statsGoals;
 
 
-    String name;
+    private String name;
     @Column(unique = true, nullable = false)
-    String email;
+    private String email;
 
-    String password;
-    Role role;
+    private String password;
+    private Role role;
 
     // korda ti si idiot
     // jebem ti mater
@@ -33,13 +33,13 @@ public class MyUser{
     Float weight;
      */
    // Gender gender;
-    String image;
+    private String image;
    // ActivityLevel activityLevel;
-    String currentNutritionPlanId;
-    Long trainerId;
-    LocalDateTime emailVerified;
-    LocalDateTime createdAt;
-    LocalDateTime updatedAt;
+    private String currentNutritionPlanId;
+    private Long trainerId;
+    private LocalDateTime emailVerified;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 
     public String getPassword() {
         return password;

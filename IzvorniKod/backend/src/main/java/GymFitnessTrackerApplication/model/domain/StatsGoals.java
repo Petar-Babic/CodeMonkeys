@@ -20,11 +20,11 @@ public class StatsGoals {
     @JoinColumn(name = "Id")
     private MyUser user;
 
-    Float height;
+    private Float height;
 
-    Float weight;
+    private Float weight;
 
-    Float goalWeight;
+    private Float goalWeight;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
