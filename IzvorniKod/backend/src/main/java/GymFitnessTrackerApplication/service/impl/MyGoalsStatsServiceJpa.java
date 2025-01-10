@@ -1,10 +1,13 @@
 package GymFitnessTrackerApplication.service.impl;
 
 import GymFitnessTrackerApplication.model.dao.MyStatsGoalsRepo;
+import GymFitnessTrackerApplication.model.domain.ActivityLevel;
+import GymFitnessTrackerApplication.model.domain.Gender;
 import GymFitnessTrackerApplication.model.domain.MyUser;
 import GymFitnessTrackerApplication.model.domain.StatsGoals;
 import GymFitnessTrackerApplication.model.forms.BodyGoalsForm;
 import GymFitnessTrackerApplication.service.MyGoalsStatsService;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -28,6 +31,28 @@ class MyGoalsStatsServiceJpa implements MyGoalsStatsService {
         stats.setUpdatedAt(ZonedDateTime.now());
 
         return stats;
+    }
+
+    @Override
+    @Transactional
+    public void updateGoals(MyUser measurementsId,BodyGoalsForm bd){
+        statsRepo.findById(measurementsId.getId()).ifPresent(
+                stats -> {
+                    stats.setUpdatedAt(ZonedDateTime.now());
+                    stats.setTimelineWeeks(bd.getTimelineWeeks());
+                    stats.setGoalWeight(bd.getGoalWeight());
+                    stats.setHeight(bd.getHeight());
+                    stats.setWeight(bd.getWeight());
+                    stats.setCalories(bd.getCalories());
+                    stats.setCarbs(bd.getCarbs());
+                    stats.setFat(bd.getFat());
+                    stats.setProtein(bd.getProtein());
+                    stats.setGender(bd.getGender());
+                    stats.setActivityLevel(bd.getActivityLevel());
+
+                    statsRepo.save(stats);
+                }
+        );
     }
 
 
