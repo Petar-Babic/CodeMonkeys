@@ -20,7 +20,6 @@ public class MyUser{
     private String name;
     @Column(unique = true, nullable = false)
     private String email;
-
     private String password;
     private Role role;
 

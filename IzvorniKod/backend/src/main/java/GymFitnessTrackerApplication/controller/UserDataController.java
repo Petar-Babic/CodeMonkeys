@@ -12,11 +12,14 @@ import GymFitnessTrackerApplication.model.response.ErrorResponse;
 import GymFitnessTrackerApplication.model.response.InfoResponse;
 import GymFitnessTrackerApplication.service.*;
 import io.jsonwebtoken.ExpiredJwtException;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Optional;
@@ -98,4 +101,26 @@ public class UserDataController {
                     .body(new ErrorResponse(0, "Internal Server Error"));
         }
     }*/
+
+
+    //AWS S3 sheme
+    @PostMapping("/image")
+    public ResponseEntity<?> uploadProfileImage(@RequestParam("file") MultipartFile file, @RequestHeader("Authorization") String token){
+        if (file.isEmpty()) {
+            return ResponseEntity.badRequest().body("File is empty");
+        }
+        System.out.println("treba se uploadat");
+        String email = jwtService.extractEmail(token.trim().substring(7));
+        myUserService.deleteFile(email);
+        myUserService.uploadFile(email,file);
+
+        return ResponseEntity.ok().body("File uploaded successfully");
+    }
+
+    @GetMapping("/image")
+    public ResponseEntity<?> getURLToProfileImage(@RequestHeader("Authorization") String token){
+        String email = jwtService.extractEmail(token.trim().substring(7));
+        String url =myUserService.getURLToFile(email);
+        return ResponseEntity.ok().body(url);
+    }
 }
