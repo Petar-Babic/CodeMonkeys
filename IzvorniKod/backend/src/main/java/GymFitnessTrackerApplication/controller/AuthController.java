@@ -46,11 +46,11 @@ public class AuthController {
     @Autowired
     EmailService emailService;
 
-    private final WebClient webClient;
+    /*private final WebClient webClient;
 
     public AuthController(WebClient.Builder webClientBuilder) {
         this.webClient = webClientBuilder.baseUrl("http://localhost:8080").build(); // Adjust as needed
-    }
+    }*/
 
 
     @PostMapping("/login")
@@ -66,13 +66,7 @@ public class AuthController {
         JwtResponse noviUser = authService.signup(signupForm);
         RefreshToken token= refreshTokenService.createToken(signupForm.getEmail());
         res.addCookie(new Cookie("Refresh",token.getToken()));
-
-        // magija
-        webClient.get()
-                .uri("/api/auth/send-mail?recep=" + signupForm.getEmail())
-                .retrieve()
-                .bodyToMono(String.class)
-                .subscribe();
+        emailService.sendHTMLMail(new EmailResponse(signupForm.getEmail(),"Registracija na našu platformu","Hvala vam na prijavi na našu platorfmu :) \n Sad go for those gains ;) \n", "N/A"));
 
         return ResponseEntity.ok(noviUser);
     }
@@ -103,12 +97,12 @@ public class AuthController {
         return ResponseEntity.status(200).body(jwt);
     }
 
-    @GetMapping("/send-mail")
+  /*  @GetMapping("/send-mail")
     public ResponseEntity<String> sendMail(@RequestParam String recep)
     {
         emailService.sendHTMLMail(new EmailResponse(recep,"Registracija na našu platformu","Hvala vam na prijavi na našu platorfmu :) \n Sad go for those gains ;) \n", "N/A"));
         return ResponseEntity.ok("Email sent to "+recep);
-    }
+    }*/
     /*
     @PostMapping("/signup")
     public ResponseEntity<?> registerAndGetToken(@RequestBody SignupForm signupForm)   {
