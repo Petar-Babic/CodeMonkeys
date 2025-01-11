@@ -13,7 +13,7 @@ public class MyUser{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
 
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne(mappedBy = "myUser", cascade = CascadeType.ALL, orphanRemoval = true)
     private StatsGoals statsGoals;
 
 

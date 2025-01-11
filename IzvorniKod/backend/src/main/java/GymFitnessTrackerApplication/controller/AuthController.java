@@ -1,16 +1,19 @@
 package GymFitnessTrackerApplication.controller;
 
 
+import GymFitnessTrackerApplication.exception.NonExistantToken;
 import GymFitnessTrackerApplication.model.domain.MyUser;
 import GymFitnessTrackerApplication.model.domain.RefreshToken;
 import GymFitnessTrackerApplication.model.domain.RegistrationMethod;
 import GymFitnessTrackerApplication.model.forms.LoginForm;
 import GymFitnessTrackerApplication.model.forms.OAuthForm;
 import GymFitnessTrackerApplication.model.forms.SignupForm;
+import GymFitnessTrackerApplication.model.response.EmailResponse;
 import GymFitnessTrackerApplication.model.response.ErrorResponse;
 import GymFitnessTrackerApplication.model.response.JwtResponse;
 import GymFitnessTrackerApplication.service.*;
 import GymFitnessTrackerApplication.exception.UserAlreadyExistsException;
+import io.jsonwebtoken.Jwt;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -24,6 +27,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.reactive.function.client.WebClient;
 
 import java.net.CookieStore;
 import java.util.Arrays;
@@ -38,6 +42,17 @@ public class AuthController {
 
     @Autowired
     RefreshTokenService refreshTokenService;
+
+    @Autowired
+    EmailService emailService;
+
+    /*private final WebClient webClient;
+
+    public AuthController(WebClient.Builder webClientBuilder) {
+        this.webClient = webClientBuilder.baseUrl("http://localhost:8080").build(); // Adjust as needed
+    }*/
+
+
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginForm loginForm, HttpServletResponse res,HttpServletRequest req){
         JwtResponse odg = authService.loginaj(loginForm);
@@ -51,13 +66,9 @@ public class AuthController {
         JwtResponse noviUser = authService.signup(signupForm);
         RefreshToken token= refreshTokenService.createToken(signupForm.getEmail());
         res.addCookie(new Cookie("Refresh",token.getToken()));
-        return ResponseEntity.ok(noviUser);
-    }
+        emailService.sendHTMLMail(new EmailResponse(signupForm.getEmail(),"Registracija na našu platformu","Hvala vam na prijavi na našu platorfmu :) \n Sad go for those gains ;) \n", "N/A"));
 
-    @PostMapping("/oauth")
-    public ResponseEntity<?> oauthLogin(@RequestBody OAuthForm oAuthForm){
-        return
-                ResponseEntity.ok("Its so jover");
+        return ResponseEntity.ok(noviUser);
     }
 
     @PostMapping("/refresh")
@@ -69,50 +80,30 @@ public class AuthController {
                 .findFirst()
                 .orElse(notFound);
 
-        if(value.equals(notFound))
+        // ako nema tokena
+        // ili ako je dobiveni token ili invalid ili istjekao
+        if(value.equals(notFound) || (!refreshTokenService.isValid(value) || !refreshTokenService.Expired(value)))
             return ResponseEntity.status(403).body(notFound);
-        return  ResponseEntity.status(200).body(value);
+        JwtResponse refreshLogin = authService.refreshLogin(value);
+        return  ResponseEntity.status(200).body(refreshLogin);
     }
 
 
-   /* @PostMapping("/oauth")
-    public ResponseEntity<?> authenticateWithOAuth(@RequestBody OAuthForm oAuthForm){
-        try{
-            String email = oAuthForm.email();
-            String name = oAuthForm.name();
-            String image = oAuthForm.image();
-
-            MyUser user = myUserService.getMyUser(email);
-            if(user == null){
-                throw new UsernameNotFoundException("User not found");
-            }
-            //ako postoji vrati token
-            String token = jwtService.generateToken(myUserDetailService.loadUserByUsername(email));
-
-            return ResponseEntity.ok(new JwtResponse(token, user.getId().toString(), name, email));
-
-        }catch (UsernameNotFoundException e){
-            //stvori novog u bazi
-            String email = oAuthForm.email();
-            String name = oAuthForm.name();
-            String image = oAuthForm.image();
-            MyUser newUser = myUserService.createMyUser(oAuthForm);
-            String token = jwtService.generateToken(myUserDetailService.loadUserByUsername(email));
-            return ResponseEntity.ok(new JwtResponse(token, newUser.getId().toString(), name, email));
-        }
-
-        catch ( AuthenticationException ex) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(new ErrorResponse(0, "Invalid email"));
-        } catch (Exception ex) {
-            System.out.println(ex.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new ErrorResponse(0, "Internal Server Error"));
-        }
-
-
+   @PostMapping("/oauth")
+    public ResponseEntity<?> authenticateWithOAuth(@RequestBody OAuthForm oAuthForm,HttpServletResponse res){
+        JwtResponse jwt = authService.oauth(oAuthForm);
+        RefreshToken token = refreshTokenService.getToken(oAuthForm.email(),"mail");
+        res.addCookie(new Cookie("Refresh",token.getToken()));
+        return ResponseEntity.status(200).body(jwt);
     }
 
+  /*  @GetMapping("/send-mail")
+    public ResponseEntity<String> sendMail(@RequestParam String recep)
+    {
+        emailService.sendHTMLMail(new EmailResponse(recep,"Registracija na našu platformu","Hvala vam na prijavi na našu platorfmu :) \n Sad go for those gains ;) \n", "N/A"));
+        return ResponseEntity.ok("Email sent to "+recep);
+    }*/
+    /*
     @PostMapping("/signup")
     public ResponseEntity<?> registerAndGetToken(@RequestBody SignupForm signupForm)   {
         try {
@@ -145,7 +136,13 @@ public class AuthController {
 
 
     @PostMapping("/logout")
-    public String logout(){
-        return "logged out ";
+    public ResponseEntity<?> logout(HttpServletRequest req) throws NonExistantToken{
+        String out = null;
+        try {
+            out = refreshTokenService.forsakeToken(req);
+        } catch (NonExistantToken e) {
+            throw new NonExistantToken(e.getMessage());
+        }
+        return ResponseEntity.ok(out);
     }
 }

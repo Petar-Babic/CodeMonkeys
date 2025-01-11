@@ -13,12 +13,11 @@ public class StatsGoals {
 
 
     @Id
-    private Long userId;
+    private Long id;
 
     @OneToOne
-    @MapsId
-    @JoinColumn(name = "Id")
-    private MyUser user;
+    @JoinColumn(name = "user_id", referencedColumnName = "id")
+    private MyUser myUser;
 
     Float height;
 
@@ -48,12 +47,20 @@ public class StatsGoals {
 
     ZonedDateTime updatedAt;
 
-    public String getUserId() {
-        return userId.toString();
+    public Long getId() {
+        return id;
     }
 
-    public void setUserId(MyUser userId) {
-        this.userId = userId.getId();
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public MyUser getMyUser() {
+        return myUser;
+    }
+
+    public void setMyUser(MyUser myUser) {
+        this.myUser = myUser;
     }
 
     public Float getHeight() {
@@ -157,8 +164,8 @@ public class StatsGoals {
     }
 
     public StatsGoals(MyUser user, @RequestBody BodyGoalsForm bg){
-        this.user=user;
-        this.userId=user.getId();
+        this.myUser=user;
+        this.id=user.getId();
         this.activityLevel = ActivityLevel.valueOf(bg.getActivityLevel().toUpperCase());
         this.calories=bg.getCalories();
         this.carbs=bg.getCarbs();
