@@ -35,7 +35,9 @@ public class MyUser{
     private String image;
    // ActivityLevel activityLevel;
     private String currentNutritionPlanId;
-    private Long trainerId;
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "trainer_id")
+    private Trainer trainer;
     private LocalDateTime emailVerified;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
@@ -142,12 +144,12 @@ public class MyUser{
         this.currentNutritionPlanId = currentNutritionPlanId;
     }
 
-    public Long getTrainerId() {
-        return trainerId;
+    public Trainer getTrainer() {
+        return trainer;
     }
 
-    public void setTrainerId(Long trainerId) {
-        this.trainerId = trainerId;
+    public void setTrainer(Trainer trainer) {
+        this.trainer = trainer;
     }
 
     public LocalDateTime getCreatedAt() {
