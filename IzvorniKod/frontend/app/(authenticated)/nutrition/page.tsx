@@ -387,8 +387,8 @@ const NutritionPage = () => {
   };
   
   const saveGoals = () => {
-    setGoals(tempGoals); // Existing logic
-    console.log("Ranges for each goal:", goalRanges); // Save or handle ranges as needed
+    setGoals(tempGoals);
+    console.log("Ranges for each goal:", goalRanges);
     setIsGoalsModalOpen(false);
   };  
 
@@ -406,8 +406,7 @@ const NutritionPage = () => {
     dailyCalories: number = 0
   ) => {
     if (isPercentage) {
-      // Convert grams to percentage of daily calories
-      const calorieValue = current * (range === "fats" ? 9 : 4); // 9 kcal/g for fats, 4 kcal/g for protein and carbs
+      const calorieValue = current * (range === "fats" ? 9 : 4);
       const percentage = (calorieValue / dailyCalories) * 100;
   
       const lowerBound = goal * 0.8;
@@ -425,7 +424,6 @@ const NutritionPage = () => {
         return "red";
       }
   
-      // Default to "exact"
       const within10 = goal * 0.9 <= percentage && percentage <= goal * 1.1;
       const within20 = goal * 0.8 <= percentage && percentage <= goal * 1.2;
   
@@ -434,7 +432,6 @@ const NutritionPage = () => {
       return "red";
     }
   
-    // Existing logic for absolute values
     return getMicronutrientColor(current, goal, range);
   };
   
@@ -650,7 +647,7 @@ const NutritionPage = () => {
       });
     }
   
-    setSaveToMyMeals(false); // Reset checkbox
+    setSaveToMyMeals(false);
     setHasUnsavedChanges(false);
     setIsModalOpen(false);
   };  
@@ -939,7 +936,6 @@ const NutritionPage = () => {
 
   const scanBarcode = () => {
     // Logic to scan barcode here
-    alert("Scan Barcode clicked");
   };
 
   const isAllZero = !Object.values(totalNutrients).some((val) => val > 0);
