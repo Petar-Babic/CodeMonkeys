@@ -38,6 +38,11 @@ jobs:
         run: sed -i 's/<facebook_secret>/${{ secrets.FACEBOOK_CLIENT_ID }}/' IzvorniKod/backend/src/main/resources/application.properties
       - name: Update facebook client secret
         run: sed -i 's/<facebook_secret>/${{ secrets.FACEBOOK_CLIENT_SECRET }}/' IzvorniKod/backend/src/main/resources/application.properties
+      - name: Update mail username
+        run: sed -i 's/<mail_username>/${{ secrets.MAIL_USERNAME }}/' IzvorniKod/backend/src/main/resources/application.properties
+      - name: Update mail password
+        run: sed -i 's/<mail_pwd>/${{ secrets.MAIL_PWD }}/' IzvorniKod/backend/src/main/resources/application.properties
+
 
       - name: Set up JDK 17
         uses: actions/setup-java@v4
