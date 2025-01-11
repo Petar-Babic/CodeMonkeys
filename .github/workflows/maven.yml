@@ -39,14 +39,6 @@ jobs:
       - name: Update facebook client secret
         run: sed -i 's/<facebook_secret>/${{ secrets.FACEBOOK_CLIENT_SECRET }}/' IzvorniKod/backend/src/main/resources/application.properties
 
-      - name: Cache Maven dependencies
-        uses: actions/cache@v2
-        with:
-          path: ~/.m2/repository
-          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
-          restore-keys: |
-            ${{ runner.os }}-maven-
-
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
