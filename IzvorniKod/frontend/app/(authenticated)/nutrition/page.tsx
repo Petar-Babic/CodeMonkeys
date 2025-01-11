@@ -441,30 +441,33 @@ const NutritionPage = () => {
   const getMicronutrientColor = (
     current: number,
     goal: number,
-    range: string = "exact"
+    range: string = "exact",
   ) => {
     const lowerBound = goal * 0.8;
     const upperBound = goal * 1.2;
-  
-    if (range === "under") {
-      if (current < goal) return "green";
-      if (current < upperBound) return "yellow";
-      return "red";
-    }
-  
-    if (range === "over") {
-      if (current > goal) return "green";
-      if (current >= lowerBound) return "yellow";
-      return "red";
-    }
-  
-    // Default to "exact"
     const within10 = goal * 0.9 <= current && current <= goal * 1.1;
     const within20 = goal * 0.8 <= current && current <= goal * 1.2;
   
-    if (within10) return "green";
-    if (within20) return "yellow";
-    return "red";
+  
+    if (range === "under") {
+      if (current < goal) return "green";
+      else if (current <= upperBound) return "yellow";
+      return "red";
+    }
+  
+    else if (range === "over") {
+      if (current > goal) return "green";
+      else if (current >= lowerBound) return "yellow";
+      return "red";
+    }
+
+    else if (range === "exact") {
+      if (within10) return "green";
+      if (within20) return "yellow";
+      return "red";
+    }
+
+    return "gray";
   };  
 
   //Pie chart--------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -486,8 +489,7 @@ const NutritionPage = () => {
   });
 
   const calculatePercentages = () => {
-    const totalCalories =
-    totalNutrients.protein * 4 + totalNutrients.carbs * 4 + totalNutrients.fats * 9;
+    const totalCalories = calculateTotalCalories();
 
     if (totalCalories === 0) {
       return [0, 0, 0];
@@ -610,6 +612,22 @@ const NutritionPage = () => {
       protein: updatedMacros.protein,
       carbs: updatedMacros.carbs,
       fats: updatedMacros.fats,
+      saturatedFats: updatedMacros.saturatedFats,
+      transFats: updatedMacros.transFats,
+      polyunsaturatedFats: updatedMacros.polyunsaturatedFats,
+      monosaturatedFats: updatedMacros.monosaturatedFats,
+      cholesterol: updatedMacros.cholesterol,
+      sodium: updatedMacros.sodium,
+      potassium: updatedMacros.potassium,
+      calcium: updatedMacros.calcium,
+      iron: updatedMacros.iron,
+      magnesium: updatedMacros.magnesium,
+      netCarbs: updatedMacros.netCarbs,
+      fiber: updatedMacros.fiber,
+      sugars: updatedMacros.sugars,
+      C: updatedMacros.C,
+      D: updatedMacros.D,
+      B12: updatedMacros.B12,
     };
   
     const dateKey = formatDateKey(currentDate);
@@ -1073,7 +1091,6 @@ const NutritionPage = () => {
               </p>
             </>
           ) : (
-            // Goal is not set: show value only
             <>
               <h2 className="text-xl font-semibold text-gray-800">{label}</h2>
               <p>{value}g</p>
@@ -1104,10 +1121,18 @@ const NutritionPage = () => {
         {activeGoals.map(({ label, name }) => {
           const value = totalNutrients[name as keyof typeof totalNutrients];
           const goal = goals[name as keyof Goals];
-          const range = goalRanges[name as keyof Goals]; // Use the range state
-          const color = getMicronutrientColor(value, goal, range);
-
+          const range = goalRanges[name as keyof Goals];
+          const isPercentage = goalFields.find((field) => field.name === name)?.isPercentage ?? false;
           const unitMatch = label.match(/\((.*?)\)/);
+
+          const displayValue = isPercentage
+            ? `${((value * 9) / calculateTotalCalories() * 100).toFixed(1)}%`
+            : `${value}${unitMatch ? unitMatch[1] : ""}`;
+            
+          const color = isPercentage
+            ? getMacronutrientColor(value, goal, range, isPercentage, calculateTotalCalories())
+            : getMicronutrientColor(value, goal, range);
+
           return (
             <div key={name} className="text-center">
               <p
@@ -1121,10 +1146,7 @@ const NutritionPage = () => {
                     : "text-gray-800"
                 }`}
               >
-                {value}
-                <span className="text-lg font-medium">
-                  {unitMatch ? unitMatch[1] : ""}
-                </span>
+                {displayValue}
               </p>
               <p className="text-sm text-gray-500">{label.replace(/\s\((.*?)\)/, "")}</p>
             </div>
@@ -1401,7 +1423,7 @@ const NutritionPage = () => {
   
       {isModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-10">
-          <div className="bg-white p-8 rounded-md shadow-md w-3/4 h-[90%] relative overflow-y-auto">
+          <div className="bg-white p-8 rounded-md shadow-md w-[90%] h-[90%] relative overflow-y-auto">
             {showConfirmDialog ? (
               <div className="absolute inset-0 bg-white p-6 rounded-md shadow-lg flex flex-col items-center justify-center z-20">
                 <p className="mb-4 text-center text-gray-700">
@@ -1453,10 +1475,12 @@ const NutritionPage = () => {
                         <th className="px-4 py-2">Food</th>
                         <th className="px-4 py-2">Amount</th>
                         <th className="px-4 py-2">Calories</th>
-                        <th className="px-4 py-2">Protein (g)</th>
-                        <th className="px-4 py-2">Carbs (g)</th>
-                        <th className="px-4 py-2">Fats (g)</th>
-                        <th></th>
+                        <th className="px-4 py-2">Protein</th>
+                        <th className="px-4 py-2">Carbs</th>
+                        <th className="px-4 py-2">Fats</th>
+                        {activeGoals.map(({ label }) => (
+                          <th key={label} className="px-4 py-2">{label}</th>
+                        ))}
                       </tr>
                     </thead>
                     <tbody>
@@ -1464,7 +1488,7 @@ const NutritionPage = () => {
                         <tr key={food.id}>
                           <td className="px-4 py-2">{food.name}</td>
                           <td className="px-4 py-2 flex justify-between items-center">
-                            {editingFoodId ? (
+                            {editingFoodId === food.id ? (
                               <>
                                 <input
                                   type="text"
@@ -1501,6 +1525,9 @@ const NutritionPage = () => {
                           <td className="px-4 py-2">{food.protein}</td>
                           <td className="px-4 py-2">{food.carbs}</td>
                           <td className="px-4 py-2">{food.fats}</td>
+                          {activeGoals.map(({ name }) => (
+                            <td key={name} className="px-4 py-2">{food[name as keyof typeof food]}</td>
+                          ))}
                           <td className="px-4 py-2">
                             <button
                               onClick={() => openFoodModal(food)}
