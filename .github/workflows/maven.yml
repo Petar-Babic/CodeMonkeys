@@ -43,7 +43,7 @@ jobs:
       - name: Update aws access key
         run: sed -i 's/<aws_access>/${{ secrets.AWS_ACCESS_KEY }}/' IzvorniKod/backend/src/main/resources/application.properties
       - name: Update aws secret key
-        run: sed -i 's/<aws_secret>/${{ secrets.AWS_SECRECT_KEY }}/' IzvorniKod/backend/src/main/resources/application.properties
+        run: sed -i 's|<aws_secret>|${{ secrets.AWS_SECRECT_KEY }}|' IzvorniKod/backend/src/main/resources/application.properties
       - name: Update region
         run: sed -i 's/<aws_region>/${{ secrets.AWS_REGION }}/' IzvorniKod/backend/src/main/resources/application.properties
       - name: Update mail password
