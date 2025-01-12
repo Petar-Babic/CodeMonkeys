@@ -8,8 +8,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import java.time.ZonedDateTime;
 
 @Entity
-@Table(name = "StatsAndGoals")
-public class StatsGoals {
+@Table(name = "Goals")
+public class Goals {
 
 
     @Id
@@ -18,17 +18,6 @@ public class StatsGoals {
     @OneToOne
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     private MyUser myUser;
-
-    private Float height;
-
-    private Float weight;
-
-    private Float goalWeight;
-
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    ActivityLevel activityLevel;
-
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     Gender gender;
@@ -61,30 +50,6 @@ public class StatsGoals {
 
     public void setMyUser(MyUser myUser) {
         this.myUser = myUser;
-    }
-
-    public Float getHeight() {
-        return height;
-    }
-
-    public void setHeight(Float height) {
-        this.height = height;
-    }
-
-    public Float getWeight() {
-        return weight;
-    }
-
-    public void setWeight(Float weight) {
-        this.weight = weight;
-    }
-
-    public ActivityLevel getActivityLevel() {
-        return activityLevel;
-    }
-
-    public void setActivityLevel(String activityLevel) {
-        this.activityLevel = ActivityLevel.valueOf(activityLevel.toUpperCase());
     }
 
     public Gender getGender() {
@@ -150,31 +115,18 @@ public class StatsGoals {
     public void setUpdatedAt(ZonedDateTime updatedAt) {
         this.updatedAt = updatedAt;
     }
-
-    public Float getGoalWeight() {
-        return goalWeight;
-    }
-
-    public void setGoalWeight(Float goalWeight) {
-        this.goalWeight = goalWeight;
-    }
-
-    public StatsGoals(){
+    public Goals(){
 
     }
 
-    public StatsGoals(MyUser user, @RequestBody BodyGoalsForm bg){
+    public Goals(MyUser user, @RequestBody BodyGoalsForm bg){
         this.myUser=user;
         this.id=user.getId();
-        this.activityLevel = ActivityLevel.valueOf(bg.getActivityLevel().toUpperCase());
         this.calories=bg.getCalories();
         this.carbs=bg.getCarbs();
         this.fat = bg.getFat();
         this.protein=bg.getProtein();
         this.gender=Gender.valueOf(bg.getGender().toUpperCase());
-        this.height=bg.getHeight();
         this.timelineWeeks=bg.getTimelineWeeks();
-        this.weight=bg.getWeight();
-        this.goalWeight=bg.getGoalWeight();
     }
 }

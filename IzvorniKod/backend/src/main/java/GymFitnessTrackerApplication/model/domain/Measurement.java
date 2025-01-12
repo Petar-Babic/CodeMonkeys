@@ -32,6 +32,15 @@ public class Measurement {
 
     private ZonedDateTime updated_at;
 
+    private String createdBy;
+
+    public String getCreatedBy() {
+        return createdBy;
+    }
+
+    public void setCreatedBy(String createdBy) {
+        this.createdBy = createdBy;
+    }
 
     public Long getMeasurementId() {
         return measurementId;
@@ -116,6 +125,7 @@ public class Measurement {
     public Measurement(){}
     public Measurement(MyUser measurementId, @RequestBody BodyMeasurementForm bd){
         this.myuser=measurementId;
+        this.createdBy=measurementId.getEmail();
         this.date=Date.from(bd.getDate().toInstant());
         this.created_at=bd.getDate();
         this.updated_at=bd.getDate();
