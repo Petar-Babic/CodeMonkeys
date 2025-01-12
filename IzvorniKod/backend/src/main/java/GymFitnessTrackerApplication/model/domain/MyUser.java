@@ -1,6 +1,6 @@
 package GymFitnessTrackerApplication.model.domain;
 
-import GymFitnessTrackerApplication.model.forms.SignupForm;
+import GymFitnessTrackerApplication.model.dto.forms.SignupForm;
 import jakarta.persistence.*;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -12,32 +12,16 @@ public class MyUser{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @OneToOne(mappedBy = "myUser", cascade = CascadeType.ALL, orphanRemoval = true)
-    private StatsGoals statsGoals;
-
-
     private String name;
     @Column(unique = true, nullable = false)
     private String email;
     private String password;
     private Role role;
-
-    // korda ti si idiot
-    // jebem ti mater
-    // zasto je sve krcato
-
-    /*
-    Float height;
-    Float weight;
-     */
-   // Gender gender;
     private String image;
-   // ActivityLevel activityLevel;
-    private String currentNutritionPlanId;
-    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "trainer_id")
-    private Trainer trainer;
+    private Gender gender;
+    private ActivityLevel activityLevel;
+    //private String currentNutritionPlanId;
+    //trainerID
     private LocalDateTime emailVerified;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
@@ -98,59 +82,14 @@ public class MyUser{
         this.role = role;
     }
 
-    /*
-    public Float getHeight() {
-        return height;
-    }
+    public Gender getGender() { return gender; }
 
-    public void setHeight(Float height) {
-        this.height = height;
-    }
-
-    public Float getWeight() {
-        return weight;
-    }
-
-    public void setWeight(Float weight) {
-        this.weight = weight;
-    }
-*/
-
-    /*
-    public Gender getGender() {
-        return gender;
-    }
-
-    public void setGender(Gender gender) {
-        this.gender = gender;
-    }
+    public void setGender(Gender gender) { this.gender = gender; }
 
 
-    public ActivityLevel getActivityLevel() {
-        return activityLevel;
-    }
+    public ActivityLevel getActivityLevel() { return activityLevel; }
 
-    public void setActivityLevel(ActivityLevel activityLevel) {
-        this.activityLevel = activityLevel;
-    }
-
-     */
-
-    public String getCurrentNutritionPlanId() {
-        return currentNutritionPlanId;
-    }
-
-    public void setCurrentNutritionPlanId(String currentNutritionPlanId) {
-        this.currentNutritionPlanId = currentNutritionPlanId;
-    }
-
-    public Trainer getTrainer() {
-        return trainer;
-    }
-
-    public void setTrainer(Trainer trainer) {
-        this.trainer = trainer;
-    }
+    public void setActivityLevel(ActivityLevel activityLevel) { this.activityLevel = activityLevel; }
 
     public LocalDateTime getCreatedAt() {
         return createdAt;

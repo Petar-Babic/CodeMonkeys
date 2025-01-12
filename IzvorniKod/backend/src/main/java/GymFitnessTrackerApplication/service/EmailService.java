@@ -1,7 +1,6 @@
 package GymFitnessTrackerApplication.service;
 
-import GymFitnessTrackerApplication.model.response.EmailResponse;
-import jakarta.mail.MessagingException;
+import GymFitnessTrackerApplication.model.dto.response.EmailResponse;
 import org.springframework.scheduling.annotation.Async;
 
 public interface EmailService {

@@ -2,7 +2,7 @@ package GymFitnessTrackerApplication.service;
 
 import GymFitnessTrackerApplication.model.domain.Measurement;
 import GymFitnessTrackerApplication.model.domain.MyUser;
-import GymFitnessTrackerApplication.model.forms.BodyMeasurementForm;
+import GymFitnessTrackerApplication.model.dto.forms.BodyMeasurementForm;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;

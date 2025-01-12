@@ -1,11 +1,9 @@
 package GymFitnessTrackerApplication.service.impl;
 
 import GymFitnessTrackerApplication.model.dao.MyStatsGoalsRepo;
-import GymFitnessTrackerApplication.model.domain.ActivityLevel;
-import GymFitnessTrackerApplication.model.domain.Gender;
 import GymFitnessTrackerApplication.model.domain.MyUser;
 import GymFitnessTrackerApplication.model.domain.StatsGoals;
-import GymFitnessTrackerApplication.model.forms.BodyGoalsForm;
+import GymFitnessTrackerApplication.model.dto.forms.BodyGoalsForm;
 import GymFitnessTrackerApplication.service.MyGoalsStatsService;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;

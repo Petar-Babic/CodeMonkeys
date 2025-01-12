@@ -1,4 +1,4 @@
-package GymFitnessTrackerApplication.model.response;
+package GymFitnessTrackerApplication.model.dto.response;
 
 public class InfoResponse {
     private float height;

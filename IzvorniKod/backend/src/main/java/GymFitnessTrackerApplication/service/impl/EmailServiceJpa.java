@@ -1,6 +1,6 @@
 package GymFitnessTrackerApplication.service.impl;
 
-import GymFitnessTrackerApplication.model.response.EmailResponse;
+import GymFitnessTrackerApplication.model.dto.response.EmailResponse;
 import GymFitnessTrackerApplication.service.EmailService;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.InternetAddress;

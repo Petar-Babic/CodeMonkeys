@@ -1,7 +1,7 @@
 package GymFitnessTrackerApplication.model.domain;
 
 
-import GymFitnessTrackerApplication.model.forms.BodyGoalsForm;
+import GymFitnessTrackerApplication.model.dto.forms.BodyGoalsForm;
 import jakarta.persistence.*;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -11,40 +11,26 @@ import java.time.ZonedDateTime;
 @Table(name = "StatsAndGoals")
 public class StatsGoals {
 
-
     @Id
     private Long id;
-
     @OneToOne
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     private MyUser myUser;
-
     private Float height;
-
     private Float weight;
-
     private Float goalWeight;
-
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     ActivityLevel activityLevel;
-
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     Gender gender;
-
     Integer timelineWeeks;
-
     Integer protein;
-
     Integer carbs;
-
     Integer fat;
-
     Float calories;
-
     ZonedDateTime createdAt;
-
     ZonedDateTime updatedAt;
 
     public Long getId() {

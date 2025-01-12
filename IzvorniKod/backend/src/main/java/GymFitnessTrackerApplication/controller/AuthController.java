@@ -2,36 +2,21 @@ package GymFitnessTrackerApplication.controller;
 
 
 import GymFitnessTrackerApplication.exception.NonExistantToken;
-import GymFitnessTrackerApplication.model.domain.MyUser;
 import GymFitnessTrackerApplication.model.domain.RefreshToken;
-import GymFitnessTrackerApplication.model.domain.RegistrationMethod;
-import GymFitnessTrackerApplication.model.forms.LoginForm;
-import GymFitnessTrackerApplication.model.forms.OAuthForm;
-import GymFitnessTrackerApplication.model.forms.SignupForm;
-import GymFitnessTrackerApplication.model.response.EmailResponse;
-import GymFitnessTrackerApplication.model.response.ErrorResponse;
-import GymFitnessTrackerApplication.model.response.JwtResponse;
+import GymFitnessTrackerApplication.model.dto.forms.LoginForm;
+import GymFitnessTrackerApplication.model.dto.forms.OAuthForm;
+import GymFitnessTrackerApplication.model.dto.forms.SignupForm;
+import GymFitnessTrackerApplication.model.dto.response.EmailResponse;
+import GymFitnessTrackerApplication.model.dto.response.JwtResponse;
 import GymFitnessTrackerApplication.service.*;
-import GymFitnessTrackerApplication.exception.UserAlreadyExistsException;
-import io.jsonwebtoken.Jwt;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.reactive.function.client.WebClient;
 
-import java.net.CookieStore;
 import java.util.Arrays;
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/auth")

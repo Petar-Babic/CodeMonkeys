@@ -1,61 +1,38 @@
 package GymFitnessTrackerApplication.model.domain;
 
 
-import GymFitnessTrackerApplication.model.forms.BodyMeasurementForm;
+import GymFitnessTrackerApplication.model.dto.forms.BodyMeasurementForm;
 import jakarta.persistence.*;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import java.time.ZonedDateTime;
-import java.util.Date;
 
 @Entity
 public class Measurement {
 
     @Id
     @GeneratedValue
-    private Long measurementId;
-
-    @ManyToOne(cascade =  CascadeType.ALL)
-    private MyUser myuser;
-
-    private Date date;
-
+    private Long id;
+    private Float height;
+    private Float weight;
     private Float chest;
     private Float waist;
     private Float hips;
-
     private Float thighs;
-
     private Float biceps;
-
-    private ZonedDateTime created_at;
-
-    private ZonedDateTime updated_at;
+    private ZonedDateTime createdAt;
+    private ZonedDateTime updatedAt;
 
 
-    public Long getMeasurementId() {
-        return measurementId;
-    }
+    public Long getId() { return id; }
 
-    public void setMeasurementId(Long measurementId) {
-        this.measurementId = measurementId;
-    }
+    public Float getHeight() { return height; }
 
-    public MyUser getMyuser() {
-        return myuser;
-    }
+    public void setHeight(Float height) { this.height = height; }
 
-    public void setMyuser(MyUser myuser) {
-        this.myuser = myuser;
-    }
+    public Float getWeight() { return weight; }
 
-    public Date getDate() {
-        return date;
-    }
-
-    public void setDate(Date date) {
-        this.date = date;
-    }
+    public void setWeight(Float weight) {this.weight = weight; }
 
     public Float getChest() {
         return chest;
@@ -97,28 +74,27 @@ public class Measurement {
         this.biceps = biceps;
     }
 
-    public ZonedDateTime getCreated_at() {
-        return created_at;
+    public ZonedDateTime getCreatedAt() {
+        return createdAt;
     }
 
-    public void setCreated_at(ZonedDateTime created_at) {
-        this.created_at = created_at;
+    public void setCreatedAt(ZonedDateTime createdAt) {
+        this.createdAt = createdAt;
     }
 
-    public ZonedDateTime getUpdated_at() {
-        return updated_at;
+    public ZonedDateTime getUpdatedAt() {
+        return updatedAt;
     }
 
-    public void setUpdated_at(ZonedDateTime updated_at) {
-        this.updated_at = updated_at;
+    public void setUpdatedAt(ZonedDateTime updatedAt) {
+        this.updatedAt = updatedAt;
     }
 
     public Measurement(){}
-    public Measurement(MyUser measurementId, @RequestBody BodyMeasurementForm bd){
-        this.myuser=measurementId;
-        this.date=Date.from(bd.getDate().toInstant());
-        this.created_at=bd.getDate();
-        this.updated_at=bd.getDate();
+
+    public Measurement(@RequestBody BodyMeasurementForm bd){
+        this.createdAt=bd.getDate();
+        this.updatedAt=bd.getDate();
         this.hips=bd.getHips();
         this.biceps=bd.getBiceps();
         this.chest=bd.getChest();

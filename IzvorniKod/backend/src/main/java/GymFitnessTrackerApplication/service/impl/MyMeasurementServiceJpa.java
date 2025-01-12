@@ -3,7 +3,7 @@ package GymFitnessTrackerApplication.service.impl;
 import GymFitnessTrackerApplication.model.dao.MyMeasurementRepo;
 import GymFitnessTrackerApplication.model.domain.Measurement;
 import GymFitnessTrackerApplication.model.domain.MyUser;
-import GymFitnessTrackerApplication.model.forms.BodyMeasurementForm;
+import GymFitnessTrackerApplication.model.dto.forms.BodyMeasurementForm;
 import GymFitnessTrackerApplication.service.MyMeasurementsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,9 +23,9 @@ public class MyMeasurementServiceJpa implements MyMeasurementsService {
 
     @Override
     public Measurement createMeasurement(MyUser id, @RequestBody BodyMeasurementForm bodyMeasurementForm) {
-        Measurement m = new Measurement(id,bodyMeasurementForm);
-        m.setUpdated_at(bodyMeasurementForm.getDate());
-        m.setCreated_at(bodyMeasurementForm.getDate());
+        Measurement m = new Measurement(bodyMeasurementForm);
+        m.setUpdatedAt(bodyMeasurementForm.getDate());
+        m.setCreatedAt(bodyMeasurementForm.getDate());
 
         return measurementRepo.save(m);
     }

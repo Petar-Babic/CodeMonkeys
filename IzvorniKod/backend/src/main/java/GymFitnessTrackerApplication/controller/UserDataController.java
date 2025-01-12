@@ -4,24 +4,18 @@ import GymFitnessTrackerApplication.model.dao.MyStatsGoalsRepo;
 import GymFitnessTrackerApplication.model.domain.Measurement;
 import GymFitnessTrackerApplication.model.domain.MyUser;
 import GymFitnessTrackerApplication.model.domain.StatsGoals;
-import GymFitnessTrackerApplication.model.forms.BodyGoalsForm;
-import GymFitnessTrackerApplication.model.forms.BodyMeasurementForm;
-import GymFitnessTrackerApplication.model.response.BodyGoalsResponse;
-import GymFitnessTrackerApplication.model.response.BodyMeasurementsResponse;
-import GymFitnessTrackerApplication.model.response.ErrorResponse;
-import GymFitnessTrackerApplication.model.response.InfoResponse;
+import GymFitnessTrackerApplication.model.dto.forms.BodyGoalsForm;
+import GymFitnessTrackerApplication.model.dto.forms.BodyMeasurementForm;
+import GymFitnessTrackerApplication.model.dto.response.BodyGoalsResponse;
+import GymFitnessTrackerApplication.model.dto.response.BodyMeasurementsResponse;
+import GymFitnessTrackerApplication.model.dto.response.InfoResponse;
 import GymFitnessTrackerApplication.service.*;
-import io.jsonwebtoken.ExpiredJwtException;
-import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -46,7 +40,7 @@ public class UserDataController {
             MyUser user = (MyUser) myUserService.getMyUser(email);
             Measurement m = myMeasurementsService.createMeasurement(user,bodyMeasForm);
 
-            return ResponseEntity.status(HttpStatus.valueOf(200)).body(new BodyMeasurementsResponse(m.getMeasurementId().toString(),user.getId().toString(),bodyMeasForm.getDate(),bodyMeasForm.getChest(),bodyMeasForm.getWaist(),bodyMeasForm.getHips(),bodyMeasForm.getThighs(),bodyMeasForm.getBiceps(),bodyMeasForm.getDate(),m.getUpdated_at()));
+            return ResponseEntity.status(HttpStatus.valueOf(200)).body(new BodyMeasurementsResponse(m.getId().toString(),user.getId().toString(),bodyMeasForm.getDate(),bodyMeasForm.getChest(),bodyMeasForm.getWaist(),bodyMeasForm.getHips(),bodyMeasForm.getThighs(),bodyMeasForm.getBiceps(),bodyMeasForm.getDate(),m.getUpdatedAt()));
     }
 
     @PostMapping("/body-stats-and-goals")

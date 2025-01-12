@@ -1,13 +1,12 @@
 package GymFitnessTrackerApplication.service;
 
 import GymFitnessTrackerApplication.model.domain.MyUser;
-import GymFitnessTrackerApplication.model.forms.OAuthForm;
-import GymFitnessTrackerApplication.model.forms.SignupForm;
+import GymFitnessTrackerApplication.model.dto.forms.OAuthForm;
+import GymFitnessTrackerApplication.model.dto.forms.SignupForm;
 import com.amazonaws.AmazonClientException;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.InputStream;
 import java.util.List;
 
 public interface  MyUserService     {

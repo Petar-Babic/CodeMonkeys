@@ -1,4 +1,4 @@
-package GymFitnessTrackerApplication.model.response;
+package GymFitnessTrackerApplication.model.dto.response;
 
 import org.springframework.cglib.core.Local;
 

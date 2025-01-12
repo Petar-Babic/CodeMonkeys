@@ -1,4 +1,4 @@
-package GymFitnessTrackerApplication.model.forms;
+package GymFitnessTrackerApplication.model.dto.forms;
 
 import java.time.ZonedDateTime;
 

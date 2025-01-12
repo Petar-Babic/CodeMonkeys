@@ -3,6 +3,7 @@ package GymFitnessTrackerApplication.model.domain;
 import jakarta.persistence.*;
 import org.joda.time.DateTime;
 
+import java.time.ZonedDateTime;
 import java.util.Date;
 
 @Entity
@@ -13,13 +14,13 @@ public class SleepLog {
     @ManyToOne
     @JoinColumn(name ="user_id")
     private MyUser user;
-    private DateTime date;
-    private float duration;  //number of hours
-    private int quality;
+    private ZonedDateTime date;
+    private Float duration;  //in hours
+    private Integer quality;
     private String notes;
     private DateTime createdAt;
 
-    public SleepLog(MyUser user, DateTime date, float duration, int quality, String notes, DateTime createdAt) {
+    public SleepLog(MyUser user, ZonedDateTime date, float duration, int quality, String notes, DateTime createdAt) {
         this.user = user;
         this.date = date;
         this.duration = duration;
@@ -45,11 +46,11 @@ public class SleepLog {
         this.user = user;
     }
 
-    public DateTime getDate() {
+    public ZonedDateTime getDate() {
         return date;
     }
 
-    public void setDate(DateTime date) {
+    public void setDate(ZonedDateTime date) {
         this.date = date;
     }
 
