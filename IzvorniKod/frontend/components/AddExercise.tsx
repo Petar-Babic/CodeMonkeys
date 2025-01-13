@@ -44,7 +44,7 @@ export default function AddExerciseModal({ closeModal }: AddExerciseModalProps) 
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div className="fixed top-5 inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div className="bg-white rounded-md p-6 w-96 space-y-4">
         <h2 className="text-lg font-semibold">Add New Exercise</h2>
 

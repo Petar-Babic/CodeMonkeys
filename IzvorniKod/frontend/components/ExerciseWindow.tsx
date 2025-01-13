@@ -16,7 +16,7 @@ export default function ExerciseModal({
   const [activeTab, setActiveTab] = useState("About");
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div className="fixed top-5 inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div className="bg-white p-8 rounded-lg shadow-lg max-w-2xl w-full h-[70vh] flex flex-col">
         <h3 className="text-3xl font-bold mb-4">{exercise.name}</h3>
 
