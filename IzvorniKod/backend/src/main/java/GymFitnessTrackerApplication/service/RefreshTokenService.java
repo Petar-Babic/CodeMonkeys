@@ -17,6 +17,7 @@ import org.springframework.boot.autoconfigure.data.redis.RedisProperties;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
+import javax.swing.text.html.Option;
 import java.lang.ref.Reference;
 import java.sql.Ref;
 import java.text.CollationKey;
@@ -88,6 +89,13 @@ public class RefreshTokenService {
                 return refreshTokenRepo.save(tok);
             }
             else return refreshTokenRepo.findByMyUser(user).get();
+        }
+        else if(tip.equals("token")){
+            Optional<RefreshToken> tkn = refreshTokenRepo.findByToken(value);
+            if(tkn.isEmpty())
+                return null;
+            return tkn.get();
+
         }
         return null;
     }

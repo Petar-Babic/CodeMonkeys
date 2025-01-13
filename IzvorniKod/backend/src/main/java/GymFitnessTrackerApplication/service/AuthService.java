@@ -51,7 +51,7 @@ public class AuthService {
 
     //treba biti jwtResponse da se vrati Jwt TOken
     public JwtResponse refreshLogin(String refreshToken){
-       RefreshToken refrToken = refreshTokenService.getToken(refreshToken,"mail");
+       RefreshToken refrToken = refreshTokenService.getToken(refreshToken,"token");
         MyUser user = refrToken.getMyUser();
         String token = jwtService.generateToken(myUserDetailsService.loadUserByUsername(user.getEmail().toString()));
         return new JwtResponse(token,user.getId().toString(), user.getName(), user.getEmail());

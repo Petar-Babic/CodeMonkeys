@@ -59,15 +59,28 @@ public class AuthController {
     @PostMapping("/refresh")
     public ResponseEntity<?> refreshToken(HttpServletRequest request){
         String notFound= "Refresh cookie not found";
-        String value =  Arrays.stream(request.getCookies())
+        Cookie[] cookies = request.getCookies();
+
+        if(cookies.length < 1)
+            return ResponseEntity.status(403).body(notFound);
+        String value = null;
+        for (Cookie cookie : cookies) {
+            if ("Refresh".equals(cookie.getName())) {
+                value = cookie.getValue();
+                break;
+            }
+        }
+
+
+       /* String value =  Arrays.stream(request.getCookies())
                 .filter(cookie -> "Refresh".equals(cookie.getName()))
                 .map(Cookie::getValue)
                 .findFirst()
-                .orElse(notFound);
+                .orElse(notFound);*/
 
         // ako nema tokena
         // ili ako je dobiveni token ili invalid ili istjekao
-        if(value.equals(notFound) || (!refreshTokenService.isValid(value) || !refreshTokenService.Expired(value)))
+        if(value.equals(notFound) || (!refreshTokenService.isValid(value) || refreshTokenService.Expired(value)))
             return ResponseEntity.status(403).body(notFound);
         JwtResponse refreshLogin = authService.refreshLogin(value);
         return  ResponseEntity.status(200).body(refreshLogin);
