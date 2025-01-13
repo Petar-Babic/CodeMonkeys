@@ -11,10 +11,10 @@ public class WebConfig implements WebMvcConfigurer {
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
                 // dopusta sa sve,localhosta i backenda delete sve po potrebi
-                .allowedOrigins("*","http://localhost:8080","http://backend.com")
+                .allowedOrigins("*","http://localhost:8080","http://gymprogressbackend.lukakordic.me")
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                 .allowedHeaders("*")
-                .allowCredentials(false)
+                .allowCredentials(true)
                 .maxAge(3600);
     }
 }
