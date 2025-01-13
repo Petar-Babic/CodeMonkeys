@@ -4,7 +4,7 @@ import GymFitnessTrackerApplication.model.dao.MyNutrionPlanRepo;
 import GymFitnessTrackerApplication.model.dao.MyUserRepository;
 import GymFitnessTrackerApplication.model.domain.MyUser;
 import GymFitnessTrackerApplication.model.domain.NutrionPlan;
-import GymFitnessTrackerApplication.model.forms.NutrionPlanForm;
+import GymFitnessTrackerApplication.model.dto.forms.NutrionPlanForm;
 import GymFitnessTrackerApplication.service.NutrionService;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;

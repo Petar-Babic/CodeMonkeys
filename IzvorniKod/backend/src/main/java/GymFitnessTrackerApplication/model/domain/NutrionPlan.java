@@ -1,14 +1,12 @@
 package GymFitnessTrackerApplication.model.domain;
 
-import GymFitnessTrackerApplication.model.forms.NutrionPlanForm;
+import GymFitnessTrackerApplication.model.dto.forms.NutrionPlanForm;
 import jakarta.persistence.*;
-import org.springframework.cglib.core.Local;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Date;
 
 @Entity
 public class NutrionPlan {

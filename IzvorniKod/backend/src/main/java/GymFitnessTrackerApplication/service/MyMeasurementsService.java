@@ -10,7 +10,4 @@ import java.util.List;
 public interface MyMeasurementsService {
     List<Measurement> listAll();
     Measurement createMeasurement(MyUser measurementId, @RequestBody BodyMeasurementForm bd);
-
-
-
 }

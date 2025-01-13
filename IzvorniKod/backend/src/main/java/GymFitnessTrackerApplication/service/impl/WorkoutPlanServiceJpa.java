@@ -29,7 +29,8 @@ public class WorkoutPlanServiceJpa implements WorkoutPlanService {
 
     @Override
     public void addWorkoutPlan(MyUser user, WorkoutPlanForm workoutPlanform) {
-        WorkoutPlan workoutPlan = new WorkoutPlan();
+        WorkoutPlan workoutPlan = new WorkoutPlan(user,workoutPlanform);
+        workoutPlanRepo.save(workoutPlan);
 
     }
 }

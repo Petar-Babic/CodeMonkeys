@@ -23,9 +23,9 @@ public class MyMeasurementServiceJpa implements MyMeasurementsService {
 
     @Override
     public Measurement createMeasurement(MyUser id, @RequestBody BodyMeasurementForm bodyMeasurementForm) {
-        Measurement m = new Measurement(bodyMeasurementForm);
-        m.setUpdatedAt(bodyMeasurementForm.getDate());
-        m.setCreatedAt(bodyMeasurementForm.getDate());
+        Measurement m = new Measurement(id,bodyMeasurementForm);
+        m.setUpdated_at(bodyMeasurementForm.getDate());
+        m.setCreated_at(bodyMeasurementForm.getDate());
 
         return measurementRepo.save(m);
     }

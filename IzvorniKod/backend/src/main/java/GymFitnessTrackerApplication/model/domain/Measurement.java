@@ -6,22 +6,31 @@ import jakarta.persistence.*;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import java.time.ZonedDateTime;
+import java.util.Date;
 
 @Entity
 public class Measurement {
 
     @Id
     @GeneratedValue
-    private Long id;
-    private Float height;
-    private Float weight;
+    private Long measurementId;
+
+    @ManyToOne(cascade =  CascadeType.ALL)
+    private MyUser myuser;
+
+    private Date date;
+
     private Float chest;
     private Float waist;
     private Float hips;
+
     private Float thighs;
+
     private Float biceps;
-    private ZonedDateTime createdAt;
-    private ZonedDateTime updatedAt;
+
+    private ZonedDateTime created_at;
+
+    private ZonedDateTime updated_at;
 
     private String createdBy;
 
@@ -33,15 +42,29 @@ public class Measurement {
         this.createdBy = createdBy;
     }
 
-    public Long getId() { return id; }
+    public Long getMeasurementId() {
+        return measurementId;
+    }
 
-    public Float getHeight() { return height; }
+    public void setMeasurementId(Long measurementId) {
+        this.measurementId = measurementId;
+    }
 
-    public void setHeight(Float height) { this.height = height; }
+    public MyUser getMyuser() {
+        return myuser;
+    }
 
-    public Float getWeight() { return weight; }
+    public void setMyuser(MyUser myuser) {
+        this.myuser = myuser;
+    }
 
-    public void setWeight(Float weight) {this.weight = weight; }
+    public Date getDate() {
+        return date;
+    }
+
+    public void setDate(Date date) {
+        this.date = date;
+    }
 
     public Float getChest() {
         return chest;
@@ -83,20 +106,20 @@ public class Measurement {
         this.biceps = biceps;
     }
 
-    public ZonedDateTime getCreatedAt() {
-        return createdAt;
+    public ZonedDateTime getCreated_at() {
+        return created_at;
     }
 
-    public void setCreatedAt(ZonedDateTime createdAt) {
-        this.createdAt = createdAt;
+    public void setCreated_at(ZonedDateTime created_at) {
+        this.created_at = created_at;
     }
 
-    public ZonedDateTime getUpdatedAt() {
-        return updatedAt;
+    public ZonedDateTime getUpdated_at() {
+        return updated_at;
     }
 
-    public void setUpdatedAt(ZonedDateTime updatedAt) {
-        this.updatedAt = updatedAt;
+    public void setUpdated_at(ZonedDateTime updated_at) {
+        this.updated_at = updated_at;
     }
 
     public Measurement(){}

@@ -4,11 +4,11 @@ import GymFitnessTrackerApplication.model.dao.MyStatsGoalsRepo;
 import GymFitnessTrackerApplication.model.domain.Measurement;
 import GymFitnessTrackerApplication.model.domain.MyUser;
 import GymFitnessTrackerApplication.model.domain.Goals;
-import GymFitnessTrackerApplication.model.forms.BodyGoalsForm;
-import GymFitnessTrackerApplication.model.forms.BodyMeasurementForm;
-import GymFitnessTrackerApplication.model.response.BodyGoalsResponse;
-import GymFitnessTrackerApplication.model.response.BodyMeasurementsResponse;
-import GymFitnessTrackerApplication.model.response.InfoResponse;
+import GymFitnessTrackerApplication.model.dto.forms.BodyGoalsForm;
+import GymFitnessTrackerApplication.model.dto.forms.BodyMeasurementForm;
+import GymFitnessTrackerApplication.model.dto.response.BodyGoalsResponse;
+import GymFitnessTrackerApplication.model.dto.response.BodyMeasurementsResponse;
+import GymFitnessTrackerApplication.model.dto.response.InfoResponse;
 import GymFitnessTrackerApplication.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -36,12 +36,12 @@ public class UserDataController {
 
     @PostMapping("/body-measurements")
     public ResponseEntity<?> setBodyMeasurements(@RequestBody BodyMeasurementForm bodyMeasForm, @RequestHeader("Authorization") String auth){
-           String email= jwtService.extractEmail(auth.trim().substring(7));
-            MyUser user = (MyUser) myUserService.getMyUser(email);
-            Measurement m = myMeasurementsService.createMeasurement(user,bodyMeasForm);
-            myUserService.updateMeasurements(user,m);
+        String email= jwtService.extractEmail(auth.trim().substring(7));
+        MyUser user = (MyUser) myUserService.getMyUser(email);
+        Measurement m = myMeasurementsService.createMeasurement(user,bodyMeasForm);
+        myUserService.updateMeasurements(user,m);
 
-            return ResponseEntity.status(HttpStatus.valueOf(200)).body(new BodyMeasurementsResponse(m.getId().toString(),user.getId().toString(),bodyMeasForm.getDate(),bodyMeasForm.getChest(),bodyMeasForm.getWaist(),bodyMeasForm.getHips(),bodyMeasForm.getThighs(),bodyMeasForm.getBiceps(),bodyMeasForm.getDate(),m.getUpdatedAt()));
+        return ResponseEntity.status(HttpStatus.valueOf(200)).body(new BodyMeasurementsResponse(m.getMeasurementId().toString(),user.getId().toString(),bodyMeasForm.getDate(),bodyMeasForm.getChest(),bodyMeasForm.getWaist(),bodyMeasForm.getHips(),bodyMeasForm.getThighs(),bodyMeasForm.getBiceps(),bodyMeasForm.getDate(),m.getUpdated_at()));
     }
 
     @PostMapping("/body-stats-and-goals")
@@ -56,25 +56,25 @@ public class UserDataController {
 
 
 
-  /*  @PostMapping("/body-stats-and-goals")
-    public ResponseEntity<?> setBodyGoals(@RequestBody BodyGoalsForm bodyGoalsForm, @RequestHeader("Authorization") String auth)
-    {
-            String email= jwtService.extractEmail(auth.trim().substring(7));
-            MyUser user = (MyUser) myUserService.getMyUser(email);
-            Optional<Goals> stats = statsRepo.findById(user.getId());
-            Goals goals;
-            if(stats.isEmpty()){
-                goals = myGoalsStatsService.createGoals(user,bodyGoalsForm);
-            }else{
-                 myGoalsStatsService.updateGoals(user,bodyGoalsForm);
-            }
-            goals = statsRepo.findById(user.getId()).get();
+    /*  @PostMapping("/body-stats-and-goals")
+      public ResponseEntity<?> setBodyGoals(@RequestBody BodyGoalsForm bodyGoalsForm, @RequestHeader("Authorization") String auth)
+      {
+              String email= jwtService.extractEmail(auth.trim().substring(7));
+              MyUser user = (MyUser) myUserService.getMyUser(email);
+              Optional<Goals> stats = statsRepo.findById(user.getId());
+              Goals goals;
+              if(stats.isEmpty()){
+                  goals = myGoalsStatsService.createGoals(user,bodyGoalsForm);
+              }else{
+                   myGoalsStatsService.updateGoals(user,bodyGoalsForm);
+              }
+              goals = statsRepo.findById(user.getId()).get();
 
-            return ResponseEntity.status(HttpStatus.valueOf(200)).body(
-                    //
-                    //new BodyGoalsResponse(user.getId().toString(), goals.getHeight(), goals.getWeight(), goals.getGoalWeight(), goals.getActivityLevel().name(), goals.getGender().name(), goals.getTimelineWeeks(), goals.getProtein(), goals.getCarbs(), goals.getFat(), goals.getCalories(), goals.getCreatedAt(), goals.getCreatedAt())
-                    "lol");
-    }*/
+              return ResponseEntity.status(HttpStatus.valueOf(200)).body(
+                      //
+                      //new BodyGoalsResponse(user.getId().toString(), goals.getHeight(), goals.getWeight(), goals.getGoalWeight(), goals.getActivityLevel().name(), goals.getGender().name(), goals.getTimelineWeeks(), goals.getProtein(), goals.getCarbs(), goals.getFat(), goals.getCalories(), goals.getCreatedAt(), goals.getCreatedAt())
+                      "lol");
+      }*/
     @GetMapping("/info")
     public ResponseEntity<?> getInfoAbtUser(@RequestHeader("Authorization") String auth){
         String email = jwtService.extractEmail(auth.trim().substring(7));
