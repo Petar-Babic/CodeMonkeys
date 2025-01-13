@@ -1,8 +1,11 @@
 package GymFitnessTrackerApplication.service.impl;
 
 import GymFitnessTrackerApplication.model.dao.MyUserRepository;
+import GymFitnessTrackerApplication.model.domain.Measurement;
 import GymFitnessTrackerApplication.model.domain.MyUser;
+import GymFitnessTrackerApplication.model.domain.NutrionPlan;
 import GymFitnessTrackerApplication.model.domain.Role;
+import GymFitnessTrackerApplication.model.forms.BodyGoalsForm;
 import GymFitnessTrackerApplication.service.MyUserService;
 import GymFitnessTrackerApplication.exception.UserAlreadyExistsException;
 import GymFitnessTrackerApplication.model.dto.forms.OAuthForm;
@@ -12,6 +15,7 @@ import com.amazonaws.HttpMethod;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.PutObjectRequest;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -48,11 +52,45 @@ public class MyUserServiceJpa implements MyUserService {
             throw new UserAlreadyExistsException("User with that email address already exists");
 
         MyUser newUser = new MyUser(signupForm);
-        newUser.setEmailVerified(LocalDateTime.now());
         newUser.setUpdatedAt(LocalDateTime.now());
+        newUser.setEmailVerified(false);
 
         return userRepository.save(newUser);
     }
+
+    @Transactional
+    @Override
+    public void updateMeasurements(MyUser user,Measurement m){
+        userRepository.findByEmail(user.getEmail()).ifPresent(
+                user1 -> {
+                    user1.setBodyMeasurement(m);
+                    userRepository.save(user1);
+                }
+        );
+    }
+
+    @Transactional
+    @Override
+    public void updateGoalMeasurements(MyUser user,Measurement m){
+        userRepository.findByEmail(user.getEmail()).ifPresent(
+                (user1) -> {
+                    user1.setGoalBodyMeasurements(m);
+                    userRepository.save(user1);
+                }
+        );
+    }
+
+    @Transactional
+    @Override
+    public void updateCurrentNutrion(MyUser user, NutrionPlan nutrionPlan){
+        userRepository.findByEmail(user.getEmail()).ifPresent(
+                (usr) -> {
+                    usr.setNutrionPlan(nutrionPlan);
+                    userRepository.save(usr);
+                }
+        );
+    }
+
 
     @Override
     public MyUser createMyUser(@RequestBody OAuthForm oauthForm) {
@@ -63,7 +101,7 @@ public class MyUserServiceJpa implements MyUserService {
         newUser.setName(oauthForm.name());
         newUser.setEmail(oauthForm.email());
         newUser.setPassword("-");
-        newUser.setEmailVerified(LocalDateTime.now());
+        newUser.setEmailVerified(false);
         newUser.setCreatedAt(LocalDateTime.now());
         newUser.setUpdatedAt(LocalDateTime.now());
         newUser.setRole(Role.USER);

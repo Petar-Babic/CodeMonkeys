@@ -12,17 +12,38 @@ public class MyUser{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @OneToOne(mappedBy = "myUser", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Goals goals;
+
+
     private String name;
     @Column(unique = true, nullable = false)
     private String email;
+
+    private Boolean emailVerified;
+
     private String password;
     private Role role;
     private String image;
-    private Gender gender;
-    private ActivityLevel activityLevel;
-    //private String currentNutritionPlanId;
-    //trainerID
-    private LocalDateTime emailVerified;
+   // ActivityLevel activityLevel;
+
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "currrentNutrionPlan")
+    private NutrionPlan nutrionPlan;
+
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "currentBodyMeasurement")
+    private Measurement bodyMeasurement;
+
+
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "goalBodyMeasurementS")
+    private Measurement goalBodyMeasurements;
+
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "trainer_id")
+    private Trainer trainer;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
@@ -58,11 +79,11 @@ public class MyUser{
         this.email = email;
     }
 
-    public LocalDateTime getEmailVerified() {
+    public Boolean getEmailVerified() {
         return emailVerified;
     }
 
-    public void setEmailVerified(LocalDateTime emailVerified) {
+    public void setEmailVerified(Boolean emailVerified) {
         this.emailVerified = emailVerified;
     }
 
@@ -89,7 +110,48 @@ public class MyUser{
 
     public ActivityLevel getActivityLevel() { return activityLevel; }
 
-    public void setActivityLevel(ActivityLevel activityLevel) { this.activityLevel = activityLevel; }
+    public void setActivityLevel(ActivityLevel activityLevel) {
+        this.activityLevel = activityLevel;
+    }
+
+     */
+
+    public void setNutrionPlan(NutrionPlan nutrionPlan) {
+
+        this.nutrionPlan = nutrionPlan;
+    }
+
+    public void setBodyMeasurement(Measurement bodyMeasurement) {
+        this.bodyMeasurement = bodyMeasurement;
+    }
+
+    public void setGoalBodyMeasurements(Measurement goalBodyMeasurements) {
+        this.goalBodyMeasurements = goalBodyMeasurements;
+    }
+
+    public Goals getGoals() {
+        return goals;
+    }
+
+    public NutrionPlan getNutrionPlan() {
+        return nutrionPlan;
+    }
+
+    public Measurement getBodyMeasurement() {
+        return bodyMeasurement;
+    }
+
+    public Measurement getGoalBodyMeasurements() {
+        return goalBodyMeasurements;
+    }
+
+    public Trainer getTrainer() {
+        return trainer;
+    }
+
+    public void setTrainer(Trainer trainer) {
+        this.trainer = trainer;
+    }
 
     public LocalDateTime getCreatedAt() {
         return createdAt;
@@ -111,9 +173,10 @@ public class MyUser{
 
     //konstruktor sa podatcima iz signup forme
     public MyUser(@RequestBody SignupForm signupForm){
-        email=signupForm.getEmail();
-        name = signupForm.getName();
-        password = signupForm.getEncodedPass();
+        this.email=signupForm.getEmail();
+        this.name = signupForm.getName();
+        this.password = signupForm.getEncodedPass();
+        this.emailVerified=false;
         this.setCreatedAt(LocalDateTime.now());
         // for purposes of testing
         this.role = Role.USER;

@@ -23,6 +23,15 @@ public class Measurement {
     private ZonedDateTime createdAt;
     private ZonedDateTime updatedAt;
 
+    private String createdBy;
+
+    public String getCreatedBy() {
+        return createdBy;
+    }
+
+    public void setCreatedBy(String createdBy) {
+        this.createdBy = createdBy;
+    }
 
     public Long getId() { return id; }
 
@@ -91,10 +100,12 @@ public class Measurement {
     }
 
     public Measurement(){}
-
-    public Measurement(@RequestBody BodyMeasurementForm bd){
-        this.createdAt=bd.getDate();
-        this.updatedAt=bd.getDate();
+    public Measurement(MyUser measurementId, @RequestBody BodyMeasurementForm bd){
+        this.myuser=measurementId;
+        this.createdBy=measurementId.getEmail();
+        this.date=Date.from(bd.getDate().toInstant());
+        this.created_at=bd.getDate();
+        this.updated_at=bd.getDate();
         this.hips=bd.getHips();
         this.biceps=bd.getBiceps();
         this.chest=bd.getChest();
