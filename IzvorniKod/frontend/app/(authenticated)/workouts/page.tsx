@@ -1,7 +1,7 @@
 import React from "react";
 import { UserWorkoutWithUserPlannedExercise } from "@/types/userWorkout";
 import UserWorkoutWithUserPlannedExerciseCard from "@/components/UserWorkoutWithUserPlannedExerciseCard"; // Ensure the import path is correct
-import CompletedWorkoutsCard from "@/components/CompletedWorkoutCard"; // Import the new CompletedWorkoutsCard component
+import CompletedWorkoutsCard from "@/components/CompletedWorkoutCard"; // Prikazuje workout zavrsen u proslosti
 
 export default function WorkoutPage() {
   // Mock workouts data
