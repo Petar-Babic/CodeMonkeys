@@ -41,9 +41,9 @@ public class MyUser{
     @JoinColumn(name = "goalBodyMeasurementS")
     private Measurement goalBodyMeasurements;
 
-    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "trainer_id")
-    private Trainer trainer;
+    //@OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    //@JoinColumn(name = "trainer_id")
+    //private Trainer trainer;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
@@ -102,19 +102,17 @@ public class MyUser{
     public void setRole(Role role) {
         this.role = role;
     }
-
-    public Gender getGender() { return gender; }
-
-    public void setGender(Gender gender) { this.gender = gender; }
-
-
-    public ActivityLevel getActivityLevel() { return activityLevel; }
-
-    public void setActivityLevel(ActivityLevel activityLevel) {
-        this.activityLevel = activityLevel;
-    }
-
-     */
+//
+//    public Gender getGender() { return gender; }
+//
+//    public void setGender(Gender gender) { this.gender = gender; }
+//
+//
+//    public ActivityLevel getActivityLevel() { return activityLevel; }
+//
+//    public void setActivityLevel(ActivityLevel activityLevel) {
+//        this.activityLevel = activityLevel;
+//    }
 
     public void setNutrionPlan(NutrionPlan nutrionPlan) {
 
@@ -145,13 +143,13 @@ public class MyUser{
         return goalBodyMeasurements;
     }
 
-    public Trainer getTrainer() {
-        return trainer;
-    }
-
-    public void setTrainer(Trainer trainer) {
-        this.trainer = trainer;
-    }
+//    public Trainer getTrainer() {
+//        return trainer;
+//    }
+//
+//    public void setTrainer(Trainer trainer) {
+//        this.trainer = trainer;
+//    }
 
     public LocalDateTime getCreatedAt() {
         return createdAt;
