@@ -4,8 +4,8 @@ import GoogleProvider from "next-auth/providers/google";
 import FacebookProvider from "next-auth/providers/facebook";
 import { SessionWithRelations } from "@/types/session";
 import "next-auth";
-// import { backendUrl } from "@/data/backendUrl";
-import { users } from "@/data/user";
+import { Session } from "next-auth";
+import { backendUrl } from "@/data/backendUrl";
 
 declare module "next-auth" {
   interface Session extends SessionWithRelations {
@@ -15,6 +15,8 @@ declare module "next-auth" {
       name: string;
       email: string;
       role: string;
+      provider?: string;
+      image?: string;
     };
   }
 
@@ -23,6 +25,8 @@ declare module "next-auth" {
     name: string;
     email: string;
     role: string;
+    accessToken?: string;
+    provider?: string;
   }
 }
 
@@ -31,6 +35,7 @@ declare module "next-auth/jwt" {
     id: string;
     role: string;
     accessToken?: string;
+    provider?: string;
   }
 }
 
@@ -47,90 +52,147 @@ export const authOptions: NextAuthOptions = {
           return null;
         }
 
-        if (credentials.email === "luka.kordic.zg@gmail.com") {
+        try {
+          const response = await fetch(`${backendUrl}/api/auth/login`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              email: credentials.email,
+              password: credentials.password,
+            }),
+          });
+
+          if (!response.ok) {
+            return null;
+          }
+
+          const data = await response.json();
+          console.log(data);
+
           return {
-            id: users[0].id,
-            email: users[0].email,
-            name: users[0].name,
-            role: users[0].role,
+            id: data.id,
+            email: data.email,
+            name: data.name,
+            role: data.role,
+            accessToken: data.token,
           };
-        } else {
+        } catch (error) {
+          console.error("Authentication error:", error);
           return null;
         }
-        // Make a request to your Java Spring backend to auhenticate the user
-        // const response = await fetch(
-        //   `${process.env.BACKEND_URL}/api/auth/login`,
-        //   {
-        //     method: "POST",
-        //     headers: {
-        //       "Content-Type": "application/json",
-        //     },
-        //     body: JSON.stringify({
-        //       email: credentials.email,
-        //       password: credentials.password,
-        //     }),
-        //   }
-        // );
-
-        // console.log(response);
-
-        // if (!response.ok) {
-        //   return null;
-        // }
-
-        // const user = await response.json();
-
-        // return {
-        //   id: user.id,
-        //   email: user.email,
-        //   name: user.name,
-        //   role: user.role,
-        // };
       },
     }),
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID!,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+      authorization: {
+        params: {
+          prompt: "consent",
+          access_type: "offline",
+          response_type: "code",
+          scope: "openid email profile",
+        },
+      },
     }),
     FacebookProvider({
       clientId: process.env.FACEBOOK_CLIENT_ID!,
       clientSecret: process.env.FACEBOOK_CLIENT_SECRET!,
+      authorization: {
+        params: {
+          scope: "email,public_profile",
+        },
+      },
     }),
   ],
-  session: {
-    strategy: "jwt",
+  callbacks: {
+    async signIn({ user, account, profile }) {
+      console.log("user", user);
+      console.log("account", account);
+      console.log("profile", profile);
+      if (account?.provider === "google" || account?.provider === "facebook") {
+        try {
+          // Raspakiranje OAuth tokena na frontendu
+          if (!profile) {
+            console.error("Profile is undefined");
+            return false;
+          }
+
+          console.log("user.image" + user?.image);
+
+          const decodedToken = {
+            oauthProvider: account.provider,
+            oauthId: profile.sub || profile.email,
+            email: profile.email,
+            name: profile.name,
+            image: user?.image,
+          };
+
+          const response = await fetch(`${backendUrl}/api/auth/oauth`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(decodedToken),
+          });
+
+          if (!response.ok) {
+            return false;
+          }
+
+          const data = await response.json();
+
+          console.log(data);
+
+          user.id = data.id;
+          user.role = data.role;
+          user.accessToken = data.token;
+          user.provider = account.provider;
+          user.email = data.email;
+          user.name = data.name;
+          user.image = user.image;
+          return true;
+        } catch (error) {
+          console.error("OAuth authentication error:", error);
+          return false;
+        }
+      }
+      return true;
+    },
+    async jwt({ token, user, account }) {
+      if (user) {
+        token.id = user.id;
+        token.email = user.email;
+        token.name = user.name;
+        token.role = user.role;
+        token.accessToken = user.accessToken;
+        token.provider = account?.provider;
+      }
+      return token;
+    },
+    async session({ session, token }) {
+      console.log(session);
+
+      session.user = {
+        id: token.id,
+        email: token.email as string,
+        name: token.name as string,
+        role: token.role,
+        provider: token.provider,
+        image: session.user.image,
+      } as Session["user"];
+
+      session.accessToken = token.accessToken || "";
+
+      return session;
+    },
   },
   pages: {
     signIn: "/sign-in",
   },
-  callbacks: {
-    jwt: async ({ token, user, account }) => {
-      if (user) {
-        token.id = user.id;
-        token.role = user.role;
-      }
-      if (account) {
-        token.accessToken = account.access_token;
-      }
-      return token;
-    },
-    session: async ({ session, token }) => {
-      // console.log("Token:", token);
-      if (session.user) {
-        session.user.id = token.id;
-        session.user.role = token.role;
-      }
-      session.accessToken = token.accessToken as string;
-
-      // console.log("Session:", session);
-      return session;
-    },
-    signIn: async ({ user, account, profile }) => {
-      console.log("Sign in user:", user);
-      console.log("Sign in account:", account);
-      console.log("Sign in profile:", profile);
-      return true;
-    },
+  session: {
+    strategy: "jwt",
   },
   secret: process.env.NEXTAUTH_SECRET,
 };

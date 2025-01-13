@@ -23,6 +23,7 @@ import {
   SignUpCredentials,
   AuthContextType,
 } from "@/types/auth";
+import { backendUrl } from "@/data/backendUrl";
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -95,11 +96,13 @@ function useAuth(): AuthContextType {
   const signUp = useCallback(
     async (credentials: SignUpCredentials): Promise<void> => {
       try {
-        const response = await fetch("/api/auth/signup", {
+        const response = await fetch(`${backendUrl}/api/auth/signup`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(credentials),
         });
+
+        console.log("Sign up response", response);
 
         if (!response.ok) {
           throw new Error("Sign up failed");

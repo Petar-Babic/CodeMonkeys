@@ -1,11 +1,15 @@
 import React from "react";
 
-export default function ExerciseList({ 
-  exercises, 
-  openModal 
-}: { 
-  exercises: any[]; 
-  openModal: (exercise: any) => void; 
+export default function ExerciseList({
+  exercises,
+  openModal,
+}: {
+  exercises: { id: string; name: string; description: string }[];
+  openModal: (exercise: {
+    id: string;
+    name: string;
+    description: string;
+  }) => void;
 }) {
   return (
     <ul className="space-y-4">

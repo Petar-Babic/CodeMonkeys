@@ -89,7 +89,6 @@ export function SignInForm() {
 
       router.push("/workouts");
     } catch (error) {
-      setError("An error occurred. Please try again.");
       console.error(`${provider} login failed:`, error);
     } finally {
       setIsLoading([false, false, false]);
