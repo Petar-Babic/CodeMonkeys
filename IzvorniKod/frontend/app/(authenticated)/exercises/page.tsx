@@ -10,7 +10,7 @@ const simulateFetchData = () => {
   return new Promise((resolve) => {
     setTimeout(() => {
       resolve(predefinedMuscleGroups);
-    }, 1000);
+    }, 200);
   });
 };
 
