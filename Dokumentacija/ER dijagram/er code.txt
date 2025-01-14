@@ -5,7 +5,7 @@ user [icon: user, color: blue] {
   emailVerified boolean
   image string
   role enum
-  goal_weight number
+  goalWeight number
   password? string
   currentNutritionalPlan uuid fk
   bodyMeasurement uuid fk
@@ -120,17 +120,6 @@ review [color: yellow] {
   comment string
 }
 
-goals [color: orange] {
-  id uuid pk
-  userId uuid fk
-  gender enum
-  protein number
-  height number
-  timeline_weeks number
-  createdAt datetime
-  updatedAt datetime
-}
-
 verificationToken [color: gray] {
   id uuid pk
   token uuid
@@ -195,8 +184,6 @@ meal.nutritionPlan > nutritionPlan.id
 meal.userId > user.id
 meal.createdById > user.id
 meal.suggestedId > meal.id
-
-goals.userId > user.id
 
 verificationToken.userId > user.id
 
