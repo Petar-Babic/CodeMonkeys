@@ -138,6 +138,9 @@
         <mxCell id="WcVSIt36STGnPMutvexC-51" value="&amp;lt;&amp;lt;protocol&amp;gt;&amp;gt;&lt;div&gt;&lt;b&gt;TCP/IP&lt;/b&gt;&lt;/div&gt;" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
           <mxGeometry x="680" y="270" width="60" height="30" as="geometry" />
         </mxCell>
+        <mxCell id="WcVSIt36STGnPMutvexC-52" value="&amp;lt;&amp;lt;protocol&amp;gt;&amp;gt;&lt;div&gt;&lt;b&gt;REST&lt;/b&gt;&lt;/div&gt;" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
+          <mxGeometry x="680" y="180" width="60" height="30" as="geometry" />
+        </mxCell>
         <mxCell id="WcVSIt36STGnPMutvexC-53" value="&lt;div&gt;&amp;lt;&amp;lt;protocol&amp;gt;&amp;gt;&lt;/div&gt;&lt;b&gt;HTTPS&lt;/b&gt;" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
           <mxGeometry x="1170" y="280" width="60" height="30" as="geometry" />
         </mxCell>
