@@ -102,6 +102,11 @@ public class CustomExceptionHandler {
         return new ResponseEntity<>(ex.getMessage(),HttpStatus.UNAUTHORIZED);
     }
 
+    @ExceptionHandler(NoNutrionPlanException.class)
+    public ResponseEntity<String> noPlanToEdit(NoNutrionPlanException ex){
+        return new ResponseEntity<>(ex.getMessage(),HttpStatus.FORBIDDEN);
+    }
+
     /*
 
     tehnicki implementacija refresh tokena moze biti napravljena pomocu hvatanja IoException i gledanja statusa pa slanja

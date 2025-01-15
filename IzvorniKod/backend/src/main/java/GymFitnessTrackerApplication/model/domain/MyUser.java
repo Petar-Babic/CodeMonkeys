@@ -5,6 +5,8 @@ import jakarta.persistence.*;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 public class MyUser{
@@ -13,8 +15,8 @@ public class MyUser{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne(mappedBy = "myUser", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Goals goals;
+   /* @OneToOne(mappedBy = "myUser", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Goals goals;*/
 
 
     private String name;
@@ -26,24 +28,26 @@ public class MyUser{
     private String password;
     private Role role;
     private String image;
-   // ActivityLevel activityLevel;
+    private ActivityLevel activityLevel;
+    private Gender gender;
+ /*   @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "currrentNutrionPlan"
+    private NutrionPlan currentNutrionPlan;*/
 
-    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "currrentNutrionPlan")
-    private NutrionPlan nutrionPlan;
+    @OneToMany(mappedBy = "myUser", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<NutrionPlan> nutrionPlans;
 
-    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "currentBodyMeasurement")
-    private Measurement bodyMeasurement;
+    public List<NutrionPlan> getNutrionPlans() {
+        return nutrionPlans;
+    }
 
-
-    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "goalBodyMeasurementS")
-    private Measurement goalBodyMeasurements;
-
+    public void setNutrionPlans(List<NutrionPlan> nutrionPlans) {
+        this.nutrionPlans = nutrionPlans;
+    }
     //@OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     //@JoinColumn(name = "trainer_id")
     //private Trainer trainer;
+
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
@@ -103,53 +107,16 @@ public class MyUser{
         this.role = role;
     }
 //
-//    public Gender getGender() { return gender; }
+    public Gender getGender() { return gender; }
 //
-//    public void setGender(Gender gender) { this.gender = gender; }
+    public void setGender(Gender gender) { this.gender = gender; }
 //
 //
-//    public ActivityLevel getActivityLevel() { return activityLevel; }
+    public ActivityLevel getActivityLevel() { return activityLevel; }
 //
-//    public void setActivityLevel(ActivityLevel activityLevel) {
-//        this.activityLevel = activityLevel;
-//    }
-
-    public void setNutrionPlan(NutrionPlan nutrionPlan) {
-
-        this.nutrionPlan = nutrionPlan;
+    public void setActivityLevel(ActivityLevel activityLevel) {
+        this.activityLevel = activityLevel;
     }
-
-    public void setBodyMeasurement(Measurement bodyMeasurement) {
-        this.bodyMeasurement = bodyMeasurement;
-    }
-
-    public void setGoalBodyMeasurements(Measurement goalBodyMeasurements) {
-        this.goalBodyMeasurements = goalBodyMeasurements;
-    }
-
-    public Goals getGoals() {
-        return goals;
-    }
-
-    public NutrionPlan getNutrionPlan() {
-        return nutrionPlan;
-    }
-
-    public Measurement getBodyMeasurement() {
-        return bodyMeasurement;
-    }
-
-    public Measurement getGoalBodyMeasurements() {
-        return goalBodyMeasurements;
-    }
-
-//    public Trainer getTrainer() {
-//        return trainer;
-//    }
-//
-//    public void setTrainer(Trainer trainer) {
-//        this.trainer = trainer;
-//    }
 
     public LocalDateTime getCreatedAt() {
         return createdAt;
@@ -167,7 +134,9 @@ public class MyUser{
         this.updatedAt = updatedAt;
     }
 
-    public MyUser(){}
+    public MyUser(){
+        this.nutrionPlans = new ArrayList<>();
+    }
 
     //konstruktor sa podatcima iz signup forme
     public MyUser(@RequestBody SignupForm signupForm){
@@ -179,6 +148,7 @@ public class MyUser{
         // for purposes of testing
         this.role = Role.USER;
         //this.activityLevel=ActivityLevel.SEDENTARY;
+        this.nutrionPlans = new ArrayList<>();
     }
 
     @Override

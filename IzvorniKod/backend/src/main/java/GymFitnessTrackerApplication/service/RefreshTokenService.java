@@ -1,26 +1,15 @@
 package GymFitnessTrackerApplication.service;
 
 import GymFitnessTrackerApplication.exception.NonExistantToken;
-import GymFitnessTrackerApplication.exception.RefreshTokenExpiredException;
-import GymFitnessTrackerApplication.model.dao.MyStatsGoalsRepo;
-import GymFitnessTrackerApplication.model.dao.MyUserRepository;
 import GymFitnessTrackerApplication.model.dao.RefreshTokenRepo;
 import GymFitnessTrackerApplication.model.domain.MyUser;
 import GymFitnessTrackerApplication.model.domain.RefreshToken;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
-import org.apache.tomcat.util.http.CookiesWithoutEquals;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.AutoConfigureOrder;
-import org.springframework.boot.autoconfigure.data.redis.RedisProperties;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
-import javax.swing.text.html.Option;
-import java.lang.ref.Reference;
-import java.sql.Ref;
-import java.text.CollationKey;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.*;

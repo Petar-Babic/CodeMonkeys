@@ -28,19 +28,14 @@ public class Measurement {
 
     private Float biceps;
 
+    private float height;
+    private float weight;
+
+    private boolean isGoal;
+
     private ZonedDateTime created_at;
 
     private ZonedDateTime updated_at;
-
-    private String createdBy;
-
-    public String getCreatedBy() {
-        return createdBy;
-    }
-
-    public void setCreatedBy(String createdBy) {
-        this.createdBy = createdBy;
-    }
 
     public Long getMeasurementId() {
         return measurementId;
@@ -122,10 +117,33 @@ public class Measurement {
         this.updated_at = updated_at;
     }
 
+    public float getHeight() {
+        return height;
+    }
+
+    public void setHeight(float height) {
+        this.height = height;
+    }
+
+    public float getWeight() {
+        return weight;
+    }
+
+    public void setWeight(float weight) {
+        this.weight = weight;
+    }
+
+    public boolean isGoal() {
+        return isGoal;
+    }
+
+    public void setGoal(boolean goal) {
+        isGoal = goal;
+    }
+
     public Measurement(){}
     public Measurement(MyUser measurementId, @RequestBody BodyMeasurementForm bd){
         this.myuser=measurementId;
-        this.createdBy=measurementId.getEmail();
         this.date=Date.from(bd.getDate().toInstant());
         this.created_at=bd.getDate();
         this.updated_at=bd.getDate();
@@ -134,7 +152,8 @@ public class Measurement {
         this.chest=bd.getChest();
         this.thighs=bd.getThighs();
         this.waist=bd.getWaist();
-
+        this.height=bd.getHeight();
+        this.weight = bd.getWeight();
     }
 
 }
