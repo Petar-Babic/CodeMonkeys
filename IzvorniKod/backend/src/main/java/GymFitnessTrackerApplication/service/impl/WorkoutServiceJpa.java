@@ -7,6 +7,10 @@ import GymFitnessTrackerApplication.model.domain.*;
 import GymFitnessTrackerApplication.model.dto.PlannedExerciseDTO;
 import GymFitnessTrackerApplication.model.dto.WorkoutDTO;
 import GymFitnessTrackerApplication.model.dto.forms.WorkoutPlanForm;
+import GymFitnessTrackerApplication.model.dto.response.PlannedExerciseResponse;
+import GymFitnessTrackerApplication.model.dto.response.WorkoutPlanResponse;
+import GymFitnessTrackerApplication.model.dto.response.WorkoutResponse;
+import GymFitnessTrackerApplication.service.MyUserService;
 import GymFitnessTrackerApplication.service.WorkoutPlanService;
 import com.amazonaws.AmazonClientException;
 import com.amazonaws.HttpMethod;
@@ -22,12 +26,16 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class WorkoutServiceJpa implements WorkoutPlanService {
     @Autowired
     private WorkoutPlanRepo workoutPlanRepo;
+    @Autowired
+    private MyUserService myUserService;
     @Autowired
     private MyUserRepository myUserRepo;
     @Autowired
@@ -39,21 +47,56 @@ public class WorkoutServiceJpa implements WorkoutPlanService {
 
 
     @Override
-    public List<WorkoutPlan> getUserWorkoutPlans(MyUser user) {
-        return workoutPlanRepo.findByCreator(user);
+    public Set<WorkoutPlanResponse> getUserCreatedWorkoutPlans(String userEmail) {
+        MyUser user = (MyUser) myUserService.getMyUser(userEmail);
+        Set<WorkoutPlan> workoutPlans = workoutPlanRepo.findAllByCreator(user);
+        return generateWorkoutPlanResponses(workoutPlans);
     }
 
     @Override
-    public List<WorkoutPlan> getPublicWorkoutPlans() {
-        return workoutPlanRepo.findByOwnerIsNull();
+    public Set<WorkoutPlanResponse> getUsersWorkoutPlans(String userEmail) {
+        MyUser user = (MyUser) myUserService.getMyUser(userEmail);
+        Set<WorkoutPlan> workoutPlans = workoutPlanRepo.findAllByOwner(user);
+        return generateWorkoutPlanResponses(workoutPlans);
+    }
+
+    @Override
+    public Set<WorkoutPlanResponse> getPublicWorkoutPlans() {
+        Set<WorkoutPlan> workoutPlans = workoutPlanRepo.findAllByOwnerIsNull();
+        return generateWorkoutPlanResponses(workoutPlans);
+    }
+
+    @Override
+    public WorkoutPlanResponse getActiveWorkoutPlan(MyUser user) {
+        WorkoutPlan workoutPlan = workoutPlanRepo.findActiveWorkoutPlanForUser(user);
+        if(workoutPlan == null) {
+            return null;
+        }
+        return generateWorkoutPlanResponse(workoutPlan);
+    }
+
+    @Override
+    public WorkoutPlanResponse getWorkoutPlanById(Long workoutPlanId) {
+        WorkoutPlan workoutPlan = workoutPlanRepo.findById(workoutPlanId).orElse(null);
+        if(workoutPlan == null) {
+            return null;
+        }
+        return generateWorkoutPlanResponse(workoutPlan);
     }
 
     @Override
     public String createNewWorkoutPlan(WorkoutPlanForm workoutPlanForm) {
 
-        MyUser user = myUserRepo.findById(workoutPlanForm.createdByUserId())
+        MyUser creator = myUserRepo.findById(workoutPlanForm.createdByUserId())
                         .orElseThrow(() -> new UsernameNotFoundException("User doesn't exist."));
-        WorkoutPlan newWorkoutPlan = new WorkoutPlan(workoutPlanForm.name(), workoutPlanForm.description(), user);
+        MyUser user = myUserRepo.findById(workoutPlanForm.createdByUserId())
+                .orElseThrow(() -> new UsernameNotFoundException("User doesn't exist."));
+        WorkoutPlan originalWorkoutPlan=null;
+        if(workoutPlanForm.originalWorkoutPlanId()!=null) {
+            originalWorkoutPlan = workoutPlanRepo.findById(workoutPlanForm.originalWorkoutPlanId()).orElse(null);
+        }
+
+        WorkoutPlan newWorkoutPlan = new WorkoutPlan(workoutPlanForm.name(), workoutPlanForm.description(), creator, user, originalWorkoutPlan);
         String imageName = newWorkoutPlan.getName() + "_" + System.currentTimeMillis();
         newWorkoutPlan.setImage(imageName);
         uploadFile(imageName,workoutPlanForm.image());
@@ -74,6 +117,7 @@ public class WorkoutServiceJpa implements WorkoutPlanService {
 
         return getURLToFile(newWorkoutPlan.getImage());
     }
+
 
     @Override
     public void uploadFile(String fileName, MultipartFile file) throws AmazonClientException {
@@ -100,5 +144,29 @@ public class WorkoutServiceJpa implements WorkoutPlanService {
             return null;
         }
         return convertedFile;
+    }
+
+    private Set<WorkoutPlanResponse> generateWorkoutPlanResponses(Set<WorkoutPlan> workoutPlans){
+        Set<WorkoutPlanResponse> result = new HashSet<>();
+        for(WorkoutPlan workoutPlan : workoutPlans){
+            WorkoutPlanResponse wpr = generateWorkoutPlanResponse(workoutPlan);
+            result.add(wpr);
+        }
+        return result;
+    }
+
+    private WorkoutPlanResponse generateWorkoutPlanResponse(WorkoutPlan workoutPlan){
+            WorkoutPlanResponse wpr = new WorkoutPlanResponse(workoutPlan.getId(), workoutPlan.getName(), workoutPlan.getDescription(),
+                    workoutPlan.getImage(), workoutPlan.getCreator().getName(), workoutPlan.getOwner().getName());
+            for(Workout workout : workoutPlan.getWorkouts()){
+                WorkoutResponse wp = new WorkoutResponse(workout.getId(), workout.getName(), workout.getDescription());
+                for(PlannedExercise exercise : workout.getPlannedExercises()){
+                    PlannedExerciseResponse per = new PlannedExerciseResponse(exercise.getExercise().getId(), exercise.getSets(),
+                            exercise.getReps(), exercise.getRpe(), exercise.getOrderNumber());
+                    wp.addExercise(per);
+                }
+                wpr.addWorkout(wp);
+            }
+        return wpr;
     }
 }

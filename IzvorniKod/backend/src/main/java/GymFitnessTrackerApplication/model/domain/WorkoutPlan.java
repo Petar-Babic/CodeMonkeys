@@ -2,6 +2,7 @@ package GymFitnessTrackerApplication.model.domain;
 
 import GymFitnessTrackerApplication.model.dto.forms.WorkoutPlanForm;
 import jakarta.persistence.*;
+import net.minidev.json.annotate.JsonIgnore;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -15,31 +16,37 @@ public class WorkoutPlan {
     private String name;
     private String description;
     private String image;
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "created_by_user_id")
     private MyUser creator;
-    @OneToOne
-    @JoinColumn(name = "owner_user_id")  //predstavlja trenutni workoutPlan
+    @JsonIgnore
+    @ManyToOne
+    @JoinColumn(name = "owner_user_id",nullable = true)
     private MyUser owner;
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "original_workout_plan_id")
     private WorkoutPlan originalWorkoutPlan;
     @OneToMany(mappedBy = "workoutPlan", cascade = CascadeType.ALL)
     private Set<Workout> workouts;
+    private boolean isActive=false;
 
 
-    public WorkoutPlan(String name, String description, String image, MyUser creator) {
+    public WorkoutPlan(String name, String description, MyUser creator, MyUser owner, WorkoutPlan originalWorkoutPlan) {
         this.name = name;
         this.description = description;
-        this.image = image;
         this.creator = creator;
+        this.owner = owner;
+        this.originalWorkoutPlan = originalWorkoutPlan;
         workouts = new HashSet<>();
     }
-
-    public WorkoutPlan(String name, String description, MyUser creator) {
+    public WorkoutPlan(String name, String description, MyUser creator, MyUser owner) {
         this.name = name;
         this.description = description;
         this.creator = creator;
+        this.owner = owner;
+        this.originalWorkoutPlan = null;
         workouts = new HashSet<>();
     }
 
@@ -112,5 +119,13 @@ public class WorkoutPlan {
 
     public void addWorkout(Workout workout) {
         workouts.add(workout);
+    }
+
+    public boolean isActive() {
+        return isActive;
+    }
+
+    public void setActive(boolean active) {
+        isActive = active;
     }
 }

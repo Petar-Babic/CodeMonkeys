@@ -2,6 +2,7 @@ package GymFitnessTrackerApplication.model.domain;
 
 import GymFitnessTrackerApplication.model.dto.forms.SignupForm;
 import jakarta.persistence.*;
+import net.minidev.json.annotate.JsonIgnore;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import java.time.LocalDateTime;
@@ -26,6 +27,12 @@ public class MyUser{
     private String image;
     private ActivityLevel activityLevel;
     private Gender gender;
+    @JsonIgnore
+    @OneToMany(mappedBy = "owner")
+    private Set<WorkoutPlan> usedWorkoutPlans = new HashSet<>();
+    @JsonIgnore
+    @OneToMany(mappedBy = "creator")
+    private Set<WorkoutPlan> createdWorkoutPlans = new HashSet<>();
  /*   @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "currrentNutrionPlan"
     private NutrionPlan currentNutrionPlan;*/
@@ -43,10 +50,7 @@ public class MyUser{
     //@OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     //@JoinColumn(name = "trainer_id")
     //private Trainer trainer;
-    @OneToOne(mappedBy = "owner")
-    private WorkoutPlan currentWorkoutPlan;
-    @OneToMany(mappedBy = "creator")
-    private Set<WorkoutPlan> createdWorkoutPlans = new HashSet<>();
+
 
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
@@ -162,6 +166,22 @@ public class MyUser{
               //  ", height=" + height +
               //  ", weight=" + weight +
                 '}';
+    }
+
+    public Set<WorkoutPlan> getUsedWorkoutPlans() {
+        return usedWorkoutPlans;
+    }
+
+    public void addusedWorkoutPlan(WorkoutPlan workoutPlan) {
+        usedWorkoutPlans.add(workoutPlan);
+    }
+
+    public Set<WorkoutPlan> getCreatedWorkoutPlans() {
+        return createdWorkoutPlans;
+    }
+
+    public void addCreatedWorkoutPlan(WorkoutPlan workoutPlan) {
+        createdWorkoutPlans.add(workoutPlan);
     }
 
 }

@@ -19,7 +19,7 @@ public class Workout {
     @JoinColumn(name = "workout_plan_id")
     private WorkoutPlan workoutPlan;
     @OneToMany(mappedBy = "workout", cascade = CascadeType.ALL)
-    private Set<PlannedExercise> plannedExerciseExercises;
+    private Set<PlannedExercise> plannedExercises;
 
     public Workout() {}
 
@@ -28,7 +28,7 @@ public class Workout {
         this.description = description;
         this.orderNumber = orderNumber;
         this.workoutPlan = workoutPlan;
-        plannedExerciseExercises = new HashSet<>();
+        plannedExercises = new HashSet<>();
     }
 
     public Long getId() {
@@ -51,11 +51,11 @@ public class Workout {
         return workoutPlan;
     }
 
-    public Set<PlannedExercise> getPlannedExerciseExercises() {
-        return plannedExerciseExercises;
+    public Set<PlannedExercise> getPlannedExercises() {
+        return plannedExercises;
     }
 
     public void addPlannedExercise(PlannedExercise plannedExercise) {
-        plannedExerciseExercises.add(plannedExercise);
+        plannedExercises.add(plannedExercise);
     }
 }
