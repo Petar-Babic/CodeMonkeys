@@ -1,12 +1,12 @@
 package GymFitnessTrackerApplication.controller;
 
+import GymFitnessTrackerApplication.model.dao.MyUserRepository;
 import GymFitnessTrackerApplication.model.domain.Measurement;
 import GymFitnessTrackerApplication.model.domain.MyUser;
+import GymFitnessTrackerApplication.model.domain.NutrionPlan;
 import GymFitnessTrackerApplication.model.dto.forms.BodyGoalsForm;
 import GymFitnessTrackerApplication.model.dto.forms.BodyMeasurementForm;
-import GymFitnessTrackerApplication.model.dto.response.BodyGoalsResponse;
 import GymFitnessTrackerApplication.model.dto.response.BodyMeasurementsResponse;
-import GymFitnessTrackerApplication.model.dto.response.InfoResponse;
 import GymFitnessTrackerApplication.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -14,7 +14,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.Optional;
+import java.util.ArrayList;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/user")
@@ -22,30 +23,67 @@ public class UserDataController {
 
     @Autowired
     private  MyMeasurementsService myMeasurementsService;
-
+    @Autowired
+    private NutrionService myNutrionService;
     @Autowired
     private MyUserService myUserService;
     @Autowired
+    private MyUserRepository myUserRepository;
+    @Autowired
     private JwtService jwtService;
 
-    @PostMapping("/body-measurements")
+    @PostMapping("/body-measurements/previous")
     public ResponseEntity<?> setBodyMeasurements(@RequestBody BodyMeasurementForm bodyMeasForm, @RequestHeader("Authorization") String auth){
         String email= jwtService.extractEmail(auth.trim().substring(7));
         MyUser user = (MyUser) myUserService.getMyUser(email);
-        Measurement m = myMeasurementsService.createMeasurement(user,bodyMeasForm);
-        myUserService.updateMeasurements(user,m);
+        Measurement m = myMeasurementsService.createMeasurement(user,bodyMeasForm,"current");
 
-        return ResponseEntity.status(HttpStatus.valueOf(200)).body(new BodyMeasurementsResponse(m.getMeasurementId().toString(),user.getId().toString(),bodyMeasForm.getDate(),bodyMeasForm.getChest(),bodyMeasForm.getWaist(),bodyMeasForm.getHips(),bodyMeasForm.getThighs(),bodyMeasForm.getBiceps(),bodyMeasForm.getDate(),m.getUpdated_at()));
+        return ResponseEntity.status(HttpStatus.valueOf(200)).body(new BodyMeasurementsResponse(m));
     }
 
-    @PostMapping("/body-stats-and-goals")
-    public ResponseEntity<?> setGoals(@RequestBody BodyMeasurementForm bodyMeasForm, @RequestHeader("Authorization") String auth){
+    @PostMapping("/body-measurements/goals")
+    public ResponseEntity<?> setGoalBodyMeasurements(@RequestBody BodyMeasurementForm bodyMeasForm, @RequestHeader("Authorization") String auth){
         String email= jwtService.extractEmail(auth.trim().substring(7));
         MyUser user = (MyUser) myUserService.getMyUser(email);
-        Measurement m = myMeasurementsService.createMeasurement(user,bodyMeasForm);
-        myUserService.updateGoalMeasurements(user,m);
+        Measurement m = myMeasurementsService.createMeasurement(user,bodyMeasForm,"goals");
+        return ResponseEntity.status(HttpStatus.valueOf(200)).body(new BodyMeasurementsResponse(m));
+    }
 
-        return ResponseEntity.status(HttpStatus.valueOf(200)).body(new BodyMeasurementsResponse(m.getMeasurementId().toString(),user.getId().toString(),bodyMeasForm.getDate(),bodyMeasForm.getChest(),bodyMeasForm.getWaist(),bodyMeasForm.getHips(),bodyMeasForm.getThighs(),bodyMeasForm.getBiceps(),bodyMeasForm.getDate(),m.getUpdated_at()));
+    @GetMapping("/body-measurements/previous")
+    public ResponseEntity<?> getBodyMeasurements(@RequestHeader("Authorization") String auth) {
+        String email= jwtService.extractEmail(auth.trim().substring(7));
+        MyUser user = (MyUser) myUserService.getMyUser(email);
+        List<Measurement> m = myMeasurementsService.getMyMeasurements(user);
+
+        if(m.isEmpty()) return ResponseEntity.status(HttpStatus.valueOf(200)).body("");
+        List<BodyMeasurementsResponse> bm = new ArrayList<>();
+        m.forEach( measurement -> {bm.add(new BodyMeasurementsResponse(measurement));});
+
+        return ResponseEntity.status(HttpStatus.valueOf(200)).body(bm);
+    }
+
+    @GetMapping("/body-measurements/goals")
+    public ResponseEntity<?> getGoalBodyMeasurements(@RequestHeader("Authorization") String auth) {
+        String email= jwtService.extractEmail(auth.trim().substring(7));
+        MyUser user = (MyUser) myUserService.getMyUser(email);
+        List<Measurement> m = myMeasurementsService.getMyGoalMeasurements(user);
+        if(m.isEmpty()) return ResponseEntity.status(HttpStatus.valueOf(200)).body("");
+        List<BodyMeasurementsResponse> bm = new ArrayList<>();
+        m.forEach( measurement -> {bm.add(new BodyMeasurementsResponse(measurement));});
+        return ResponseEntity.status(HttpStatus.valueOf(200)).body(bm);
+    }
+
+
+
+    @PostMapping("/body-stats-and-goals")
+    public ResponseEntity<?> setGoals(@RequestBody BodyGoalsForm form, @RequestHeader("Authorization") String auth){
+        String email= jwtService.extractEmail(auth.trim().substring(7));
+        MyUser user = (MyUser) myUserService.getMyUser(email);
+        myUserService.updateUserFromForm(user,form);
+        myMeasurementsService.createGoalMeasurementFromStats(user,form);
+        myNutrionService.createNutrionFromForm(user,form);
+        //myUserService.updateCurrentNutrion(user,nutrionPlan);
+        return ResponseEntity.status(HttpStatus.valueOf(200)).body("Created nutrion plan and goal body measurements");
     }
 
 
@@ -70,23 +108,22 @@ public class UserDataController {
                       "lol");
       }*/
 
-//VRATI POSLIJE
-//    @GetMapping("/info")
-//    public ResponseEntity<?> getInfoAbtUser(@RequestHeader("Authorization") String auth){
-//        String email = jwtService.extractEmail(auth.trim().substring(7));
-//        MyUser user = (MyUser) myUserService.getMyUser(email);
-//        Optional<Goals> statsGoals = statsRepo.findById(user.getId());
-//
-//        if(statsGoals.isEmpty()){
-//            return ResponseEntity.status(HttpStatus.valueOf(403)).body("No user stats");
-//        }
-//        Goals stats = statsGoals.get();
-//        return ResponseEntity.status(HttpStatus.OK).body(
-//                //new InfoResponse(stats.getHeight(),stats.getWeight(),stats.getGoalWeight(),stats.getActivityLevel().toString(),stats.getGender().toString())
-//                "lol");
-//
-//
-//    }
+    /*@GetMapping("/info")
+    public ResponseEntity<?> getInfoAbtUser(@RequestHeader("Authorization") String auth){
+        String email = jwtService.extractEmail(auth.trim().substring(7));
+        MyUser user = (MyUser) myUserService.getMyUser(email);
+        Optional<Goals> statsGoals = statsRepo.findById(user.getId());
+
+        if(statsGoals.isEmpty()){
+            return ResponseEntity.status(HttpStatus.valueOf(403)).body("No user stats");
+        }
+        Goals stats = statsGoals.get();
+        return ResponseEntity.status(HttpStatus.OK).body(
+                //new InfoResponse(stats.getHeight(),stats.getWeight(),stats.getGoalWeight(),stats.getActivityLevel().toString(),stats.getGender().toString())
+                "lol");
+
+
+    }*/
 
     /*da ne izgubim primjer
     @PostMapping("/body-measurements")

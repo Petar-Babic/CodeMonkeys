@@ -3,6 +3,7 @@ package GymFitnessTrackerApplication.service;
 import GymFitnessTrackerApplication.model.domain.Measurement;
 import GymFitnessTrackerApplication.model.domain.MyUser;
 import GymFitnessTrackerApplication.model.domain.NutrionPlan;
+import GymFitnessTrackerApplication.model.dto.forms.BodyGoalsForm;
 import GymFitnessTrackerApplication.model.dto.forms.OAuthForm;
 import GymFitnessTrackerApplication.model.dto.forms.SignupForm;
 import GymFitnessTrackerApplication.model.dto.response.NutrionPlanResponse;
@@ -19,11 +20,9 @@ public interface  MyUserService     {
     MyUser createMyUser(@RequestBody OAuthForm oauthForm);
     MyUser getMyUser(String email);
 
-    void updateMeasurements(MyUser user,Measurement m);
+    //void updateGoalMeasurements(MyUser user,Measurement m);
 
-    void updateGoalMeasurements(MyUser user,Measurement m);
-
-    void updateCurrentNutrion(MyUser user, NutrionPlan nutrionPlan);
+    void updateUserFromForm(MyUser user, BodyGoalsForm form);
 
 
     //UserDetails loadUserByUsername(String username) throws UsernameNotFoundException;

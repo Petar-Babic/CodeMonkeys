@@ -7,6 +7,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 public class NutrionPlan {
@@ -35,6 +37,10 @@ public class NutrionPlan {
 
     // nezz jel
     private ZonedDateTime updatedAt;
+
+    private String createdBy;
+
+    private boolean isCurrent;
 
     public Long getId() {
         return id;
@@ -116,8 +122,26 @@ public class NutrionPlan {
         this.updatedAt = updatedAt;
     }
 
-    public NutrionPlan(){}
+    public String getCreatedBy() {
+        return createdBy;
+    }
 
+    public void setCreatedBy(String createdBy) {
+        this.createdBy = createdBy;
+    }
+
+
+    public boolean isCurrent() {
+        return isCurrent;
+    }
+
+    public void setCurrent(boolean current) {
+        isCurrent = current;
+    }
+
+    public NutrionPlan(){
+
+    }
     public NutrionPlan(MyUser user, @RequestBody NutrionPlanForm form){
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         this.myUser = user;

@@ -7,6 +7,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 public class MyUser{
@@ -22,21 +24,22 @@ public class MyUser{
     private String password;
     private Role role;
     private String image;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
-    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "currrentNutrionPlan")
-    private NutrionPlan nutrionPlan;
+    private ActivityLevel activityLevel;
+    private Gender gender;
+ /*   @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "currrentNutrionPlan"
+    private NutrionPlan currentNutrionPlan;*/
 
-    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "currentBodyMeasurement")
-    private Measurement bodyMeasurement;
+    @OneToMany(mappedBy = "myUser", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<NutrionPlan> nutrionPlans;
 
+    public List<NutrionPlan> getNutrionPlans() {
+        return nutrionPlans;
+    }
 
-    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "goalBodyMeasurementS")
-    private Measurement goalBodyMeasurements;
-
+    public void setNutrionPlans(List<NutrionPlan> nutrionPlans) {
+        this.nutrionPlans = nutrionPlans;
+    }
     //@OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     //@JoinColumn(name = "trainer_id")
     //private Trainer trainer;
@@ -44,6 +47,9 @@ public class MyUser{
     private WorkoutPlan currentWorkoutPlan;
     @OneToMany(mappedBy = "creator")
     private Set<WorkoutPlan> createdWorkoutPlans = new HashSet<>();
+
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 
     public String getPassword() {
         return password;
@@ -101,50 +107,16 @@ public class MyUser{
         this.role = role;
     }
 //
-//    public Gender getGender() { return gender; }
+    public Gender getGender() { return gender; }
 //
-//    public void setGender(Gender gender) { this.gender = gender; }
+    public void setGender(Gender gender) { this.gender = gender; }
 //
 //
-//    public ActivityLevel getActivityLevel() { return activityLevel; }
+    public ActivityLevel getActivityLevel() { return activityLevel; }
 //
-//    public void setActivityLevel(ActivityLevel activityLevel) {
-//        this.activityLevel = activityLevel;
-//    }
-
-    public void setNutrionPlan(NutrionPlan nutrionPlan) {
-
-        this.nutrionPlan = nutrionPlan;
+    public void setActivityLevel(ActivityLevel activityLevel) {
+        this.activityLevel = activityLevel;
     }
-
-    public void setBodyMeasurement(Measurement bodyMeasurement) {
-        this.bodyMeasurement = bodyMeasurement;
-    }
-
-    public void setGoalBodyMeasurements(Measurement goalBodyMeasurements) {
-        this.goalBodyMeasurements = goalBodyMeasurements;
-    }
-
-
-    public NutrionPlan getNutrionPlan() {
-        return nutrionPlan;
-    }
-
-    public Measurement getBodyMeasurement() {
-        return bodyMeasurement;
-    }
-
-    public Measurement getGoalBodyMeasurements() {
-        return goalBodyMeasurements;
-    }
-
-//    public Trainer getTrainer() {
-//        return trainer;
-//    }
-//
-//    public void setTrainer(Trainer trainer) {
-//        this.trainer = trainer;
-//    }
 
     public LocalDateTime getCreatedAt() {
         return createdAt;
@@ -162,7 +134,9 @@ public class MyUser{
         this.updatedAt = updatedAt;
     }
 
-    public MyUser(){}
+    public MyUser(){
+        this.nutrionPlans = new ArrayList<>();
+    }
 
     //konstruktor sa podatcima iz signup forme
     public MyUser(@RequestBody SignupForm signupForm){
@@ -174,6 +148,7 @@ public class MyUser{
         // for purposes of testing
         this.role = Role.USER;
         //this.activityLevel=ActivityLevel.SEDENTARY;
+        this.nutrionPlans = new ArrayList<>();
     }
 
     @Override

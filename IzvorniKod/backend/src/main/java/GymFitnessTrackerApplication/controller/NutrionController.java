@@ -1,10 +1,12 @@
 package GymFitnessTrackerApplication.controller;
 
 
+import GymFitnessTrackerApplication.exception.NoNutrionPlanException;
 import GymFitnessTrackerApplication.model.dao.MyNutrionPlanRepo;
 import GymFitnessTrackerApplication.model.domain.MyUser;
 import GymFitnessTrackerApplication.model.domain.NutrionPlan;
 import GymFitnessTrackerApplication.model.dto.forms.NutrionPlanForm;
+import GymFitnessTrackerApplication.model.dto.response.BodyMeasurementsResponse;
 import GymFitnessTrackerApplication.model.dto.response.NutrionPlanResponse;
 import GymFitnessTrackerApplication.service.JwtService;
 import GymFitnessTrackerApplication.service.MyUserService;
@@ -17,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 import java.security.PublicKey;
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -33,51 +36,57 @@ public class NutrionController {
     @Autowired
     private NutrionService myNutrionService;
 
-    @Autowired
-    private MyNutrionPlanRepo nutrionPlanRepo;
-  /*  @PostMapping("")
-    public String stvoriPlan() {
-        return "Stvoren nutrion plan";
-    }*/
-
     @PostMapping("")
     public ResponseEntity<?> postNutrionPlan(@RequestBody NutrionPlanForm form, @RequestHeader("Authorization") String auth){
         String email= jwtService.extractEmail(auth.trim().substring(7));
         MyUser user = (MyUser) myUserService.getMyUser(email);
         NutrionPlan plan = myNutrionService.createNutrionPlan(user,form);
 
-        return ResponseEntity.status(200).body(new NutrionPlanResponse(plan.getId().toString(),user.getId().toString(),plan.getCalories(),plan.getProtein(),plan.getCarbs(),plan.getFat(),plan.getStartDate(),plan.getEndDate(),plan.getCreatedAt(),plan.getUpdatedAt()));
-        //(String id, String userId, float calories, float protein, float carbs, float fat, LocalDate startDate, java.time.LocalDate
-        //endDate, ZonedDateTime createdAt, ZonedDateTime updatedAt)
+        return ResponseEntity.status(200).body(new NutrionPlanResponse(plan));
     }
 
     @PutMapping("")
-    public ResponseEntity<?> updateNutrionPlan(@RequestBody NutrionPlanForm form, @RequestHeader("Authorization") String auth){
+    public ResponseEntity<?> updateCurrentNutrionPlan(@RequestBody NutrionPlanForm form, @RequestHeader("Authorization") String auth){
         String email= jwtService.extractEmail(auth.trim().substring(7));
         MyUser user = (MyUser) myUserService.getMyUser(email);
-        Optional<NutrionPlan> nutrionPlan = nutrionPlanRepo.findByMyUser(user);
-        NutrionPlan plan;
+        NutrionPlan plan = myNutrionService.getMyPlan(user);
 
-        if(nutrionPlan.isEmpty()){
-            plan = myNutrionService.createNutrionPlan(user,form);
+        if(plan == null){
+            //plan = myNutrionService.createNutrionPlan(user,form);
+            throw new NoNutrionPlanException("NO existing plan to update");
         }else{
-            myNutrionService.updateNutrionPlan(user,form);
-            plan = nutrionPlanRepo.findByMyUser(user).get();
+            myNutrionService.updateNutrionPlan(form,plan);
         }
 
-        return ResponseEntity.status(200).body(new NutrionPlanResponse(plan.getId().toString(),user.getId().toString(),plan.getCalories(),plan.getProtein(),plan.getCarbs(),plan.getFat(),plan.getStartDate(),plan.getEndDate(),plan.getCreatedAt(),plan.getUpdatedAt()));
-        //(String id, String userId, float calories, float protein, float carbs, float fat, LocalDate startDate, java.time.LocalDate
-        //endDate, ZonedDateTime createdAt, ZonedDateTime updatedAt)
+        //myUserService.updateCurrentNutrion(user,plan);
+
+        return ResponseEntity.status(200).body(new NutrionPlanResponse(plan));
+    }
+
+
+    @PutMapping("{id}")
+    public ResponseEntity<?> updateNutrionPlan(@RequestBody NutrionPlanForm form, @RequestHeader("Authorization") String auth,@PathVariable String id){
+        String email= jwtService.extractEmail(auth.trim().substring(7));
+        MyUser user = (MyUser) myUserService.getMyUser(email);
+        NutrionPlan plan = myNutrionService.getPlanFromId(id);
+
+        if(plan == null){
+            //plan = myNutrionService.createNutrionPlan(user,form);
+            throw new NoNutrionPlanException("NO existing plan to update");
+        }else{
+            myNutrionService.updateNutrionPlan(form,plan);
+        }
+
+        //myUserService.updateCurrentNutrion(user,plan);
+
+        return ResponseEntity.status(200).body(new NutrionPlanResponse(plan));
     }
 
     @GetMapping("")
     public ResponseEntity<?> getNutrionPlan(@RequestHeader("Authorization") String auth){
         String email = jwtService.extractEmail(auth.trim().substring(7));
         MyUser user = (MyUser) myUserService.getMyUser(email);
-        Optional<NutrionPlan> nutrionPlan = nutrionPlanRepo.findByMyUser(user);
-        if(nutrionPlan.isEmpty())
-            return ResponseEntity.status(404).body("No nutrition plan found");
-        NutrionPlan plan = nutrionPlan.get();
-        return ResponseEntity.status(200).body(new NutrionPlanResponse(plan.getId().toString(),user.getId().toString(),plan.getCalories(),plan.getProtein(),plan.getCarbs(),plan.getFat(),plan.getStartDate(),plan.getEndDate(),plan.getCreatedAt(),plan.getUpdatedAt()));
+        NutrionPlan plan = myNutrionService.getMyPlan(user);
+        return ResponseEntity.status(200).body(new NutrionPlanResponse(plan));
     }
 }
