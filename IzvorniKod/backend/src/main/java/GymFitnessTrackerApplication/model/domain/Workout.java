@@ -2,6 +2,7 @@ package GymFitnessTrackerApplication.model.domain;
 
 import jakarta.persistence.*;
 
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -13,20 +14,21 @@ public class Workout {
 
     private String name;
     private String description;
-    private Integer order;
+    private Integer orderNumber;
     @ManyToOne
     @JoinColumn(name = "workout_plan_id")
     private WorkoutPlan workoutPlan;
-    @OneToMany(mappedBy = "workout")
+    @OneToMany(mappedBy = "workout", cascade = CascadeType.ALL)
     private Set<PlannedExercise> plannedExerciseExercises;
 
     public Workout() {}
 
-    public Workout(String name, String description, Integer order, WorkoutPlan workoutPlan) {
+    public Workout(String name, String description, Integer orderNumber, WorkoutPlan workoutPlan) {
         this.name = name;
         this.description = description;
-        this.order = order;
+        this.orderNumber = orderNumber;
         this.workoutPlan = workoutPlan;
+        plannedExerciseExercises = new HashSet<>();
     }
 
     public Long getId() {
@@ -41,8 +43,8 @@ public class Workout {
         return description;
     }
 
-    public Integer getOrder() {
-        return order;
+    public Integer getorderNumber() {
+        return orderNumber;
     }
 
     public WorkoutPlan getWorkoutPlan() {
@@ -51,5 +53,9 @@ public class Workout {
 
     public Set<PlannedExercise> getPlannedExerciseExercises() {
         return plannedExerciseExercises;
+    }
+
+    public void addPlannedExercise(PlannedExercise plannedExercise) {
+        plannedExerciseExercises.add(plannedExercise);
     }
 }

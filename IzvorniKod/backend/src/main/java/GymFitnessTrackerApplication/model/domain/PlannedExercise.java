@@ -15,19 +15,20 @@ public class PlannedExercise {
     private Integer sets;
     private Integer reps;
     private Integer rpe;
-    private Integer order;
+    private Integer orderNumber;
     @ManyToOne
     @JoinColumn(name = "workout_id", referencedColumnName = "id")
     private Workout workout;
 
     public PlannedExercise() {}
 
-    public PlannedExercise(Integer sets, Integer reps, Integer rpe, Integer order, Exercise exercise) {
+    public PlannedExercise(Integer sets, Integer reps, Integer rpe, Integer order, Exercise exercise, Workout workout) {
         this.sets = sets;
         this.reps = reps;
         this.rpe = rpe;
-        this.order = order;
+        this.orderNumber = order;
         this.exercise = exercise;
+        this.workout = workout;
     }
 
     public Long getId() {
@@ -46,8 +47,8 @@ public class PlannedExercise {
         return rpe;
     }
 
-    public Integer getOrder() {
-        return order;
+    public Integer getOrderNumber() {
+        return orderNumber;
     }
 
     public Exercise getExercise() {

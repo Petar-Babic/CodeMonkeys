@@ -8,5 +8,5 @@ import java.util.List;
 
 public interface WorkoutPlanRepo extends JpaRepository<WorkoutPlan, Long> {
     List<WorkoutPlan> findByCreator(MyUser user);
-    List<WorkoutPlan> findByOriginalWorkoutPlanIsNull();
+    List<WorkoutPlan> findByOwnerIsNull();
 }

@@ -1,6 +1,5 @@
 package GymFitnessTrackerApplication.model.dao;
 
-import GymFitnessTrackerApplication.model.domain.Goals;
 import GymFitnessTrackerApplication.model.domain.MyUser;
 import GymFitnessTrackerApplication.model.domain.NutrionPlan;
 import org.springframework.data.jpa.repository.JpaRepository;

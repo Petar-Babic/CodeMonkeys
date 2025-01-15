@@ -2,7 +2,6 @@ package GymFitnessTrackerApplication.service;
 
 import GymFitnessTrackerApplication.exception.NonExistantToken;
 import GymFitnessTrackerApplication.exception.RefreshTokenExpiredException;
-import GymFitnessTrackerApplication.model.dao.MyStatsGoalsRepo;
 import GymFitnessTrackerApplication.model.dao.MyUserRepository;
 import GymFitnessTrackerApplication.model.dao.RefreshTokenRepo;
 import GymFitnessTrackerApplication.model.domain.MyUser;

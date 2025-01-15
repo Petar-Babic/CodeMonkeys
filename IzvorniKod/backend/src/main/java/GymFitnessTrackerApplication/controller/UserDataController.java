@@ -1,9 +1,7 @@
 package GymFitnessTrackerApplication.controller;
 
-import GymFitnessTrackerApplication.model.dao.MyStatsGoalsRepo;
 import GymFitnessTrackerApplication.model.domain.Measurement;
 import GymFitnessTrackerApplication.model.domain.MyUser;
-import GymFitnessTrackerApplication.model.domain.Goals;
 import GymFitnessTrackerApplication.model.dto.forms.BodyGoalsForm;
 import GymFitnessTrackerApplication.model.dto.forms.BodyMeasurementForm;
 import GymFitnessTrackerApplication.model.dto.response.BodyGoalsResponse;
@@ -24,10 +22,6 @@ public class UserDataController {
 
     @Autowired
     private  MyMeasurementsService myMeasurementsService;
-    @Autowired
-    private MyGoalsStatsService myGoalsStatsService;
-    @Autowired
-    private MyStatsGoalsRepo statsRepo;
 
     @Autowired
     private MyUserService myUserService;
@@ -75,22 +69,24 @@ public class UserDataController {
                       //new BodyGoalsResponse(user.getId().toString(), goals.getHeight(), goals.getWeight(), goals.getGoalWeight(), goals.getActivityLevel().name(), goals.getGender().name(), goals.getTimelineWeeks(), goals.getProtein(), goals.getCarbs(), goals.getFat(), goals.getCalories(), goals.getCreatedAt(), goals.getCreatedAt())
                       "lol");
       }*/
-    @GetMapping("/info")
-    public ResponseEntity<?> getInfoAbtUser(@RequestHeader("Authorization") String auth){
-        String email = jwtService.extractEmail(auth.trim().substring(7));
-        MyUser user = (MyUser) myUserService.getMyUser(email);
-        Optional<Goals> statsGoals = statsRepo.findById(user.getId());
 
-        if(statsGoals.isEmpty()){
-            return ResponseEntity.status(HttpStatus.valueOf(403)).body("No user stats");
-        }
-        Goals stats = statsGoals.get();
-        return ResponseEntity.status(HttpStatus.OK).body(
-                //new InfoResponse(stats.getHeight(),stats.getWeight(),stats.getGoalWeight(),stats.getActivityLevel().toString(),stats.getGender().toString())
-                "lol");
-
-
-    }
+//VRATI POSLIJE
+//    @GetMapping("/info")
+//    public ResponseEntity<?> getInfoAbtUser(@RequestHeader("Authorization") String auth){
+//        String email = jwtService.extractEmail(auth.trim().substring(7));
+//        MyUser user = (MyUser) myUserService.getMyUser(email);
+//        Optional<Goals> statsGoals = statsRepo.findById(user.getId());
+//
+//        if(statsGoals.isEmpty()){
+//            return ResponseEntity.status(HttpStatus.valueOf(403)).body("No user stats");
+//        }
+//        Goals stats = statsGoals.get();
+//        return ResponseEntity.status(HttpStatus.OK).body(
+//                //new InfoResponse(stats.getHeight(),stats.getWeight(),stats.getGoalWeight(),stats.getActivityLevel().toString(),stats.getGender().toString())
+//                "lol");
+//
+//
+//    }
 
     /*da ne izgubim primjer
     @PostMapping("/body-measurements")
@@ -121,7 +117,6 @@ public class UserDataController {
         if (file.isEmpty()) {
             return ResponseEntity.badRequest().body("File is empty");
         }
-        System.out.println("treba se uploadat");
         String email = jwtService.extractEmail(token.trim().substring(7));
         myUserService.deleteFile(email);
         myUserService.uploadFile(email,file);
