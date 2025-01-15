@@ -3,6 +3,8 @@ package GymFitnessTrackerApplication.model.domain;
 import GymFitnessTrackerApplication.model.dto.forms.WorkoutPlanForm;
 import jakarta.persistence.*;
 
+import java.util.Set;
+
 @Entity
 public class WorkoutPlan {
 
@@ -12,16 +14,18 @@ public class WorkoutPlan {
     private String name;
     private String description;
     private String image;
-    //created by user
     @ManyToOne
     @JoinColumn(name = "created_by_user_id")
     private MyUser creator;
     @OneToOne
-    @JoinColumn(name = "owner_user_id")
+    @JoinColumn(name = "owner_user_id")  //predstavlja trenutni workoutPlan
     private MyUser owner;
     @ManyToOne
     @JoinColumn(name = "original_workout_plan_id")
     private WorkoutPlan originalWorkoutPlan;
+    @OneToMany(mappedBy = "workoutPlan")
+    private Set<Workout> workouts;
+
 
     public WorkoutPlan(String name, String description, String image, MyUser creator, MyUser owner) {
         this.name = name;

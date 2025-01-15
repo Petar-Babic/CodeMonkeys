@@ -5,6 +5,8 @@ import jakarta.persistence.*;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 public class MyUser{
@@ -13,21 +15,15 @@ public class MyUser{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne(mappedBy = "myUser", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Goals goals;
-
-
     private String name;
     @Column(unique = true, nullable = false)
     private String email;
-
     private Boolean emailVerified;
-
     private String password;
     private Role role;
     private String image;
-   // ActivityLevel activityLevel;
-
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "currrentNutrionPlan")
     private NutrionPlan nutrionPlan;
@@ -44,8 +40,10 @@ public class MyUser{
     //@OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     //@JoinColumn(name = "trainer_id")
     //private Trainer trainer;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
+    @OneToOne(mappedBy = "owner")
+    private WorkoutPlan currentWorkoutPlan;
+    @OneToMany(mappedBy = "creator")
+    private Set<WorkoutPlan> createdWorkoutPlans = new HashSet<>();
 
     public String getPassword() {
         return password;
@@ -127,9 +125,6 @@ public class MyUser{
         this.goalBodyMeasurements = goalBodyMeasurements;
     }
 
-    public Goals getGoals() {
-        return goals;
-    }
 
     public NutrionPlan getNutrionPlan() {
         return nutrionPlan;
