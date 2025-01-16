@@ -66,10 +66,6 @@ function useAuth(): AuthContextType {
     setLoading(status === "loading");
   }, [session, status]);
 
-  useEffect(() => {
-    console.log("User:", user);
-  }, [user]);
-
   const login = useCallback(
     async (credentials: LoginCredentials): Promise<SignInResponse> => {
       try {
@@ -163,6 +159,7 @@ function useAuth(): AuthContextType {
   return {
     user,
     session: session as SessionWithRelations | null,
+    accessToken: session?.accessToken || null,
     isAuthenticated,
     login,
     signUp,

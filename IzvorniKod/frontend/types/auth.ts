@@ -16,12 +16,14 @@ export type SignUpCredentials = {
 export type LoginResponse = {
   user: UserBase;
   session: SessionWithRelations;
+  accessToken: string;
 };
 
 export type AuthState = {
   user: UserBase | null;
   session: SessionWithRelations | null;
   isAuthenticated: boolean;
+  accessToken: string | null;
 };
 
 export type AuthActions = {

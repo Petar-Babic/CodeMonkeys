@@ -143,17 +143,18 @@ public class NutrionPlan {
 
     }
     public NutrionPlan(MyUser user, @RequestBody NutrionPlanForm form){
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         this.myUser = user;
-        this.calories=form.getCalories();
-        this.fat=form.getFat();
-        this.carbs=form.getCarbs();
-        this.protein=form.getProtein();
-        this.startDate=LocalDate.parse(form.getStartDate(),formatter);
-        this.endDate = LocalDate.parse(form.getEndDate(),formatter);
+        this.calories = form.getCalories();
+        this.fat = form.getFat();
+        this.carbs = form.getCarbs();
+        this.protein = form.getProtein();
+        
+        // Parse ISO format date and extract only the date part
+        this.startDate = LocalDate.parse(form.getStartDate().substring(0, 10));
+        this.endDate = LocalDate.parse(form.getEndDate().substring(0, 10));
+        
         this.createdAt = ZonedDateTime.now();
         this.updatedAt = ZonedDateTime.now();
-
     }
 
 }

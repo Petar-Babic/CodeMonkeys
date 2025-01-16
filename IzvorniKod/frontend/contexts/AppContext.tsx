@@ -40,6 +40,8 @@ type AppContextType = UseUserContextType &
   UseMuscleGroupContextType &
   UseUserWorkoutPlanType & {
     isLoading: boolean;
+  } & {
+    accessToken: string;
   };
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -55,6 +57,7 @@ export function AppProvider({
     nutritionPlan: NutritionPlanBase | null;
     userWorkoutPlan: UserWorkoutPlanWithRelations | null;
     workoutPlans: WorkoutPlanBase[];
+    accessToken: string;
   };
 }) {
   const userContext = useUser();
@@ -64,6 +67,10 @@ export function AppProvider({
   const workoutPlanContext = useWorkoutPlan();
   const userWorkoutPlanContext = useUserWorkoutPlan();
   const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    localStorage.setItem("accessToken", initialData.accessToken);
+  }, [initialData.accessToken]);
 
   const { setExercises } = exerciseContext;
   const { setMuscleGroups } = muscleGroupContext;
@@ -77,7 +84,6 @@ export function AppProvider({
     setWorkoutPlans(initialData.workoutPlans);
     setUserWorkoutPlan(initialData.userWorkoutPlan);
     setNutritionPlan(initialData.nutritionPlan);
-
     setIsLoading(false);
   }, [
     initialData,
@@ -97,6 +103,7 @@ export function AppProvider({
       ...workoutPlanContext,
       ...userWorkoutPlanContext,
       isLoading: isLoading,
+      accessToken: initialData.accessToken,
     }),
     [
       userContext,
@@ -106,6 +113,7 @@ export function AppProvider({
       workoutPlanContext,
       userWorkoutPlanContext,
       isLoading,
+      initialData.accessToken,
     ]
   );
 

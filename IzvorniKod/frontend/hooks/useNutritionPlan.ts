@@ -1,11 +1,11 @@
 "use client";
 
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback } from "react";
 import {
   CreateNutritionPlanInput,
   NutritionPlanBase,
 } from "@/types/nutritionPlan";
-import { nutritionPlans as initialNutritionPlans } from "@/data/nutritionPlan";
+import { backendUrl } from "@/data/backendUrl";
 
 export function useNutritionPlan() {
   const [isLoadingNutritionalPlan, setIsLoadingNutritionalPlan] =
@@ -15,30 +15,42 @@ export function useNutritionPlan() {
     null
   );
 
-  useEffect(() => {
-    console.log("Nutrition plan:", nutritionPlan);
-  }, [nutritionPlan]);
-
   const createNutritionPlan = useCallback(
     async (data: CreateNutritionPlanInput) => {
       setError(null);
       try {
-        await new Promise((resolve) => setTimeout(resolve, 1000));
+        const token = localStorage.getItem("accessToken");
+        if (!token) {
+          throw new Error("No access token available");
+        }
 
-        // Simulated logic (replace with actual API call)
-        const newNutritionPlan: NutritionPlanBase = {
-          id: `nutrition${initialNutritionPlans.length + 1}`,
-          ...data,
-          createdAt: new Date(),
-          updatedAt: new Date(),
-        };
+        console.log("Access token:", token);
+        console.log("data for nutrition plan:", data);
+
+        const response = await fetch(`${backendUrl}/api/nutrition-plan`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+            Accept: "application/json",
+            "X-Requested-With": "XMLHttpRequest",
+          },
+          credentials: "include",
+          body: JSON.stringify(data),
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const newNutritionPlan = await response.json();
         setNutritionPlan(newNutritionPlan);
-
         return newNutritionPlan;
       } catch (err) {
         setError(
           err instanceof Error ? err.message : "An unknown error occurred"
         );
+        console.log("Error creating nutrition plan:", err);
         throw err;
       }
     },
@@ -53,21 +65,28 @@ export function useNutritionPlan() {
       console.log("Getting nutrition plan for user:", userId);
 
       try {
-        await new Promise((resolve) => setTimeout(resolve, 1000));
-
-        // Find the nutrition plan for the given user
-        const plan = initialNutritionPlans.find(
-          (plan) => plan.userId === userId
-        );
-        if (!plan) {
-          console.error("Nutrition plan not found for user:", userId);
-          return false;
-        } else {
-          setIsLoadingNutritionalPlan(false);
-          setNutritionPlan(plan);
-          console.log("Nutrition plan found:", plan);
-          return true;
+        const token = localStorage.getItem("accessToken");
+        if (!token) {
+          throw new Error("No access token available");
         }
+
+        const response = await fetch(`${backendUrl}/api/nutrition-plan`, {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            Accept: "application/json",
+            "X-Requested-With": "XMLHttpRequest",
+          },
+          credentials: "include",
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const plan = await response.json();
+        setNutritionPlan(plan);
+        return true;
       } catch (err) {
         console.error("Error getting nutrition plan:", err);
         return false;

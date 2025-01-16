@@ -2,12 +2,11 @@ export type ExerciseBase = {
   id: string;
   name: string;
   description?: string;
-  gifUrl?: string;
+  gif?: string;
   createdById: string;
   isApproved: boolean;
-  categoryId: string;
-  primaryMuscleGroupId: string[];
-  secondaryMuscleGroupIds: string[];
+  primaryMuscleGroupsIds: string[];
+  secondaryMuscleGroupsIds: string[];
   createdAt: Date;
   updatedAt: Date;
 };

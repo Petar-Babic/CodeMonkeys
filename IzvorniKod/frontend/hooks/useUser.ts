@@ -37,21 +37,12 @@ export function useUser() {
           fat: data.fat,
           calories: data.calories,
           startDate: new Date(),
-          // endDate is the current date + values.durations weeks
           endDate: new Date(
             new Date().getTime() + data.timelineWeeks * 7 * 24 * 60 * 60 * 1000
           ),
         });
 
         console.log("Nutrition plan:", nutritionPlan);
-
-        // const updatedUser = { ...user };
-        // updatedUser.height = convertToCm(data.height, data.isHeightImperial);
-        // updatedUser.weight = convertToKg(data.weight, data.isWeightImperial);
-        // updatedUser.activityLevel = data.activityLevel;
-        // updatedUser.gender = data.gender;
-        // updatedUser.currentNutritionPlanId = nutritionPlan.id;
-        // updatedUser.updatedAt = new Date();
 
         const updatedUser = {
           ...user,
@@ -77,57 +68,11 @@ export function useUser() {
     [user, setUser, createNutritionPlan]
   );
 
-  const changeUserWeight = useCallback(
-    async (newWeight: number) => {
-      if (!user) throw new Error("User not authenticated");
-      setIsLoading(true);
-      setError(null);
-      try {
-        setUser({
-          ...user,
-          weight: convertToKg(newWeight, false),
-          updatedAt: new Date(),
-        });
-      } catch (err) {
-        setError(
-          err instanceof Error ? err.message : "An unknown error occurred"
-        );
-      } finally {
-        setIsLoading(false);
-      }
-    },
-    [user, setUser]
-  );
-
-  const changeUserHeight = useCallback(
-    async (newHeight: number) => {
-      if (!user) throw new Error("User not authenticated");
-      setIsLoading(true);
-      setError(null);
-      try {
-        setUser({
-          ...user,
-          height: convertToCm(newHeight, false),
-          updatedAt: new Date(),
-        });
-      } catch (err) {
-        setError(
-          err instanceof Error ? err.message : "An unknown error occurred"
-        );
-      } finally {
-        setIsLoading(false);
-      }
-    },
-    [user, setUser]
-  );
-
   return {
     user,
     isLoading,
     error,
     bodyStatsAndGoal,
-    changeUserWeight,
-    changeUserHeight,
   } as UseUserContextType;
 }
 

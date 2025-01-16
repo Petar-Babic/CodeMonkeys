@@ -1,12 +1,12 @@
 export type BodyMeasurementBase = {
   id: string;
-  userId: string;
-  date: Date;
   chest?: number;
   waist?: number;
   hips?: number;
   thighs?: number;
   biceps?: number;
+  weight?: number;
+  height?: number;
   createdAt: Date;
   updatedAt: Date;
 };

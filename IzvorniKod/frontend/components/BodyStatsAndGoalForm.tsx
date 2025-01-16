@@ -135,10 +135,10 @@ export default function BodyStatsAndGoalForm() {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      height: user?.height?.toString() || "",
+      height: "180",
       isHeightImperial: false,
       gender: "male",
-      weight: user?.weight?.toString() || "",
+      weight: "",
       isWeightImperial: false,
       goalWeight: "",
       isGoalWeightImperial: false,
@@ -272,7 +272,7 @@ export default function BodyStatsAndGoalForm() {
       router.push("/workouts");
     } catch (error) {
       router.push("/sign-in");
-      console.error("Failed to update user data:", error);
+      console.error("Body stats and goal error:", error);
     } finally {
       setIsLoadingNutritionalPlan(false);
     }
@@ -306,7 +306,7 @@ export default function BodyStatsAndGoalForm() {
   };
 
   return (
-    <div className="flex flex-col bg-black/80 max-xl:pt-[2rem]  items-center h-screen justify-center overflow-auto w-full 2xl:w-2/5 xl:w-2/5 lg:w-1/2 md:w-full px-8 sm:px-24 xl:px-28 2xl:px-[10%] relative">
+    <div className="flex flex-col bg-black/80 max-xl:pt-[2rem]  items-center h-screen justify-center overflow-auto w-full 2xl:w-2/5 xl:w-2/5  lg:w-full px-8 sm:px-24 xl:px-28 2xl:px-[10%] relative">
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
