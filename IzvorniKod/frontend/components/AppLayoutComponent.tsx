@@ -13,10 +13,12 @@ import { UserWorkoutPlanWithRelations } from "@/types/userWorkoutPlan";
 import { WorkoutPlanBase } from "@/types/workoutPlan";
 import NutritionPlanRedirect from "./NutritionPlanRedirect";
 import { backendUrl } from "@/data/backendUrl";
+import { UserBase } from "@/types/user";
 
 const getInitialData = async (
   userId: string,
-  accessToken: string
+  accessToken: string,
+  refreshToken: string
 ): Promise<{
   exercises: ExerciseBase[];
   muscleGroups: MuscleGroupBase[];
@@ -24,11 +26,28 @@ const getInitialData = async (
   userWorkoutPlan: UserWorkoutPlanWithRelations | null;
   workoutPlans: WorkoutPlanBase[];
   accessToken: string;
+  refreshToken: string;
+  user: UserBase | null;
 }> => {
   const filteredExercises = predefinedExercises.filter(
     (exercise: ExerciseBase) =>
       exercise.isApproved || exercise.createdById === userId
   );
+
+  let user = null;
+
+  try {
+    user = await fetch(`${backendUrl}/api/user/profile`, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+      credentials: "include",
+    }).then((response) => response.json());
+
+    console.log("GET /api/user/profile", user);
+  } catch (error) {
+    console.error("Error fetching user:", error);
+  }
 
   let nutritionPlan = null;
   try {
@@ -39,7 +58,6 @@ const getInitialData = async (
       credentials: "include",
       mode: "cors",
     }).then((response) => {
-      console.log("response", response);
       return response.json();
     });
   } catch (error) {
@@ -56,6 +74,8 @@ const getInitialData = async (
     userWorkoutPlan,
     workoutPlans,
     accessToken,
+    refreshToken,
+    user,
   };
 };
 
@@ -63,15 +83,17 @@ export default async function AppLayoutComponent({
   children,
   userId,
   accessToken,
+  refreshToken,
 }: Readonly<{
   children: React.ReactNode;
   userId: string;
   accessToken: string;
+  refreshToken: string;
 }>) {
-  const initialData = await getInitialData(userId, accessToken);
+  const initialData = await getInitialData(userId, accessToken, refreshToken);
 
   console.log("nutritionPlan", initialData.nutritionPlan);
-
+  console.log("user", initialData.user);
   if (initialData.nutritionPlan) {
     return (
       <AuthProvider>

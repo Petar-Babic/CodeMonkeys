@@ -68,7 +68,6 @@ public class NutrionController {
             return ResponseEntity.status(200).body(new NutrionPlanResponse(plan));
         } catch (Exception e) {
             System.out.println("Error in getNutrionPlan: " + e.getMessage());
-            e.printStackTrace();
             throw e;
         }
     }
@@ -98,7 +97,7 @@ public class NutrionController {
             throw new NoNutrionPlanException("NO existing plan to update");
         } else {
             myNutrionService.updateNutrionPlan(form,plan);
-        }
+        }   
 
         return ResponseEntity.status(200).body(new NutrionPlanResponse(plan));
     }

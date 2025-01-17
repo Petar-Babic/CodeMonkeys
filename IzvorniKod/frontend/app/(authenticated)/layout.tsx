@@ -13,6 +13,10 @@ export default async function AppLayout({
 
   const userId = session?.user.id;
   const accessToken = session?.accessToken;
+  const refreshToken = session?.refreshToken;
+
+  console.log("/app/(authenticated)/layout refreshToken", refreshToken);
+  console.log("/app/(authenticated)/layout accessToken", accessToken);
 
   if (!session) {
     // Redirect to login or show an error
@@ -21,7 +25,11 @@ export default async function AppLayout({
 
   return (
     <Suspense fallback={<LoadingAppScreen />}>
-      <AppLayoutComponent userId={userId ?? ""} accessToken={accessToken ?? ""}>
+      <AppLayoutComponent
+        userId={userId ?? ""}
+        accessToken={accessToken ?? ""}
+        refreshToken={refreshToken ?? ""}
+      >
         {children}
       </AppLayoutComponent>
     </Suspense>

@@ -10,6 +10,7 @@ import { backendUrl } from "@/data/backendUrl";
 declare module "next-auth" {
   interface Session extends SessionWithRelations {
     accessToken: string;
+    refreshToken?: string;
     user: {
       id: string;
       name: string;
@@ -26,6 +27,7 @@ declare module "next-auth" {
     email: string;
     role: string;
     accessToken?: string;
+    refreshToken?: string;
     provider?: string;
   }
 }
@@ -35,6 +37,7 @@ declare module "next-auth/jwt" {
     id: string;
     role: string;
     accessToken?: string;
+    refreshToken?: string;
     provider?: string;
   }
 }
@@ -71,12 +74,32 @@ export const authOptions: NextAuthOptions = {
           const data = await response.json();
           console.log(data);
 
+          // Dohvaćanje refresh tokena iz cookiesa
+          const cookies = response.headers.get("set-cookie");
+          let refreshToken;
+          if (cookies) {
+            refreshToken = cookies
+              .split(";")
+              .find((cookie) => cookie.trim().startsWith("Refresh="))
+              ?.split("=")[1];
+
+            console.log("refreshToken", refreshToken);
+          }
+
+          if (!refreshToken) {
+            throw new Error("No refresh token in response");
+          }
+
+          // i will delete this later
+          // i just want to test the Post/ api/auth/refresh
+
           return {
             id: data.id,
             email: data.email,
             name: data.name,
             role: data.role,
             accessToken: data.token,
+            refreshToken: refreshToken,
           };
         } catch (error) {
           console.error("Authentication error:", error);
@@ -162,17 +185,26 @@ export const authOptions: NextAuthOptions = {
     },
     async jwt({ token, user, account }) {
       if (user) {
+        if (!user.refreshToken) {
+          throw new Error("refreshToken is not set in user");
+        }
+
         token.id = user.id;
         token.email = user.email;
         token.name = user.name;
         token.role = user.role;
         token.accessToken = user.accessToken;
+        token.refreshToken = user.refreshToken;
         token.provider = account?.provider;
       }
       return token;
     },
     async session({ session, token }) {
-      console.log(session);
+      console.log("session", session);
+
+      if (!token.refreshToken) {
+        throw new Error("refreshToken is not set in token");
+      }
 
       session.user = {
         id: token.id,
@@ -184,6 +216,7 @@ export const authOptions: NextAuthOptions = {
       } as Session["user"];
 
       session.accessToken = token.accessToken || "";
+      session.refreshToken = token.refreshToken;
 
       return session;
     },

@@ -36,4 +36,17 @@ export type AuthActions = {
   socialLogin: (provider: string) => Promise<SignInResponse>;
 };
 
-export type AuthContextType = AuthState & AuthActions;
+export type AuthContextType = {
+  user: UserBase | null;
+  session: SessionWithRelations | null;
+  accessToken: string | null;
+  refreshToken: string | null;
+  isAuthenticated: boolean;
+  login: (credentials: LoginCredentials) => Promise<SignInResponse>;
+  signUp: (credentials: SignUpCredentials) => Promise<void>;
+  logout: () => Promise<void>;
+  setUser: React.Dispatch<React.SetStateAction<UserBase | null>>;
+  loading: boolean;
+  socialLogin: (provider: string) => Promise<SignInResponse>;
+  getNutritionPlan: (userId: string) => Promise<boolean>;
+};

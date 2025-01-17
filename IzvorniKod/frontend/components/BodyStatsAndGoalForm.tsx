@@ -122,7 +122,7 @@ const formSchema = z.object({
 
 export default function BodyStatsAndGoalForm() {
   const router = useRouter();
-  const { user, bodyStatsAndGoal } = useAppContext();
+  const { user, bodyStatsAndGoal, getNutritionPlan } = useAppContext();
   const [currentStep, setCurrentStep] = useState(1);
   const [calculatedCalories, setCalculatedCalories] = useState<number | null>(
     null
@@ -132,15 +132,25 @@ export default function BodyStatsAndGoalForm() {
   const [isLoadingNutritionalPlan, setIsLoadingNutritionalPlan] =
     useState(false);
 
+  useEffect(() => {
+    const isExistingPlan = async () => {
+      const isExistingPlan = await getNutritionPlan();
+      if (isExistingPlan) {
+        router.push("/workouts");
+      }
+    };
+    isExistingPlan();
+  }, []);
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       height: "180",
       isHeightImperial: false,
       gender: "male",
-      weight: "",
+      weight: "90",
       isWeightImperial: false,
-      goalWeight: "",
+      goalWeight: "85",
       isGoalWeightImperial: false,
       activityLevel: "moderate",
       protein: 0,

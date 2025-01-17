@@ -57,9 +57,11 @@ function useAuth(): AuthContextType {
 
   useEffect(() => {
     if (status === "authenticated" && session?.user) {
+      console.log("Session authenticated, setting user:", session.user);
       setUser(session.user as UserBase);
       setIsAuthenticated(true);
     } else {
+      console.log("Session not authenticated, clearing user");
       setUser(null);
       setIsAuthenticated(false);
     }
@@ -160,6 +162,7 @@ function useAuth(): AuthContextType {
     user,
     session: session as SessionWithRelations | null,
     accessToken: session?.accessToken || null,
+    refreshToken: session?.refreshToken || null,
     isAuthenticated,
     login,
     signUp,

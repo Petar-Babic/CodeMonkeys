@@ -36,7 +36,7 @@ public class SecurityConfiguration {
                     registry.requestMatchers("/home","/get", "/api/auth/**").permitAll();
                     registry.requestMatchers("/admin/**").hasRole("ADMIN");
                     registry.requestMatchers("/trainer/**").hasRole("TRAINER");
-                    registry.requestMatchers("/user/**", "/api/nutrition-plan/**").hasRole("USER");
+                    registry.requestMatchers("/user/**", "/api/nutrition-plan/**", "/api/user/**").hasRole("USER");
                     registry.anyRequest().authenticated();
                 })
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)

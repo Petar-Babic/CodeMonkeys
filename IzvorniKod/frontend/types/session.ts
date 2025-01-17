@@ -5,6 +5,7 @@ export type SessionBase = {
   id: string;
   accessToken?: string;
   userId: string;
+  refreshToken?: string;
   expires: Date;
 };
 

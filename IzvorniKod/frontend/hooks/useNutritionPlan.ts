@@ -57,45 +57,40 @@ export function useNutritionPlan() {
     []
   );
 
-  const getNutritionPlan = useCallback(
-    async (userId: string): Promise<boolean> => {
-      setIsLoadingNutritionalPlan(true);
-      setError(null);
+  const getNutritionPlan = useCallback(async (): Promise<boolean> => {
+    setIsLoadingNutritionalPlan(true);
+    setError(null);
 
-      console.log("Getting nutrition plan for user:", userId);
-
-      try {
-        const token = localStorage.getItem("accessToken");
-        if (!token) {
-          throw new Error("No access token available");
-        }
-
-        const response = await fetch(`${backendUrl}/api/nutrition-plan`, {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            Accept: "application/json",
-            "X-Requested-With": "XMLHttpRequest",
-          },
-          credentials: "include",
-        });
-
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
-        const plan = await response.json();
-        setNutritionPlan(plan);
-        return true;
-      } catch (err) {
-        console.error("Error getting nutrition plan:", err);
-        return false;
-      } finally {
-        setIsLoadingNutritionalPlan(false);
+    try {
+      const token = localStorage.getItem("accessToken");
+      if (!token) {
+        throw new Error("No access token available");
       }
-    },
-    []
-  );
+
+      const response = await fetch(`${backendUrl}/api/nutrition-plan`, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          Accept: "application/json",
+          "X-Requested-With": "XMLHttpRequest",
+        },
+        credentials: "include",
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const plan = await response.json();
+      setNutritionPlan(plan);
+      return true;
+    } catch (err) {
+      console.error("Error getting nutrition plan:", err);
+      return false;
+    } finally {
+      setIsLoadingNutritionalPlan(false);
+    }
+  }, []);
 
   return {
     isLoadingNutritionalPlan,
@@ -115,5 +110,5 @@ export type UseNutritionPlanContextType = {
   ) => Promise<NutritionPlanBase>;
   nutritionPlan: NutritionPlanBase | null;
   setNutritionPlan: (plan: NutritionPlanBase | null) => void;
-  getNutritionPlan: (userId: string) => Promise<boolean>;
+  getNutritionPlan: () => Promise<boolean>;
 };

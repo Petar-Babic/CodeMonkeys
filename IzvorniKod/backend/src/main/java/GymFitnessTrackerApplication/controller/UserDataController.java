@@ -7,6 +7,7 @@ import GymFitnessTrackerApplication.model.domain.NutrionPlan;
 import GymFitnessTrackerApplication.model.dto.forms.BodyGoalsForm;
 import GymFitnessTrackerApplication.model.dto.forms.BodyMeasurementForm;
 import GymFitnessTrackerApplication.model.dto.response.BodyMeasurementsResponse;
+import GymFitnessTrackerApplication.model.dto.response.UserInfoResponse;
 import GymFitnessTrackerApplication.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -77,6 +78,12 @@ public class UserDataController {
 
     @PostMapping("/body-stats-and-goals")
     public ResponseEntity<?> setGoals(@RequestBody BodyGoalsForm form, @RequestHeader("Authorization") String auth){
+        
+        // ispisi da znam kada se ovo izvrsava
+        System.out.println("POST /api/user/body-stats-and-goals");
+        System.out.println("form: " + form);
+        System.out.println("auth: " + auth);
+
         String email= jwtService.extractEmail(auth.trim().substring(7));
         MyUser user = (MyUser) myUserService.getMyUser(email);
         myUserService.updateUserFromForm(user,form);
@@ -86,6 +93,23 @@ public class UserDataController {
         return ResponseEntity.status(HttpStatus.valueOf(200)).body("Created nutrion plan and goal body measurements");
     }
 
+    @GetMapping("/profile")
+    public ResponseEntity<?> getUserFullData(@RequestHeader("Authorization") String auth) {
+    String email = jwtService.extractEmail(auth.trim().substring(7));
+    MyUser user = (MyUser) myUserService.getMyUser(email);
+
+    UserInfoResponse userInfo = new UserInfoResponse(
+        user.getId(),
+        user.getName(),
+        user.getEmail(),
+        user.getRole(),  // Assuming user.getRole() returns Role enum
+        user.getImage(),
+        user.getEmailVerified()
+    );
+    
+    System.out.println("GET /api/user/profile: " + userInfo);
+    return ResponseEntity.status(HttpStatus.valueOf(200)).body(userInfo);
+}
 
 
     /*  @PostMapping("/body-stats-and-goals")

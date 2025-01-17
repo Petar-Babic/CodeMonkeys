@@ -32,6 +32,8 @@ import { MuscleGroupBase } from "@/types/muscleGroup";
 import { NutritionPlanBase } from "@/types/nutritionPlan";
 import { UserWorkoutPlanWithRelations } from "@/types/userWorkoutPlan";
 import { WorkoutPlanBase } from "@/types/workoutPlan";
+import { UserBase } from "@/types/user";
+import { useAuthContext } from "./AuthContext";
 
 type AppContextType = UseUserContextType &
   UseNutritionPlanContextType &
@@ -42,6 +44,7 @@ type AppContextType = UseUserContextType &
     isLoading: boolean;
   } & {
     accessToken: string;
+    refreshToken: string;
   };
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -58,6 +61,8 @@ export function AppProvider({
     userWorkoutPlan: UserWorkoutPlanWithRelations | null;
     workoutPlans: WorkoutPlanBase[];
     accessToken: string;
+    refreshToken: string;
+    user: UserBase;
   };
 }) {
   const userContext = useUser();
@@ -70,13 +75,15 @@ export function AppProvider({
 
   useEffect(() => {
     localStorage.setItem("accessToken", initialData.accessToken);
-  }, [initialData.accessToken]);
+    localStorage.setItem("refreshToken", initialData.refreshToken);
+  }, [initialData.accessToken, initialData.refreshToken]);
 
   const { setExercises } = exerciseContext;
   const { setMuscleGroups } = muscleGroupContext;
   const { setWorkoutPlans } = workoutPlanContext;
   const { setUserWorkoutPlan } = userWorkoutPlanContext;
   const { setNutritionPlan } = nutritionPlanContext;
+  const { setUserData } = userContext;
 
   useEffect(() => {
     setExercises(initialData.exercises);
@@ -85,6 +92,7 @@ export function AppProvider({
     setUserWorkoutPlan(initialData.userWorkoutPlan);
     setNutritionPlan(initialData.nutritionPlan);
     setIsLoading(false);
+    setUserData(initialData.user);
   }, [
     initialData,
     setExercises,
@@ -92,6 +100,7 @@ export function AppProvider({
     setWorkoutPlans,
     setUserWorkoutPlan,
     setNutritionPlan,
+    setUserData,
   ]);
 
   const appContextValue = useMemo<AppContextType>(
@@ -104,6 +113,7 @@ export function AppProvider({
       ...userWorkoutPlanContext,
       isLoading: isLoading,
       accessToken: initialData.accessToken,
+      refreshToken: initialData.refreshToken,
     }),
     [
       userContext,
@@ -114,6 +124,7 @@ export function AppProvider({
       userWorkoutPlanContext,
       isLoading,
       initialData.accessToken,
+      initialData.refreshToken,
     ]
   );
 
