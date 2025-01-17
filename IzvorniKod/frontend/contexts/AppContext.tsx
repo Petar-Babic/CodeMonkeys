@@ -30,16 +30,19 @@ import {
 import { ExerciseBase } from "@/types/exercise";
 import { MuscleGroupBase } from "@/types/muscleGroup";
 import { NutritionPlanBase } from "@/types/nutritionPlan";
-import { UserWorkoutPlanWithRelations } from "@/types/userWorkoutPlan";
-import { WorkoutPlanBase } from "@/types/workoutPlan";
+import { WorkoutPlanBase, WorkoutPlanWithWorkouts } from "@/types/workoutPlan";
 import { UserBase } from "@/types/user";
-import { useAuthContext } from "./AuthContext";
+import {
+  useWorkoutSession,
+  UseWorkoutSessionType,
+} from "@/hooks/workoutSession";
 
 type AppContextType = UseUserContextType &
   UseNutritionPlanContextType &
   UseExerciseContextType &
   UseWorkoutPlanContextType &
   UseMuscleGroupContextType &
+  UseWorkoutSessionType &
   UseUserWorkoutPlanType & {
     isLoading: boolean;
   } & {
@@ -58,7 +61,7 @@ export function AppProvider({
     exercises: ExerciseBase[];
     muscleGroups: MuscleGroupBase[];
     nutritionPlan: NutritionPlanBase | null;
-    userWorkoutPlan: UserWorkoutPlanWithRelations | null;
+    userWorkoutPlan: WorkoutPlanWithWorkouts | null;
     workoutPlans: WorkoutPlanBase[];
     accessToken: string;
     refreshToken: string;
@@ -71,6 +74,7 @@ export function AppProvider({
   const muscleGroupContext = useMuscleGroup();
   const workoutPlanContext = useWorkoutPlan();
   const userWorkoutPlanContext = useUserWorkoutPlan();
+  const workoutSessionContext = useWorkoutSession();
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -110,6 +114,7 @@ export function AppProvider({
       ...muscleGroupContext,
       ...nutritionPlanContext,
       ...workoutPlanContext,
+      ...workoutSessionContext,
       ...userWorkoutPlanContext,
       isLoading: isLoading,
       accessToken: initialData.accessToken,
@@ -121,6 +126,7 @@ export function AppProvider({
       exerciseContext,
       muscleGroupContext,
       workoutPlanContext,
+      workoutSessionContext,
       userWorkoutPlanContext,
       isLoading,
       initialData.accessToken,

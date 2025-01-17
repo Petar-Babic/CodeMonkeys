@@ -1,5 +1,4 @@
 "use client";
-import { UserWorkoutWithUserPlannedExerciseCreateInput } from "@/types/userWorkout";
 import { useState } from "react";
 import { useAppContext } from "@/contexts/AppContext";
 import { useForm, useFieldArray } from "react-hook-form";
@@ -20,6 +19,7 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ChooseExercisesDrawer } from "./ChooseExercisesDrawer";
 import { Loader2 } from "lucide-react";
+import { WorkoutWithPlannedExerciseBaseCreateInput } from "@/types/workout";
 
 const formSchema = z.object({
   name: z.string().min(1, "Name is required"),
@@ -41,7 +41,7 @@ export default function CreateUserWorkoutForm({
   onSubmit,
   userWorkoutPlanId,
 }: {
-  onSubmit: (data: UserWorkoutWithUserPlannedExerciseCreateInput) => void;
+  onSubmit: (data: WorkoutWithPlannedExerciseBaseCreateInput) => void;
   userWorkoutPlanId: string;
 }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -65,19 +65,20 @@ export default function CreateUserWorkoutForm({
   const handleSubmit = async (values: FormValues) => {
     setIsSubmitting(true);
     try {
-      const formattedData: UserWorkoutWithUserPlannedExerciseCreateInput = {
+      const formattedData: WorkoutWithPlannedExerciseBaseCreateInput = {
         name: values.name,
-        userWorkoutPlanId: userWorkoutPlanId,
+        description: "",
         order: values.order,
         exercises: values.exercises
           .map((exercise, index) => ({
-            ...exercise,
+            exerciseId: exercise.exerciseId,
+            sets: exercise.sets,
+            reps: exercise.reps,
+            rpe: exercise.rpe || 0,
             order: index + 1,
-            exercise: exercises.find(
-              (e) => e.id === exercise.exerciseId
-            ) as ExerciseBase,
+            workoutId: userWorkoutPlanId,
           }))
-          .filter((exercise) => exercise.exercise !== undefined),
+          .filter((exercise) => exercise.exerciseId),
       };
       await onSubmit(formattedData);
     } catch (error) {

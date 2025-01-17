@@ -7,8 +7,6 @@ export type ExerciseBase = {
   isApproved: boolean;
   primaryMuscleGroupsIds: string[];
   secondaryMuscleGroupsIds: string[];
-  createdAt: Date;
-  updatedAt: Date;
 };
 
 export type CreateExerciseInput = Omit<

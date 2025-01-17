@@ -1,11 +1,18 @@
+import { PerformedExerciseWithPerformedSet } from "./performedExercise";
+import { ReviewBase } from "./review";
+
 export type WorkoutSessionBase = {
   id: string;
   userId: string;
-  userWorkoutPlanId: string;
-  userWorkoutId: string;
+  workoutId: string;
   date: Date;
-  createdAt: Date;
-  updatedAt: Date;
+  userReviewId?: string;
+  trainerReviewId?: string;
+};
+
+export type WorkoutSessionWithReview = WorkoutSessionBase & {
+  userReview?: ReviewBase;
+  trainerReview?: ReviewBase;
 };
 
 export type CreateWorkoutSessionInput = Omit<
@@ -16,3 +23,7 @@ export type CreateWorkoutSessionInput = Omit<
 export type UpdateWorkoutSessionInput = Partial<
   Omit<WorkoutSessionBase, "createdAt" | "updatedAt">
 > & { id: string };
+
+export type WorkoutSessionWithPerformedExercises = WorkoutSessionBase & {
+  performedExercises: PerformedExerciseWithPerformedSet[];
+};

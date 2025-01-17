@@ -11,8 +11,6 @@ export const exercises: ExerciseBase[] = [
     isApproved: true,
     primaryMuscleGroupsIds: ["1"], // Assuming 1 is the ID for "Quadriceps" muscle group
     secondaryMuscleGroupsIds: ["2", "3"], // Assuming 2 is "Hamstrings" and 3 is "Glutes"
-    createdAt: new Date("2023-01-01"),
-    updatedAt: new Date("2023-01-01"),
   },
   {
     id: "2",
@@ -24,8 +22,6 @@ export const exercises: ExerciseBase[] = [
     isApproved: true,
     primaryMuscleGroupsIds: ["4"], // Assuming 4 is the ID for "Chest" muscle group
     secondaryMuscleGroupsIds: ["5", "6"], // Assuming 5 is "Shoulders" and 6 is "Triceps"
-    createdAt: new Date("2023-01-15"),
-    updatedAt: new Date("2023-01-15"),
   },
   {
     id: "3",
@@ -37,8 +33,6 @@ export const exercises: ExerciseBase[] = [
     isApproved: true,
     primaryMuscleGroupsIds: ["7"], // Assuming 7 is the ID for "Back" muscle group
     secondaryMuscleGroupsIds: ["3", "2"], // Glutes and Hamstrings
-    createdAt: new Date("2023-02-01"),
-    updatedAt: new Date("2023-02-01"),
   },
   {
     id: "4",
@@ -50,8 +44,6 @@ export const exercises: ExerciseBase[] = [
     isApproved: true,
     primaryMuscleGroupsIds: ["8"], // Assuming 8 is the ID for "Core" muscle group
     secondaryMuscleGroupsIds: ["5", "7"], // Shoulders and Back
-    createdAt: new Date("2023-02-15"),
-    updatedAt: new Date("2023-02-15"),
   },
   {
     id: "5",
@@ -62,7 +54,5 @@ export const exercises: ExerciseBase[] = [
     isApproved: true,
     primaryMuscleGroupsIds: ["9"], // Assuming 9 is the ID for "Biceps" muscle group
     secondaryMuscleGroupsIds: [],
-    createdAt: new Date("2023-03-01"),
-    updatedAt: new Date("2023-03-01"),
   },
 ];

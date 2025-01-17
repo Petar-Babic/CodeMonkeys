@@ -33,15 +33,15 @@ import {
 } from "@/components/ui/drawer";
 import CreateUserWorkoutForm from "./CreateUserWorkoutForm";
 import {
-  UserWorkoutWithUserPlannedExercise,
-  UserWorkoutWithUserPlannedExerciseCreateInput,
-  UserWorkoutWithUserPlannedExerciseUpdateInput,
-} from "@/types/userWorkout";
+  WorkoutWithPlannedExercises,
+  WorkoutWithPlannedExerciseBaseCreateInput,
+  WorkoutWithPlannedExerciseBaseUpdateInput,
+} from "@/types/workout";
 import {
-  UserWorkoutPlanWithRelations,
-  UpdateUserWorkoutPlanInput,
-  CreateUserWorkoutPlanInput,
-} from "@/types/userWorkoutPlan";
+  WorkoutPlanWithWorkouts,
+  UpdateWorkoutPlanInput,
+  CreateWorkoutPlanInput,
+} from "@/types/workoutPlan";
 import { useAppContext } from "@/contexts/AppContext";
 import { Loader2 } from "lucide-react";
 import { EditUserWorkoutForm } from "./EditUserWorkoutForm";
@@ -76,7 +76,7 @@ export function UserWorkoutPlanForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [editingWorkout, setEditingWorkout] =
-    useState<UserWorkoutWithUserPlannedExercise | null>(null);
+    useState<WorkoutWithPlannedExercises | null>(null);
   const router = useRouter();
 
   const {
@@ -84,29 +84,29 @@ export function UserWorkoutPlanForm() {
     updateUserWorkoutPlan,
     createUserWorkoutPlan,
   }: {
-    userWorkoutPlan: UserWorkoutPlanWithRelations | null;
+    userWorkoutPlan: WorkoutPlanWithWorkouts | null;
     updateUserWorkoutPlan: (
-      data: UpdateUserWorkoutPlanInput
-    ) => Promise<UserWorkoutPlanWithRelations>;
+      data: UpdateWorkoutPlanInput
+    ) => Promise<WorkoutPlanWithWorkouts>;
     createUserWorkoutPlan: (
-      data: CreateUserWorkoutPlanInput
-    ) => Promise<UserWorkoutPlanWithRelations>;
+      data: CreateWorkoutPlanInput
+    ) => Promise<WorkoutPlanWithWorkouts>;
   } = useAppContext();
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: userWorkoutPlan?.name || "",
-      workoutPlanId: userWorkoutPlan?.workoutPlanId || undefined,
-      userWorkouts: userWorkoutPlan?.userWorkouts || [],
+      workoutPlanId: userWorkoutPlan?.id || undefined,
+      userWorkouts: userWorkoutPlan?.workouts || [],
     },
   });
 
   useEffect(() => {
     form.reset({
       name: userWorkoutPlan?.name || "",
-      workoutPlanId: userWorkoutPlan?.workoutPlanId || undefined,
-      userWorkouts: userWorkoutPlan?.userWorkouts || [],
+      workoutPlanId: userWorkoutPlan?.id || undefined,
+      userWorkouts: userWorkoutPlan?.workouts || [],
     });
   }, [userWorkoutPlan, form]);
 
@@ -118,34 +118,28 @@ export function UserWorkoutPlanForm() {
   const handleSubmit = async (values: FormValues) => {
     setIsSubmitting(true);
     try {
-      const formattedData: UpdateUserWorkoutPlanInput = {
+      const formattedData: UpdateWorkoutPlanInput = {
         ...values,
         id: userWorkoutPlan?.id || "",
         userId: userWorkoutPlan?.userId || "",
-        userWorkouts: fields as UserWorkoutWithUserPlannedExercise[],
+        workouts: fields as WorkoutWithPlannedExercises[],
       };
 
       if (!userWorkoutPlan) {
-        const data: CreateUserWorkoutPlanInput = {
+        const data: CreateWorkoutPlanInput = {
           ...values,
-          userWorkouts: fields.map((field) => ({
-            ...field,
+          workouts: fields.map((field) => ({
+            name: field.name,
+            description: "",
+            order: field.order,
             exercises: field.exercises.map((exercise) => ({
-              ...exercise,
-              exercise: {
-                id: exercise.exerciseId,
-                name: "",
-                createdById: "",
-                isApproved: false,
-                categoryId: "",
-                primaryMuscleGroupId: [""],
-                secondaryMuscleGroupIds: [],
-                equipmentIds: [],
-                createdAt: new Date(),
-                updatedAt: new Date(),
-              }, // Add appropriate exercise details here
+              exerciseId: exercise.exerciseId,
+              sets: exercise.sets,
+              reps: exercise.reps,
+              rpe: exercise.rpe || 0,
+              order: exercise.order,
             })),
-          })) as UserWorkoutWithUserPlannedExerciseCreateInput[],
+          })),
         };
 
         await createUserWorkoutPlan(data);
@@ -165,18 +159,34 @@ export function UserWorkoutPlanForm() {
   };
 
   const handleCreateWorkout = async (
-    data: UserWorkoutWithUserPlannedExerciseCreateInput
+    data: WorkoutWithPlannedExerciseBaseCreateInput
   ) => {
-    append(data);
+    append({
+      ...data,
+      exercises: [],
+    });
     setIsDrawerOpen(false);
   };
 
   const handleUpdateWorkout = async (
-    data: UserWorkoutWithUserPlannedExerciseUpdateInput
+    data: WorkoutWithPlannedExerciseBaseUpdateInput
   ) => {
     const index = fields.findIndex((workout) => workout.id === data.id);
     if (index !== -1) {
-      update(index, data);
+      update(index, {
+        id: data.id,
+        name: data.name || fields[index].name,
+        order: data.order || fields[index].order,
+        exercises:
+          data?.exercises?.map((exercise) => ({
+            ...exercise,
+            order: exercise.order || 0,
+            exerciseId: exercise.exerciseId || "",
+            sets: exercise.sets || 0,
+            reps: exercise.reps || 0,
+            rpe: exercise.rpe || 0,
+          })) || [],
+      });
     }
     setIsDrawerOpen(false);
     setEditingWorkout(null);
@@ -231,9 +241,35 @@ export function UserWorkoutPlanForm() {
                   <Button
                     type="button"
                     onClick={() => {
-                      setEditingWorkout(
-                        workout as UserWorkoutWithUserPlannedExercise
-                      );
+                      setEditingWorkout({
+                        id: workout.id || "",
+                        name: workout.name,
+                        order: workout.order,
+                        description: "",
+                        workoutPlanId: userWorkoutPlan?.id || "",
+                        exercises: workout.exercises.map((exercise) => ({
+                          id: exercise.id || `temp-${Date.now()}`,
+                          workoutId: workout.id || "",
+                          exerciseId: exercise.exerciseId,
+                          sets: exercise.sets,
+                          reps: exercise.reps,
+                          rpe: exercise.rpe || 0,
+                          order: exercise.order,
+                          exercise: {
+                            id: exercise.exerciseId,
+                            name: "",
+                            description: "",
+                            createdById: "",
+                            isApproved: false,
+                            categoryId: "",
+                            primaryMuscleGroupsIds: [],
+                            secondaryMuscleGroupsIds: [],
+                            equipmentIds: [],
+                            createdAt: new Date(),
+                            updatedAt: new Date(),
+                          },
+                        })),
+                      });
                       setIsDrawerOpen(true);
                     }}
                   >
