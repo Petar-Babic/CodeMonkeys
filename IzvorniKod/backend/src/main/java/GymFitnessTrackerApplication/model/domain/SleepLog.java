@@ -1,8 +1,10 @@
 package GymFitnessTrackerApplication.model.domain;
 
+import GymFitnessTrackerApplication.model.dto.forms.SleepLogForm;
 import jakarta.persistence.*;
 import org.joda.time.DateTime;
 
+import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.util.Date;
 
@@ -18,15 +20,28 @@ public class SleepLog {
     private Float duration;  //in hours
     private Integer quality;
     private String notes;
-    private DateTime createdAt;
+    private ZonedDateTime createdAt;
 
-    public SleepLog(MyUser user, ZonedDateTime date, float duration, int quality, String notes, DateTime createdAt) {
+    private ZonedDateTime updatedAt;
+
+    public SleepLog(MyUser user, ZonedDateTime date, float duration, int quality, String notes) {
         this.user = user;
         this.date = date;
         this.duration = duration;
         this.quality = quality;
         this.notes = notes;
-        this.createdAt = createdAt;
+        this.createdAt = ZonedDateTime.now();
+        this.updatedAt = ZonedDateTime.now();
+    }
+
+    public SleepLog(MyUser u, SleepLogForm log){
+        this.user=u;
+        this.updatedAt=ZonedDateTime.now();
+        this.createdAt = ZonedDateTime.now();
+        this.duration = log.getDuration();
+        this.quality = log.getQuality();
+        this.notes = log.getNotes();
+        this.date = log.getDate();
     }
     public SleepLog() {}
 
@@ -78,11 +93,27 @@ public class SleepLog {
         this.notes = notes;
     }
 
-    public DateTime getCreatedAt() {
+    public void setDuration(Float duration) {
+        this.duration = duration;
+    }
+
+    public void setQuality(Integer quality) {
+        this.quality = quality;
+    }
+
+    public ZonedDateTime getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(DateTime createdAt) {
+    public void setCreatedAt(ZonedDateTime createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public ZonedDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(ZonedDateTime updatedAt) {
+        this.updatedAt = updatedAt;
     }
 }

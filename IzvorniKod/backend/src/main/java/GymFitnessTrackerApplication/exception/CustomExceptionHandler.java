@@ -104,7 +104,17 @@ public class CustomExceptionHandler {
 
     @ExceptionHandler(NoNutrionPlanException.class)
     public ResponseEntity<String> noPlanToEdit(NoNutrionPlanException ex){
-        return new ResponseEntity<>(ex.getMessage(),HttpStatus.FORBIDDEN);
+        return new ResponseEntity<>(ex.getMessage(),HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(AdminRestrictedException.class)
+    public ResponseEntity<String> handleUserTryingAdmin(AdminRestrictedException ex) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.UNAUTHORIZED);
+    }
+
+    @ExceptionHandler(NonExistantSleepLog.class)
+    public ResponseEntity<String> handleNonExistantLog(NonExistantSleepLog ex) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
     }
 
     /*
