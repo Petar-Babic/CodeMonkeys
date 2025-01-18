@@ -34,11 +34,6 @@ public class RController {
     public String handleAdminHome() {
         return "Welcome to ADMIN home!";
     }
-
-    @GetMapping("/user/home")
-    public String handleUserHome() {
-        return "Welcome to USER home!";
-    }
     
     @GetMapping("/get")
     public String handleGetUser() {

@@ -1,5 +1,6 @@
 package GymFitnessTrackerApplication.model.domain;
 
+import GymFitnessTrackerApplication.model.dao.MuscleGroupRepo;
 import jakarta.persistence.*;
 
 import java.util.HashSet;
@@ -43,6 +44,14 @@ public class Exercise {
         this.secondaryMuscleGroup = secondaryMuscleGroup;
     }
 
+    public Exercise(String name, String description, String gif) {
+        this.name = name;
+        this.description = description;
+        this.gif = gif;
+        primaryMuscleGroup = new HashSet<>();
+        secondaryMuscleGroup = new HashSet<>();
+    }
+
     public Long getId() {return id;}
 
     public String getName() {
@@ -72,7 +81,15 @@ public class Exercise {
         return primaryMuscleGroup;
     }
 
+    public void addPrimaryMuscleGroup(MuscleGroup muscleGroup){
+        primaryMuscleGroup.add(muscleGroup);
+    }
+
     public Set<MuscleGroup> getSecondaryMuscleGroup() {
         return secondaryMuscleGroup;
+    }
+
+    public void addSecondaryMuscleGroup(MuscleGroup muscleGroup){
+        secondaryMuscleGroup.add(muscleGroup);
     }
 }

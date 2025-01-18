@@ -130,4 +130,18 @@ public class WorkoutController {
         List<ExerciseResponse> exercises = workoutPlanService.listAllExercises();
         return ResponseEntity.status(HttpStatus.OK).body(exercises);
     }
+
+    @PostMapping("create-exercise")
+    public ResponseEntity<?> createExercise(@RequestHeader("Authorization") String token,
+                                            @RequestParam("name") String name,
+                                            @RequestParam("description") String description,
+                                            @RequestParam("gif") MultipartFile file,
+                                            @RequestParam("primaryMuscleGroupId") Set<Long> primaryMuscleGroupIds,
+                                            @RequestParam("secondaryMuscleGroupId") Set<Long> secondaryMuscleGroupIds){
+
+        String email = jwtService.extractEmail(token.trim().substring(7));
+        MyUser user = (MyUser) myUserService.getMyUser(email);
+        workoutPlanService.createExercise(user, name, description, file, primaryMuscleGroupIds, secondaryMuscleGroupIds);
+        return ResponseEntity.status(HttpStatus.OK).body("Exercise successfully created.");
+    }
 }

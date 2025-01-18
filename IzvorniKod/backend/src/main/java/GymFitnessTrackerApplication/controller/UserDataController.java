@@ -179,7 +179,10 @@ public class UserDataController {
             return ResponseEntity.badRequest().body("File is empty");
         }
         String email = jwtService.extractEmail(token.trim().substring(7));
-        myUserService.deleteFile(email);
+        MyUser user = (MyUser) myUserService.getMyUser(email);
+        if(user.getImage()!=null){
+            myUserService.deleteFile(email);
+        }
         myUserService.uploadFile(email,file);
 
         return ResponseEntity.ok().body("File uploaded successfully");

@@ -1,6 +1,7 @@
 package GymFitnessTrackerApplication.service.impl;
 
 import GymFitnessTrackerApplication.model.dao.ExerciseRepo;
+import GymFitnessTrackerApplication.model.dao.MuscleGroupRepo;
 import GymFitnessTrackerApplication.model.dao.MyUserRepository;
 import GymFitnessTrackerApplication.model.dao.WorkoutPlanRepo;
 import GymFitnessTrackerApplication.model.domain.*;
@@ -38,6 +39,8 @@ public class WorkoutServiceJpa implements WorkoutPlanService {
     private MyUserRepository myUserRepo;
     @Autowired
     private ExerciseRepo exerciseRepo;
+    @Autowired
+    private MuscleGroupRepo muscleGroupRepo;
     @Autowired
     private AmazonS3 s3Client;
     @Value("${cloud.aws.s3.bucket}")
@@ -134,6 +137,62 @@ public class WorkoutServiceJpa implements WorkoutPlanService {
         return s3Client.generatePresignedUrl(bucketName,fileName,expiration, HttpMethod.GET).toString();
     }
 
+
+    @Override
+    public List<ExerciseResponse> listAllExercises() {
+        List<Exercise> exercises =  exerciseRepo.findAll();
+        List<ExerciseResponse> result = new ArrayList<>();
+        for(Exercise exercise : exercises){
+            ExerciseResponse exerciseResponse = generateExerciseResponse(exercise);
+            result.add(exerciseResponse);
+        }
+        return result;
+    }
+
+    @Override
+    public List<ExerciseResponse> listAllNotApprovedExercises() {
+        List<Exercise> exercises =  exerciseRepo.findByIsApprovedFalse();
+        List<ExerciseResponse> result = new ArrayList<>();
+        for(Exercise exercise : exercises){
+            ExerciseResponse exerciseResponse = generateExerciseResponse(exercise);
+            result.add(exerciseResponse);
+        }
+        return result;
+    }
+
+    @Override
+    public void createExercise(MyUser user, String name, String description, MultipartFile file,
+                               Set<Long> primaryMuscleGroupIds, Set<Long> secondaryMuscleGroupIds) {
+        String fileName = name + "_" + System.currentTimeMillis();
+        Exercise newExercise = new Exercise(name, description, fileName);
+        for(Long pmgId : primaryMuscleGroupIds){
+            muscleGroupRepo.findById(pmgId).ifPresent(muscleGroup -> {
+                newExercise.addPrimaryMuscleGroup(muscleGroup);
+                muscleGroup.addPrimaryToExercises(newExercise);
+            });
+        }
+        for(Long smgId : secondaryMuscleGroupIds){
+            muscleGroupRepo.findById(smgId).ifPresent(muscleGroup -> {
+                newExercise.addSecondaryMuscleGroup(muscleGroup);
+                muscleGroup.addSecondaryToExercises(newExercise);
+            });
+        }
+        uploadFile(fileName, file);
+        exerciseRepo.save(newExercise);
+    }
+
+    @Override
+    public void createMuscleGroup(String name, String description, MultipartFile file) {
+        String fileName = name + "_" + System.currentTimeMillis();
+        uploadFile(fileName, file);
+        MuscleGroup newMuscleGroup = new MuscleGroup(name, description, fileName);
+        muscleGroupRepo.save(newMuscleGroup);
+    }
+
+    //getAllmuscleGroups
+
+
+
     private File convertMultipartFileToFile(MultipartFile mpFile){
         File convertedFile = new File(mpFile.getOriginalFilename());
         try (FileOutputStream fos = new FileOutputStream(convertedFile)){
@@ -154,43 +213,21 @@ public class WorkoutServiceJpa implements WorkoutPlanService {
     }
 
     private WorkoutPlanResponse generateWorkoutPlanResponse(WorkoutPlan workoutPlan){
-            WorkoutPlanResponse wpr = new WorkoutPlanResponse(workoutPlan.getId(), workoutPlan.getName(), workoutPlan.getDescription(),
-                    workoutPlan.getImage(), workoutPlan.getCreator().getName(), workoutPlan.getOwner().getName());
-            for(Workout workout : workoutPlan.getWorkouts()){
-                WorkoutResponse wp = new WorkoutResponse(workout.getId(), workout.getName(), workout.getDescription());
-                for(PlannedExercise exercise : workout.getPlannedExercises()){
-                    Exercise originalExercise = exerciseRepo.findById(exercise.getExercise().getId()).orElse(null);
-                    String exerciseName = "";
-                    if(originalExercise!=null) {exerciseName = originalExercise.getName(); }
-                    PlannedExerciseResponse per = new PlannedExerciseResponse(exercise.getExercise().getId(), exerciseName,
-                                    exercise.getSets(), exercise.getReps(), exercise.getRpe(), exercise.getOrderNumber());
-                    wp.addExercise(per);
-                }
-                wpr.addWorkout(wp);
+        WorkoutPlanResponse wpr = new WorkoutPlanResponse(workoutPlan.getId(), workoutPlan.getName(), workoutPlan.getDescription(),
+                workoutPlan.getImage(), workoutPlan.getCreator().getName(), workoutPlan.getOwner().getName());
+        for(Workout workout : workoutPlan.getWorkouts()){
+            WorkoutResponse wp = new WorkoutResponse(workout.getId(), workout.getName(), workout.getDescription());
+            for(PlannedExercise exercise : workout.getPlannedExercises()){
+                Exercise originalExercise = exerciseRepo.findById(exercise.getExercise().getId()).orElse(null);
+                String exerciseName = "";
+                if(originalExercise!=null) {exerciseName = originalExercise.getName(); }
+                PlannedExerciseResponse per = new PlannedExerciseResponse(exercise.getExercise().getId(), exerciseName,
+                        exercise.getSets(), exercise.getReps(), exercise.getRpe(), exercise.getOrderNumber());
+                wp.addExercise(per);
             }
+            wpr.addWorkout(wp);
+        }
         return wpr;
-    }
-
-    @Override
-    public List<ExerciseResponse> listAllExercises() {
-        List<Exercise> exercises =  exerciseRepo.findAll();
-        List<ExerciseResponse> result = new ArrayList<>();
-        for(Exercise exercise : exercises){
-            ExerciseResponse exerciseResponse = generateExerciseResponse(exercise);
-            result.add(exerciseResponse);
-        }
-        return result;
-    }
-
-    @Override
-    public List<ExerciseResponse> listAllNotApprvedExercises() {
-        List<Exercise> exercises =  exerciseRepo.findByIsApprovedFalse();
-        List<ExerciseResponse> result = new ArrayList<>();
-        for(Exercise exercise : exercises){
-            ExerciseResponse exerciseResponse = generateExerciseResponse(exercise);
-            result.add(exerciseResponse);
-        }
-        return result;
     }
 
     private ExerciseResponse generateExerciseResponse(Exercise exercise){

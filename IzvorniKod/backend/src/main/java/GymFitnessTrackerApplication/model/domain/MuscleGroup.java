@@ -19,9 +19,9 @@ public class MuscleGroup {
     private String description;
     private String image;
     @ManyToMany(mappedBy = "primaryMuscleGroup")
-    private Set<Exercise> primaryToExercises = new HashSet<>();
+    private Set<Exercise> primaryToExercises;
     @ManyToMany(mappedBy = "secondaryMuscleGroup")
-    private Set<Exercise> secondaryToExercises = new HashSet<>();
+    private Set<Exercise> secondaryToExercises;
 
     public MuscleGroup() {}
 
@@ -29,6 +29,8 @@ public class MuscleGroup {
         this.name = name;
         this.description = description;
         this.image = image;
+        primaryToExercises = new HashSet<>();
+        secondaryToExercises = new HashSet<>();
     }
 
     public Long getId() {return id;}
@@ -61,7 +63,15 @@ public class MuscleGroup {
         return primaryToExercises;
     }
 
+    public void addPrimaryToExercises(Exercise exercise) {
+        primaryToExercises.add(exercise);
+    }
+
     public Set<Exercise> getSecondaryToExercises() {
         return secondaryToExercises;
+    }
+
+    public void addSecondaryToExercises(Exercise exercise) {
+        secondaryToExercises.add(exercise);
     }
 }

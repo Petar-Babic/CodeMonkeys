@@ -20,7 +20,9 @@ public interface WorkoutPlanService {
     public WorkoutPlanResponse getActiveWorkoutPlan(MyUser user);
     public WorkoutPlanResponse getWorkoutPlanById(Long workoutPlanId);
     public List<ExerciseResponse> listAllExercises();
-    public List<ExerciseResponse> listAllNotApprvedExercises();
+    public List<ExerciseResponse> listAllNotApprovedExercises();
+    public void createExercise(MyUser user, String name, String description, MultipartFile file, Set<Long> primaryMuscleGroupIds, Set<Long> secondaryMuscleGroupIds);
+    public void createMuscleGroup(String name, String description, MultipartFile file);
     void uploadFile(final String fileName, final MultipartFile file) throws AmazonClientException;
     void deleteFile(final String fileName);
     String getURLToFile(final String fileName);
