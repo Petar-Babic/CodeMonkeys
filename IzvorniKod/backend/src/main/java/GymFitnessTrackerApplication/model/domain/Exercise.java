@@ -17,7 +17,7 @@ public class Exercise {
     @ManyToOne
     @JoinColumn(name = "created_by_user_id")
     private MyUser createdByUser;
-    private boolean isApproved;
+    private boolean isApproved=false;
     @ManyToMany
     @JoinTable(
             name = "primary_muscleGroup_exercise",

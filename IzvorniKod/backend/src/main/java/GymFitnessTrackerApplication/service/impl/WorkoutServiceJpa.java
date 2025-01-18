@@ -4,6 +4,7 @@ import GymFitnessTrackerApplication.model.dao.ExerciseRepo;
 import GymFitnessTrackerApplication.model.dao.MyUserRepository;
 import GymFitnessTrackerApplication.model.dao.WorkoutPlanRepo;
 import GymFitnessTrackerApplication.model.domain.*;
+import GymFitnessTrackerApplication.model.dto.response.ExerciseResponse;
 import GymFitnessTrackerApplication.model.dto.workoutDTOs.PlannedExerciseDTO;
 import GymFitnessTrackerApplication.model.dto.workoutDTOs.WorkoutDTO;
 import GymFitnessTrackerApplication.model.dto.forms.WorkoutPlanForm;
@@ -25,9 +26,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 @Service
 public class WorkoutServiceJpa implements WorkoutPlanService {
@@ -170,5 +169,33 @@ public class WorkoutServiceJpa implements WorkoutPlanService {
                 wpr.addWorkout(wp);
             }
         return wpr;
+    }
+
+    @Override
+    public List<ExerciseResponse> listAllExercises() {
+        List<Exercise> exercises =  exerciseRepo.findAll();
+        List<ExerciseResponse> result = new ArrayList<>();
+        for(Exercise exercise : exercises){
+            ExerciseResponse exerciseResponse = generateExerciseResponse(exercise);
+            result.add(exerciseResponse);
+        }
+        return result;
+    }
+
+    @Override
+    public List<ExerciseResponse> listAllNotApprvedExercises() {
+        List<Exercise> exercises =  exerciseRepo.findByIsApprovedFalse();
+        List<ExerciseResponse> result = new ArrayList<>();
+        for(Exercise exercise : exercises){
+            ExerciseResponse exerciseResponse = generateExerciseResponse(exercise);
+            result.add(exerciseResponse);
+        }
+        return result;
+    }
+
+    private ExerciseResponse generateExerciseResponse(Exercise exercise){
+        String gif = getURLToFile(exercise.getGif());
+        return new ExerciseResponse(exercise.getId(), exercise.getName(),
+                    exercise.getDescription(), gif, exercise.getCreatedByUser().getName(), exercise.isApproved());
     }
 }

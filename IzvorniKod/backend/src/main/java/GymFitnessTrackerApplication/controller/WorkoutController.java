@@ -2,6 +2,7 @@ package GymFitnessTrackerApplication.controller;
 
 import GymFitnessTrackerApplication.model.domain.MyUser;
 import GymFitnessTrackerApplication.model.dto.forms.WorkoutSessionForm;
+import GymFitnessTrackerApplication.model.dto.response.ExerciseResponse;
 import GymFitnessTrackerApplication.model.dto.response.WorkoutSessionResponse;
 import GymFitnessTrackerApplication.model.dto.workoutDTOs.DateRangeDTO;
 import GymFitnessTrackerApplication.model.dto.workoutDTOs.WorkoutDTO;
@@ -122,5 +123,11 @@ public class WorkoutController {
         MyUser user = (MyUser) myUserService.getMyUser(email);
         Set<WorkoutSessionResponse> response = workoutSessionService.getWorkoutSessionsForUser(user);
         return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
+    @GetMapping("all-exercises")
+    public ResponseEntity<?> getAllExercises(){
+        List<ExerciseResponse> exercises = workoutPlanService.listAllExercises();
+        return ResponseEntity.status(HttpStatus.OK).body(exercises);
     }
 }
