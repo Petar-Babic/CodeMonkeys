@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo } from "react";
+import { useState, useCallback, useMemo, useEffect } from "react";
 import { ExerciseBase, CreateExerciseInput } from "@/types/exercise";
 import { exercises as predefinedExercises } from "@/data/exercise";
 import { useUser } from "./useUser";
@@ -15,8 +15,6 @@ const createExerciseAPI = async (
     id: Math.random().toString(36).substr(2, 9),
     ...data,
     isApproved: false,
-    createdAt: new Date(),
-    updatedAt: new Date(),
   };
 
   // Update local storage
@@ -73,6 +71,10 @@ export const useExercise = () => {
   const { user } = useUser();
 
   const userId = useMemo(() => user?.id ?? null, [user?.id]);
+
+  useEffect(() => {
+    console.log("exercises", exercises);
+  }, [exercises]);
 
   const getAllExercises = useCallback(async () => {
     const fetchedExercises = await getExercisesAPI(userId);

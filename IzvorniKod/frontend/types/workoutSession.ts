@@ -1,5 +1,7 @@
+import { ExerciseBase } from "./exercise";
 import { PerformedExerciseWithPerformedSet } from "./performedExercise";
 import { ReviewBase } from "./review";
+import { WorkoutBase } from "./workout";
 
 export type WorkoutSessionBase = {
   id: string;
@@ -26,4 +28,10 @@ export type UpdateWorkoutSessionInput = Partial<
 
 export type WorkoutSessionWithPerformedExercises = WorkoutSessionBase & {
   performedExercises: PerformedExerciseWithPerformedSet[];
+};
+
+export type WorkoutSessionWithExercisesForPage = WorkoutSessionBase & {
+  performedExercises: PerformedExerciseWithPerformedSet[];
+  exercises: ExerciseBase[];
+  workout: WorkoutBase;
 };

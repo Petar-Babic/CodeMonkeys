@@ -21,9 +21,7 @@ export const useWorkoutPlan = () => {
           id: Date.now().toString(),
           name: input.name,
           userId: input.userId,
-          createdById: input.createdById,
-          createdAt: new Date(),
-          updatedAt: new Date(),
+          createdById: "user-",
         };
         setWorkoutPlans((prevPlans) => [...prevPlans, newWorkoutPlan]);
         return newWorkoutPlan;
@@ -64,7 +62,6 @@ export const useWorkoutPlan = () => {
             updatedPlan = {
               ...plan,
               ...input,
-              updatedAt: new Date(),
             };
             return updatedPlan;
           }

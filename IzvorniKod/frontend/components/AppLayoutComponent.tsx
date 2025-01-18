@@ -9,11 +9,12 @@ import { MuscleGroupBase } from "@/types/muscleGroup";
 import { userWorkoutPlans } from "@/data/userWorkoutPlan";
 import { workoutPlans } from "@/data/workoutPlan";
 import { NutritionPlanBase } from "@/types/nutritionPlan";
-import { UserWorkoutPlanWithRelations } from "@/types/userWorkoutPlan";
+import { WorkoutPlanWithWorkouts } from "@/types/workoutPlan";
 import { WorkoutPlanBase } from "@/types/workoutPlan";
 import NutritionPlanRedirect from "./NutritionPlanRedirect";
 import { backendUrl } from "@/data/backendUrl";
 import { UserBase } from "@/types/user";
+import Link from "next/link";
 
 const getInitialData = async (
   userId: string,
@@ -23,7 +24,7 @@ const getInitialData = async (
   exercises: ExerciseBase[];
   muscleGroups: MuscleGroupBase[];
   nutritionPlan: NutritionPlanBase | null;
-  userWorkoutPlan: UserWorkoutPlanWithRelations | null;
+  userWorkoutPlan: WorkoutPlanWithWorkouts | null;
   workoutPlans: WorkoutPlanBase[];
   accessToken: string;
   refreshToken: string;
@@ -92,12 +93,30 @@ export default async function AppLayoutComponent({
 }>) {
   const initialData = await getInitialData(userId, accessToken, refreshToken);
 
+  if (!initialData.user) {
+    return (
+      <div className="flex flex-col items-center justify-center h-screen bg-black">
+        <Link
+          href="/sign-in"
+          className="bg-white text-2xl font-bold hover:text-gray-300 transition-colors duration-300 p-2 rounded-md w-1/2 text-center"
+        >
+          Login
+        </Link>
+      </div>
+    );
+  }
+
+  const safeInitialData = {
+    ...initialData,
+    user: initialData.user,
+  } as const;
+
   console.log("nutritionPlan", initialData.nutritionPlan);
   console.log("user", initialData.user);
   if (initialData.nutritionPlan) {
     return (
       <AuthProvider>
-        <AppProvider initialData={initialData}>
+        <AppProvider initialData={safeInitialData}>
           <div className="flex flex-col min-h-screen">
             <Header />
             <div className="flex flex-1 h-[calc(100dvh-60px)]">
@@ -119,7 +138,7 @@ export default async function AppLayoutComponent({
 
   return (
     <AuthProvider>
-      <AppProvider initialData={initialData}>
+      <AppProvider initialData={safeInitialData}>
         <div className="flex bg-black flex-col min-h-screen">
           <NutritionPlanRedirect nutritionPlan={initialData.nutritionPlan} />
           {children}

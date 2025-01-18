@@ -60,6 +60,7 @@ export function ChooseExercisesDrawer({
   };
 
   const handleSubmit = () => {
+    console.log(selectedExercises);
     onExercisesSelected(selectedExercises);
     onClose();
   };

@@ -20,9 +20,9 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ChooseExercisesDrawer } from "./ChooseExercisesDrawer";
 import {
-  UserWorkoutWithUserPlannedExercise,
-  UserWorkoutWithUserPlannedExerciseUpdateInput,
-} from "@/types/userWorkout";
+  WorkoutWithPlannedExercisesBase,
+  WorkoutWithPlannedExerciseBaseUpdateInput,
+} from "@/types/workout";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AlertCircle, Loader2 } from "lucide-react";
 
@@ -42,8 +42,11 @@ const formSchema = z.object({
           id: z.string(),
           name: z.string(),
           description: z.string().optional(),
-          createdAt: z.date(),
-          updatedAt: z.date(),
+          gif: z.string().optional(),
+          createdById: z.string(),
+          isApproved: z.boolean(),
+          primaryMuscleGroupsIds: z.array(z.string()),
+          secondaryMuscleGroupsIds: z.array(z.string()),
         }),
       })
     )
@@ -53,10 +56,8 @@ const formSchema = z.object({
 type FormValues = z.infer<typeof formSchema>;
 
 interface EditUserWorkoutFormProps {
-  workout: UserWorkoutWithUserPlannedExercise;
-  onSubmit: (
-    data: UserWorkoutWithUserPlannedExerciseUpdateInput
-  ) => Promise<void>;
+  workout: WorkoutWithPlannedExercisesBase;
+  onSubmit: (data: WorkoutWithPlannedExerciseBaseUpdateInput) => Promise<void>;
 }
 
 export function EditUserWorkoutForm({
@@ -75,8 +76,8 @@ export function EditUserWorkoutForm({
       order: workout.order,
       exercises: workout.exercises.map((exercise) => ({
         id: exercise.id,
-        exercise: exercise.exercise,
-        exerciseId: exercise.exercise.id,
+        exerciseId: exercise.exerciseId,
+        exercise: exercises.find((e) => e.id === exercise.exerciseId)!,
         sets: exercise.sets,
         reps: exercise.reps,
         rpe: exercise.rpe,
@@ -94,10 +95,9 @@ export function EditUserWorkoutForm({
     setIsSubmitting(true);
     setSubmitError(null);
     try {
-      const formattedData: UserWorkoutWithUserPlannedExerciseUpdateInput = {
+      const formattedData: WorkoutWithPlannedExerciseBaseUpdateInput = {
         id: workout.id,
         name: values.name,
-        userWorkoutPlanId: workout.userWorkoutPlanId,
         order: values.order,
         exercises: values.exercises.map((exercise) => ({
           ...exercise,
@@ -109,7 +109,7 @@ export function EditUserWorkoutForm({
           exercise: exercises.find(
             (e) => e.id === exercise.exerciseId
           ) as ExerciseBase,
-          userWorkoutId: workout.id,
+          workoutId: workout.id,
           updatedAt: new Date(),
         })),
       };
@@ -136,10 +136,7 @@ export function EditUserWorkoutForm({
           reps: 1,
           rpe: 1,
           order: fields.length + 1,
-          exercise: {
-            ...exercise,
-            description: exercise.description || "",
-          },
+          exercise: exercise,
         };
       }
     });
@@ -148,7 +145,7 @@ export function EditUserWorkoutForm({
 
   const getInitialSelectedExercises = () => {
     return exercises.filter((exercise) =>
-      workout.exercises.some((e) => e.exercise.id === exercise.id)
+      workout.exercises.some((e) => e.exerciseId === exercise.id)
     );
   };
 

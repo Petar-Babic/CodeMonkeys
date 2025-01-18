@@ -1,4 +1,4 @@
-import { UserWorkoutWithUserPlannedExercise } from "@/types/userWorkout";
+import { WorkoutWithPlannedExercise } from "@/types/workout";
 import Link from "next/link";
 import React from "react";
 import { Button } from "./ui/button";
@@ -7,8 +7,10 @@ import { Dumbbell } from "lucide-react";
 export default function UserWorkoutWithUserPlannedExerciseCard({
   workout,
 }: {
-  workout: UserWorkoutWithUserPlannedExercise;
+  workout: WorkoutWithPlannedExercise;
 }) {
+  console.log(workout);
+
   return (
     <Link
       href={`/workout-now`}
@@ -19,8 +21,8 @@ export default function UserWorkoutWithUserPlannedExerciseCard({
         {workout.exercises.map((exercise) => (
           <li key={exercise.id}>
             <p className="text-xs mt-1 text-gray-500">
-              {exercise.exercise.name} - {exercise.sets} sets - {exercise.reps}{" "}
-              reps
+              {exercise.exercise?.name} - {exercise?.sets} sets -{" "}
+              {exercise?.reps} reps
             </p>
           </li>
         ))}

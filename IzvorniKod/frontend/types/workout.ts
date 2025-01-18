@@ -2,6 +2,7 @@ import {
   PlannedExerciseWithExercise,
   UpdatePlannedExerciseInput,
   CreatePlannedExerciseInputForUserWorkout,
+  PlannedExerciseBase,
 } from "./plannedExercise";
 
 export type WorkoutBase = {
@@ -21,8 +22,8 @@ export type UpdateWorkoutInput = Partial<
   Omit<WorkoutBase, "createdAt" | "updatedAt">
 > & { id: string };
 
-export type WorkoutWithPlannedExercises = WorkoutBase & {
-  exercises: PlannedExerciseWithExercise[];
+export type WorkoutWithPlannedExercisesBase = WorkoutBase & {
+  exercises: PlannedExerciseBase[];
 };
 
 export type WorkoutWithPlannedExerciseBaseCreateInput = {
@@ -36,4 +37,8 @@ export type WorkoutWithPlannedExerciseBaseUpdateInput = Partial<
   Omit<WorkoutBase, "id" | "workoutPlanId">
 > & { id: string } & {
   exercises: UpdatePlannedExerciseInput[];
+};
+
+export type WorkoutWithPlannedExercise = WorkoutBase & {
+  exercises: PlannedExerciseWithExercise[];
 };

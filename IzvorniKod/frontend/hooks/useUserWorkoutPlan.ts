@@ -6,18 +6,9 @@ import {
   WorkoutPlanWithWorkouts,
   UpdateWorkoutPlanInput,
 } from "@/types/workoutPlan";
-import {
-  userWorkoutPlans as initialUserWorkoutPlans,
-  userWorkoutPlans,
-} from "@/data/userWorkoutPlan";
-import { workoutPlans } from "@/data/workoutPlan";
-import { workoutsWithExercises } from "@/data/workout";
-import { WorkoutWithPlannedExerciseBaseCreateInput } from "@/types/workout";
-import {
-  CreatePlannedExerciseInputForUserWorkout,
-  CreatePlannedExerciseInput,
-} from "@/types/plannedExercise";
+import { userWorkoutPlans as initialUserWorkoutPlans } from "@/data/userWorkoutPlan";
 import { useAuthContext } from "@/contexts/AuthContext";
+import { exercises } from "@/data/exercise";
 
 const getUserWorkoutPlanAPI = async (
   userId: string
@@ -30,62 +21,9 @@ const getUserWorkoutPlanAPI = async (
     (plan) => plan.userId === userId
   );
 
+  console.log("User workout plan found:", userWorkoutPlan);
+
   return userWorkoutPlan;
-};
-
-// apply workout plan to user
-const applyWorkoutPlanToUserAPI = async (
-  workoutPlanId: string,
-  userId: string
-): Promise<WorkoutPlanWithWorkouts | undefined> => {
-  // Simulate API delay
-  await new Promise((resolve) => setTimeout(resolve, 1000));
-
-  console.log("Applying workout plan to user:", workoutPlanId, userId);
-
-  const workoutPlan = workoutPlans.find((plan) => plan.id === workoutPlanId);
-  // Find the workouts for the workout plan
-  const workoutPlanWorkouts = workoutsWithExercises.filter(
-    (workout) => workout.workoutPlanId === workoutPlanId
-  );
-
-  if (!workoutPlan) {
-    return undefined;
-  }
-
-  const userWorkouts: WorkoutWithPlannedExerciseBaseCreateInput[] =
-    workoutPlanWorkouts.map((workout) => {
-      const userPlannedExercises: CreatePlannedExerciseInput[] =
-        workout.exercises.map((exercise) => {
-          const exerciseInput: CreatePlannedExerciseInputForUserWorkout = {
-            exerciseId: exercise.exerciseId,
-            sets: exercise.sets,
-            reps: exercise.reps,
-            rpe: exercise.reps,
-            order: exercise.order,
-          };
-          return {
-            ...exerciseInput,
-            workoutId: workout.id,
-          };
-        });
-
-      return {
-        name: workout.name,
-        order: workout.order,
-        description: workout.description || "",
-        exercises: userPlannedExercises,
-      };
-    });
-
-  const userWorkoutPlan: CreateWorkoutPlanInput = {
-    name: workoutPlan.name,
-    workouts: userWorkouts,
-  };
-
-  console.log("User workout plan created:", userWorkoutPlan);
-
-  return userWorkoutPlans[0];
 };
 
 export function useUserWorkoutPlan() {
@@ -124,14 +62,6 @@ export function useUserWorkoutPlan() {
               ...exercise,
               id: `exercise${i + 1}`,
               workoutId: `workout${index + 1}`,
-              exercise: {
-                id: exercise.exerciseId,
-                name: "",
-                createdById: "",
-                isApproved: false,
-                primaryMuscleGroupsIds: [],
-                secondaryMuscleGroupsIds: [],
-              },
             })),
           })),
         };
@@ -207,14 +137,9 @@ export function useUserWorkoutPlan() {
                   reps: exercise.reps || 0,
                   rpe: exercise.rpe || 0,
                   order: exercise.order || 0,
-                  exercise: {
-                    id: exercise.exerciseId!,
-                    name: "",
-                    createdById: "",
-                    isApproved: false,
-                    primaryMuscleGroupsIds: [],
-                    secondaryMuscleGroupsIds: [],
-                  },
+                  exercise: exercises.find(
+                    (e) => e.id === exercise.exerciseId
+                  )!,
                 })),
             };
           }),
@@ -235,35 +160,6 @@ export function useUserWorkoutPlan() {
     [userWorkoutPlan]
   );
 
-  const applyWorkoutPlanToUser = useCallback(
-    async (workoutPlanId: string) => {
-      setIsLoadingUserWorkoutPlan(true);
-      setError(null);
-      try {
-        if (!userId) {
-          console.log("User ID is not available");
-          throw new Error("User ID is not available");
-        }
-        const userWorkoutPlan = await applyWorkoutPlanToUserAPI(
-          workoutPlanId,
-          userId
-        );
-        if (userWorkoutPlan) {
-          setUserWorkoutPlan(userWorkoutPlan);
-        }
-        return userWorkoutPlan;
-      } catch (err) {
-        setError(
-          err instanceof Error ? err.message : "An unknown error occurred"
-        );
-        throw err;
-      } finally {
-        setIsLoadingUserWorkoutPlan(false);
-      }
-    },
-    [userId]
-  );
-
   return {
     isLoadingUserWorkoutPlan,
     error,
@@ -272,7 +168,6 @@ export function useUserWorkoutPlan() {
     userWorkoutPlan,
     getUserWorkoutPlan,
     updateUserWorkoutPlan,
-    applyWorkoutPlanToUser,
   } as UseUserWorkoutPlanType;
 }
 
@@ -290,7 +185,4 @@ export type UseUserWorkoutPlanType = {
   updateUserWorkoutPlan: (
     data: UpdateWorkoutPlanInput
   ) => Promise<WorkoutPlanWithWorkouts>;
-  applyWorkoutPlanToUser: (
-    workoutPlanId: string
-  ) => Promise<WorkoutPlanWithWorkouts | undefined>;
 };

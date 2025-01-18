@@ -11,11 +11,15 @@ import { useWorkoutSession } from "@/hooks/workoutSession";
 
 export default function UserWorkoutPlanCard() {
   const { userWorkoutPlan } = useAppContext();
+  const { exercises } = useAppContext();
 
   const { workoutSessions } = useWorkoutSession();
 
   const events = workoutSessions.map((workoutSession) => ({
-    name: workoutSession.workoutId,
+    name:
+      userWorkoutPlan?.workouts.find(
+        (workout) => workout.id === workoutSession.workoutId
+      )?.name || "",
     href: `/workout-session/${workoutSession.id}`,
     date: workoutSession.date,
   }));
@@ -43,9 +47,20 @@ export default function UserWorkoutPlanCard() {
               Workout&apos;s list
             </h4>
           </div>
-          <UserWorkoutWithUserPlannedExerciseList
-            workouts={userWorkoutPlan.workouts}
-          />
+
+          {userWorkoutPlan?.workouts && (
+            <UserWorkoutWithUserPlannedExerciseList
+              workouts={userWorkoutPlan?.workouts?.map((workout) => ({
+                ...workout,
+                exercises: workout.exercises.map((exercise) => ({
+                  ...exercise,
+                  exercise: exercises.find(
+                    (e) => e.id === exercise.exerciseId
+                  )!,
+                })),
+              }))}
+            />
+          )}
           <div className="p-5 shadow-md rounded-sm bg-white">
             <Calendar events={events} />
           </div>

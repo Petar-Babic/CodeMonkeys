@@ -89,6 +89,11 @@ export default function CreateUserWorkoutForm({
   };
 
   const handleExercisesSelected = (selectedExercises: ExerciseBase[]) => {
+    console.log(
+      "selectedExercises in CreateUserWorkoutForm",
+      selectedExercises
+    );
+
     const updatedExercises = selectedExercises.map((exercise) => {
       const existingExercise = fields.find(
         (field) => field.exerciseId === exercise.id
@@ -102,6 +107,7 @@ export default function CreateUserWorkoutForm({
           reps: 1,
           rpe: 1,
           order: fields.length + 1,
+          exercise: exercise,
         };
       }
     });
