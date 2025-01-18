@@ -20,6 +20,8 @@ public class Workout {
     private WorkoutPlan workoutPlan;
     @OneToMany(mappedBy = "workout", cascade = CascadeType.ALL)
     private Set<PlannedExercise> plannedExercises;
+    @OneToMany(mappedBy = "workout")
+    private Set<WorkoutSession> workoutSessions;
 
     public Workout() {}
 

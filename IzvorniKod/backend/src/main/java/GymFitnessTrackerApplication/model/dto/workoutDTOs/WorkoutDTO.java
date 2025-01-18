@@ -1,4 +1,4 @@
-package GymFitnessTrackerApplication.model.dto;
+package GymFitnessTrackerApplication.model.dto.workoutDTOs;
 
 
 import java.util.List;

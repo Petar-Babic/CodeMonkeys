@@ -2,6 +2,8 @@ package GymFitnessTrackerApplication.model.domain;
 
 import jakarta.persistence.*;
 
+import java.util.Set;
+
 @Entity
 public class PlannedExercise {
 
@@ -19,6 +21,9 @@ public class PlannedExercise {
     @ManyToOne
     @JoinColumn(name = "workout_id", referencedColumnName = "id")
     private Workout workout;
+    @OneToMany(mappedBy = "plannedExercise")
+    private Set<PerformedExercises> performedExercises;
+
 
     public PlannedExercise() {}
 

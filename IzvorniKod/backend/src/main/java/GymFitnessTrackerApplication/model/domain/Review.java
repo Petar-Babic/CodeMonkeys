@@ -1,5 +1,6 @@
 package GymFitnessTrackerApplication.model.domain;
 
+import GymFitnessTrackerApplication.model.dto.workoutDTOs.ReviewDTO;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
@@ -14,9 +15,10 @@ public class Review {
     private Integer rating;
     private String comment;
 
-    public Review(Integer rating, String comment) {
-        this.rating = rating;
-        this.comment = comment;
+
+    public Review(ReviewDTO reviewDTO) {
+        this.rating = reviewDTO.rating();
+        this.comment = reviewDTO.comment();
     }
     public Review() {}
 

@@ -1,13 +1,17 @@
 package GymFitnessTrackerApplication.controller;
 
 import GymFitnessTrackerApplication.model.domain.MyUser;
-import GymFitnessTrackerApplication.model.domain.WorkoutPlan;
-import GymFitnessTrackerApplication.model.dto.WorkoutDTO;
+import GymFitnessTrackerApplication.model.dto.forms.WorkoutSessionForm;
+import GymFitnessTrackerApplication.model.dto.response.WorkoutSessionResponse;
+import GymFitnessTrackerApplication.model.dto.workoutDTOs.DateRangeDTO;
+import GymFitnessTrackerApplication.model.dto.workoutDTOs.WorkoutDTO;
 import GymFitnessTrackerApplication.model.dto.forms.WorkoutPlanForm;
 import GymFitnessTrackerApplication.model.dto.response.WorkoutPlanResponse;
 import GymFitnessTrackerApplication.service.JwtService;
 import GymFitnessTrackerApplication.service.MyUserService;
 import GymFitnessTrackerApplication.service.WorkoutPlanService;
+import GymFitnessTrackerApplication.service.WorkoutSessionService;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -17,8 +21,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
 @RestController
@@ -31,6 +35,8 @@ public class WorkoutController {
     private MyUserService myUserService;
     @Autowired
     private WorkoutPlanService workoutPlanService;
+    @Autowired
+    private WorkoutSessionService workoutSessionService;
 
     //treba dodat WorkoutPlanResponse klasu i popuniti ju
     @GetMapping("/workout-plans")
@@ -91,4 +97,30 @@ public class WorkoutController {
         return ResponseEntity.status(HttpStatus.OK).body(workoutPlan);
     }
 
+    @PostMapping("/create-workout-session")
+    public ResponseEntity<?> createWorkoutSession(@RequestHeader("Authorization") String token,
+                                                  @RequestBody WorkoutSessionForm workoutSessionForm) {
+        String email = jwtService.extractEmail(token.trim().substring(7));
+        MyUser user = (MyUser) myUserService.getMyUser(email);
+        workoutSessionService.createWorkoutSession(workoutSessionForm, user);
+        return ResponseEntity.status(HttpStatus.OK).body("Workout session successfully created.");
+    }
+
+    @GetMapping("workout-session")
+    public ResponseEntity<?> getWorkoutSession(@RequestHeader("Authorization") String token,
+                                               @RequestBody DateRangeDTO dateRange){
+        String email = jwtService.extractEmail(token.trim().substring(7));
+        MyUser user = (MyUser) myUserService.getMyUser(email);
+        Set<WorkoutSessionResponse> wsr = workoutSessionService.getWorkoutSessionsBetweenDates(user,
+                                                dateRange.startDate(), dateRange.endDate());
+        return ResponseEntity.status(HttpStatus.OK).body(wsr);
+    }
+
+    @GetMapping("workout-sessions-user")
+    public ResponseEntity<?> getUserWorkoutSessions(@RequestHeader("Authorization") String token){
+        String email = jwtService.extractEmail(token.trim().substring(7));
+        MyUser user = (MyUser) myUserService.getMyUser(email);
+        Set<WorkoutSessionResponse> response = workoutSessionService.getWorkoutSessionsForUser(user);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
 }

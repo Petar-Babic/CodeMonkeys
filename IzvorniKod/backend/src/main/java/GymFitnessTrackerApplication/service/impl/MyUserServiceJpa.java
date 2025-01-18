@@ -125,9 +125,9 @@ public class MyUserServiceJpa implements MyUserService {
         if (optionalUser.isPresent()){
             MyUser myUser = optionalUser.get();
             String fileName = myUser.getImage();
-//            if(fileName==null){
-//                throw new UsernameNotFoundException("User doesn't have a profile image.");
-//            }
+            if(fileName==null){
+                return null;
+            }
             Date expiration = new Date(System.currentTimeMillis() + 3600 * 1000);
             URL url = s3Client.generatePresignedUrl(bucketName,fileName,expiration, HttpMethod.GET);
             return url.toString();

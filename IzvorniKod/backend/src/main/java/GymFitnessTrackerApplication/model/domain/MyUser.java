@@ -36,6 +36,8 @@ public class MyUser{
  /*   @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "currrentNutrionPlan"
     private NutrionPlan currentNutrionPlan;*/
+    @OneToMany(mappedBy = "user")
+    private Set<WorkoutSession> workoutSessions;
 
     @OneToMany(mappedBy = "myUser", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<NutrionPlan> nutrionPlans;
@@ -153,6 +155,7 @@ public class MyUser{
         this.role = Role.USER;
         //this.activityLevel=ActivityLevel.SEDENTARY;
         this.nutrionPlans = new ArrayList<>();
+        this.workoutSessions = new HashSet<>();
     }
 
     @Override
@@ -172,7 +175,7 @@ public class MyUser{
         return usedWorkoutPlans;
     }
 
-    public void addusedWorkoutPlan(WorkoutPlan workoutPlan) {
+    public void addUsedWorkoutPlan(WorkoutPlan workoutPlan) {
         usedWorkoutPlans.add(workoutPlan);
     }
 
@@ -184,4 +187,11 @@ public class MyUser{
         createdWorkoutPlans.add(workoutPlan);
     }
 
+    public Set<WorkoutSession> getWorkoutSessions() {
+        return workoutSessions;
+    }
+
+    public void addWorkoutSession(WorkoutSession workoutSession) {
+        workoutSessions.add(workoutSession);
+    }
 }

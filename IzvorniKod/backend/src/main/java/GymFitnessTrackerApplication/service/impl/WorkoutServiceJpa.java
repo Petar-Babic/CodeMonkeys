@@ -4,8 +4,8 @@ import GymFitnessTrackerApplication.model.dao.ExerciseRepo;
 import GymFitnessTrackerApplication.model.dao.MyUserRepository;
 import GymFitnessTrackerApplication.model.dao.WorkoutPlanRepo;
 import GymFitnessTrackerApplication.model.domain.*;
-import GymFitnessTrackerApplication.model.dto.PlannedExerciseDTO;
-import GymFitnessTrackerApplication.model.dto.WorkoutDTO;
+import GymFitnessTrackerApplication.model.dto.workoutDTOs.PlannedExerciseDTO;
+import GymFitnessTrackerApplication.model.dto.workoutDTOs.WorkoutDTO;
 import GymFitnessTrackerApplication.model.dto.forms.WorkoutPlanForm;
 import GymFitnessTrackerApplication.model.dto.response.PlannedExerciseResponse;
 import GymFitnessTrackerApplication.model.dto.response.WorkoutPlanResponse;
@@ -27,7 +27,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Date;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 @Service
@@ -161,8 +160,11 @@ public class WorkoutServiceJpa implements WorkoutPlanService {
             for(Workout workout : workoutPlan.getWorkouts()){
                 WorkoutResponse wp = new WorkoutResponse(workout.getId(), workout.getName(), workout.getDescription());
                 for(PlannedExercise exercise : workout.getPlannedExercises()){
-                    PlannedExerciseResponse per = new PlannedExerciseResponse(exercise.getExercise().getId(), exercise.getSets(),
-                            exercise.getReps(), exercise.getRpe(), exercise.getOrderNumber());
+                    Exercise originalExercise = exerciseRepo.findById(exercise.getExercise().getId()).orElse(null);
+                    String exerciseName = "";
+                    if(originalExercise!=null) {exerciseName = originalExercise.getName(); }
+                    PlannedExerciseResponse per = new PlannedExerciseResponse(exercise.getExercise().getId(), exerciseName,
+                                    exercise.getSets(), exercise.getReps(), exercise.getRpe(), exercise.getOrderNumber());
                     wp.addExercise(per);
                 }
                 wpr.addWorkout(wp);
