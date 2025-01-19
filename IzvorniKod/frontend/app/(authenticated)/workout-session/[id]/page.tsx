@@ -1,9 +1,6 @@
 import React from "react";
 import { workoutSessions } from "@/data/workoutSession";
-import {
-  WorkoutSessionWithExercisesForPage,
-  WorkoutSessionWithPerformedExercises,
-} from "@/types/workoutSession";
+import { WorkoutSessionWithExercisesForPage } from "@/types/workoutSession";
 import { exercises } from "@/data/exercise";
 import { workoutsWithExercises } from "@/data/workout";
 

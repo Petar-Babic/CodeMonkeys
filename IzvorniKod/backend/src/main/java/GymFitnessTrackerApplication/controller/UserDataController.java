@@ -90,7 +90,7 @@ public class UserDataController {
         myMeasurementsService.createGoalMeasurementFromStats(user,form);
         myNutrionService.createNutrionFromForm(user,form);
         //myUserService.updateCurrentNutrion(user,nutrionPlan);
-        return ResponseEntity.status(HttpStatus.valueOf(200)).body("Created nutrion plan and goal body measurements");
+        return ResponseEntity.status(HttpStatus.valueOf(200)).body("Creeated nutrion plan and goal body measurements");
     }
 
     @GetMapping("/profile")
