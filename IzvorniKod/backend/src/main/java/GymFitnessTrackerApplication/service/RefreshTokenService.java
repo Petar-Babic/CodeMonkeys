@@ -51,7 +51,7 @@ public class RefreshTokenService {
                 }
             }
         }
-        throw new NonExistantToken("No refresh token cookie found");
+        throw new NonExistantToken("No refresh token cookie found in request");
     }
 
     public RefreshToken createToken(String username){
