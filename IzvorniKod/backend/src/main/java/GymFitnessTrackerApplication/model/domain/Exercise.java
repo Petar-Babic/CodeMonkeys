@@ -10,15 +10,16 @@ import java.util.Set;
 public class Exercise {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
+
     private String name;
     private String description;
     private String gif;
     @ManyToOne
     @JoinColumn(name = "created_by_user_id")
     private MyUser createdByUser;
-    private boolean isApproved=false;
+    private boolean isApproved;
     @ManyToMany
     @JoinTable(
             name = "primary_muscleGroup_exercise",
@@ -42,12 +43,15 @@ public class Exercise {
         this.gif = gif;
         this.primaryMuscleGroup = primaryMuscleGroup;
         this.secondaryMuscleGroup = secondaryMuscleGroup;
+        isApproved=false;
     }
 
-    public Exercise(String name, String description, String gif) {
+    public Exercise(String name, String description, String gif, MyUser user) {
         this.name = name;
         this.description = description;
         this.gif = gif;
+        this.createdByUser = user;
+        isApproved=false;
         primaryMuscleGroup = new HashSet<>();
         secondaryMuscleGroup = new HashSet<>();
     }

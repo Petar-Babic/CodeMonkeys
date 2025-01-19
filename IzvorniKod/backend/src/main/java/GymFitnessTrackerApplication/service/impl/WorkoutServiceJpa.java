@@ -6,6 +6,7 @@ import GymFitnessTrackerApplication.model.dao.MyUserRepository;
 import GymFitnessTrackerApplication.model.dao.WorkoutPlanRepo;
 import GymFitnessTrackerApplication.model.domain.*;
 import GymFitnessTrackerApplication.model.dto.response.ExerciseResponse;
+import GymFitnessTrackerApplication.model.dto.workoutDTOs.MuscleGroupDTO;
 import GymFitnessTrackerApplication.model.dto.workoutDTOs.PlannedExerciseDTO;
 import GymFitnessTrackerApplication.model.dto.workoutDTOs.WorkoutDTO;
 import GymFitnessTrackerApplication.model.dto.forms.WorkoutPlanForm;
@@ -161,10 +162,22 @@ public class WorkoutServiceJpa implements WorkoutPlanService {
     }
 
     @Override
+    public List<ExerciseResponse> listAllExercisesCreatedByUser(MyUser user) {
+        List<Exercise> exercises = exerciseRepo.findByCreatedByUser(user);
+        List<ExerciseResponse> result = new ArrayList<>();
+        for(Exercise e : exercises){
+            ExerciseResponse exerciseResponse = generateExerciseResponse(e);
+            result.add(exerciseResponse);
+        }
+
+        return result;
+    }
+
+    @Override
     public void createExercise(MyUser user, String name, String description, MultipartFile file,
                                Set<Long> primaryMuscleGroupIds, Set<Long> secondaryMuscleGroupIds) {
         String fileName = name + "_" + System.currentTimeMillis();
-        Exercise newExercise = new Exercise(name, description, fileName);
+        Exercise newExercise = new Exercise(name, description, fileName, user);
         for(Long pmgId : primaryMuscleGroupIds){
             muscleGroupRepo.findById(pmgId).ifPresent(muscleGroup -> {
                 newExercise.addPrimaryMuscleGroup(muscleGroup);
@@ -184,13 +197,22 @@ public class WorkoutServiceJpa implements WorkoutPlanService {
     @Override
     public void createMuscleGroup(String name, String description, MultipartFile file) {
         String fileName = name + "_" + System.currentTimeMillis();
-        uploadFile(fileName, file);
         MuscleGroup newMuscleGroup = new MuscleGroup(name, description, fileName);
         muscleGroupRepo.save(newMuscleGroup);
+        uploadFile(fileName, file);
     }
 
-    //getAllmuscleGroups
-
+    @Override
+    public Set<MuscleGroupDTO> listAllMuscleGroups() {
+        List<MuscleGroup> muscleGroups = muscleGroupRepo.findAll();
+        Set<MuscleGroupDTO> result = new HashSet<>();
+        for(MuscleGroup muscleGroup : muscleGroups){
+            String imageUrl = getURLToFile(muscleGroup.getImage());
+            MuscleGroupDTO mgDto = new MuscleGroupDTO(muscleGroup.getName(), muscleGroup.getDescription(), imageUrl);
+            result.add(mgDto);
+        }
+        return result;
+    }
 
 
     private File convertMultipartFileToFile(MultipartFile mpFile){
@@ -233,6 +255,6 @@ public class WorkoutServiceJpa implements WorkoutPlanService {
     private ExerciseResponse generateExerciseResponse(Exercise exercise){
         String gif = getURLToFile(exercise.getGif());
         return new ExerciseResponse(exercise.getId(), exercise.getName(),
-                    exercise.getDescription(), gif, exercise.getCreatedByUser().getName(), exercise.isApproved());
+                    exercise.getDescription(), gif, exercise.getCreatedByUser().getId(), exercise.isApproved());
     }
 }

@@ -5,6 +5,7 @@ import GymFitnessTrackerApplication.model.dto.forms.WorkoutSessionForm;
 import GymFitnessTrackerApplication.model.dto.response.ExerciseResponse;
 import GymFitnessTrackerApplication.model.dto.response.WorkoutSessionResponse;
 import GymFitnessTrackerApplication.model.dto.workoutDTOs.DateRangeDTO;
+import GymFitnessTrackerApplication.model.dto.workoutDTOs.MuscleGroupDTO;
 import GymFitnessTrackerApplication.model.dto.workoutDTOs.WorkoutDTO;
 import GymFitnessTrackerApplication.model.dto.forms.WorkoutPlanForm;
 import GymFitnessTrackerApplication.model.dto.response.WorkoutPlanResponse;
@@ -131,6 +132,14 @@ public class WorkoutController {
         return ResponseEntity.status(HttpStatus.OK).body(exercises);
     }
 
+    @GetMapping("all-exercises/created-by-user")
+    public ResponseEntity<?> getAllExercisesCreatedByUser(@RequestHeader("Authorization") String token){
+        String email = jwtService.extractEmail(token.trim().substring(7));
+        MyUser user = (MyUser) myUserService.getMyUser(email);
+        List<ExerciseResponse> exercises = workoutPlanService.listAllExercises();
+        return ResponseEntity.status(HttpStatus.OK).body(exercises);
+    }
+
     @PostMapping("create-exercise")
     public ResponseEntity<?> createExercise(@RequestHeader("Authorization") String token,
                                             @RequestParam("name") String name,
@@ -143,5 +152,21 @@ public class WorkoutController {
         MyUser user = (MyUser) myUserService.getMyUser(email);
         workoutPlanService.createExercise(user, name, description, file, primaryMuscleGroupIds, secondaryMuscleGroupIds);
         return ResponseEntity.status(HttpStatus.OK).body("Exercise successfully created.");
+    }
+
+    @PostMapping("create-muscle-group")
+    public ResponseEntity<?> createMuscleGroup(@RequestHeader("Authorization") String token,
+                                               @RequestParam("name") String name,
+                                               @RequestParam("description") String description,
+                                               @RequestParam("image") MultipartFile image){
+        workoutPlanService.createMuscleGroup(name, description, image);
+
+        return ResponseEntity.status(HttpStatus.OK).body("Muscle Group successfully created.");
+    }
+
+    @GetMapping("all-muscle-groups")
+    public ResponseEntity<?> getAllMuscleGroups(){
+        Set<MuscleGroupDTO> muscleGroups = workoutPlanService.listAllMuscleGroups();
+        return ResponseEntity.status(HttpStatus.OK).body(muscleGroups);
     }
 }
