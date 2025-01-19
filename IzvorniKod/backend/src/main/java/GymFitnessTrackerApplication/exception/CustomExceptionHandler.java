@@ -117,6 +117,11 @@ public class CustomExceptionHandler {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
     }
 
+    @ExceptionHandler(NoExistingFoodException.class)
+    public ResponseEntity<String> handleNonExistingFood(NoExistingFoodException ex){
+        return new ResponseEntity<>(ex.getMessage(),HttpStatus.NOT_FOUND);
+    }
+
     /*
 
     tehnicki implementacija refresh tokena moze biti napravljena pomocu hvatanja IoException i gledanja statusa pa slanja

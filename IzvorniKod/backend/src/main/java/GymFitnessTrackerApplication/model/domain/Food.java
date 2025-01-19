@@ -1,5 +1,6 @@
 package GymFitnessTrackerApplication.model.domain;
 
+import GymFitnessTrackerApplication.model.dto.forms.FoodForm;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -13,6 +14,7 @@ public class Food {
     Long id;
     Unit unit;
 
+    String name;
     float defaultNumber;
 
     float calories;
@@ -26,6 +28,16 @@ public class Food {
     boolean isApproved;
 
     public  Food(){}
+
+    public Food(FoodForm form){
+        this.calories= form.getCalories();
+        this.fat=form.getFats();
+        this.carbs = form.getCarbs();
+        this.unit=form.getUnit();
+        this.defaultNumber=form.getDefaultNumber();
+        this.protein = form.getProtein();
+        this.name = form.getName();
+    }
 
     public Unit getUnit() {
         return unit;
@@ -81,5 +93,17 @@ public class Food {
 
     public void setApproved(boolean approved) {
         isApproved = approved;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 }
