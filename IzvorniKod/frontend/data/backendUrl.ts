@@ -1,2 +1,1 @@
-export const backendUrl =
-  process.env.BACKEND_URL || "https://gymprogressbackend.lukakordic.me";
+export const backendUrl = "http://localhost:8080";

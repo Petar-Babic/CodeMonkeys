@@ -26,7 +26,7 @@ export default function MuscleGroupPage() {
     if (group) {
       const filtered = exercises.filter(
         (exercise) =>
-          exercise.primaryMuscleGroupId.includes(group.id) &&
+          exercise.primaryMuscleGroupsIds.includes(group.id) &&
           exercise.name.toLowerCase().includes(searchQuery.toLowerCase())
       );
       setFilteredExercises(filtered);

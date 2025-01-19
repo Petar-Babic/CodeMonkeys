@@ -14,13 +14,26 @@ public class BodyMeasurementForm {
     private float thighs;
     private float biceps;
 
-    public BodyMeasurementForm(String date, float chest, float waist, float hips, float thighs, float biceps) throws ParseException {
-        this.date = ZonedDateTime.parse(date);
+    private float height;
+    private float weight;
+
+    private boolean isGoal;
+
+    public BodyMeasurementForm() {
+        this.date = ZonedDateTime.now();
+    }
+
+
+    public BodyMeasurementForm(float chest, float waist, float hips, float thighs, float biceps,float height,float weight,boolean isGoal) throws ParseException {
+        this.date = ZonedDateTime.now();
        this.chest = chest;
         this.waist = waist;
         this.hips = hips;
         this.thighs = thighs;
         this.biceps = biceps;
+        this.height = height;
+        this.weight = weight;
+        this.isGoal = isGoal;
     }
 
     public void setDate(ZonedDateTime date) {
@@ -70,4 +83,29 @@ public class BodyMeasurementForm {
     public float getBiceps() {
         return biceps;
     }
+
+    public float getHeight() {
+        return height;
+    }
+
+    public void setHeight(float height) {
+        this.height = height;
+    }
+
+    public float getWeight() {
+        return weight;
+    }
+
+    public void setWeight(float weight) {
+        this.weight = weight;
+    }
+
+    public boolean isGoal() {
+        return isGoal;
+    }
+
+    public void setGoal(boolean goal) {
+        isGoal = goal;
+    }
 }
+

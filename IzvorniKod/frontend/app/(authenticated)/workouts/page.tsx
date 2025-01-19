@@ -18,17 +18,17 @@ export default function WorkoutPage() {
           userWorkoutId: "1",
           exerciseId: "101",
           exercise: {
-            id: "101",
-            name: "Push-up",
-            description: "A basic push-up exercise.",
-            gifUrl: "https://example.com/pushup.gif",
+            id: "1",
+            name: "Barbell Squat",
+            description:
+              "A compound lower body exercise that targets the quadriceps, hamstrings, and glutes.",
+            gif: "/exercises/barbell-squat.gif",
             createdById: "user1",
             isApproved: true,
-            categoryId: "strength",
-            primaryMuscleGroupId: ["chest"],
-            secondaryMuscleGroupIds: ["triceps", "shoulders"],
-            createdAt: new Date("2024-11-10T00:00:00Z"),
-            updatedAt: new Date("2024-11-10T00:00:00Z"),
+            primaryMuscleGroupsIds: ["1"], // Assuming 1 is the ID for "Quadriceps" muscle group
+            secondaryMuscleGroupsIds: ["2", "3"], // Assuming 2 is "Hamstrings" and 3 is "Glutes"
+            createdAt: new Date("2023-01-01"),
+            updatedAt: new Date("2023-01-01"),
           },
           sets: 3,
           reps: 12,
@@ -41,17 +41,17 @@ export default function WorkoutPage() {
           userWorkoutId: "1",
           exerciseId: "102",
           exercise: {
-            id: "102",
-            name: "Squat",
-            description: "A basic squat exercise.",
-            gifUrl: "https://example.com/squat.gif",
-            createdById: "user2",
+            id: "1",
+            name: "Barbell Squat",
+            description:
+              "A compound lower body exercise that targets the quadriceps, hamstrings, and glutes.",
+            gif: "/exercises/barbell-squat.gif",
+            createdById: "user1",
             isApproved: true,
-            categoryId: "strength",
-            primaryMuscleGroupId: ["legs"],
-            secondaryMuscleGroupIds: ["glutes", "core"],
-            createdAt: new Date("2024-11-10T00:00:00Z"),
-            updatedAt: new Date("2024-11-10T00:00:00Z"),
+            primaryMuscleGroupsIds: ["1"], // Assuming 1 is the ID for "Quadriceps" muscle group
+            secondaryMuscleGroupsIds: ["2", "3"], // Assuming 2 is "Hamstrings" and 3 is "Glutes"
+            createdAt: new Date("2023-01-01"),
+            updatedAt: new Date("2023-01-01"),
           },
           sets: 3,
           reps: 15,
@@ -125,7 +125,6 @@ export default function WorkoutPage() {
         Choose today&apos;s workout
       </h1>
 
-      {/* Workouts List */}
       <div className="w-full max-w-4xl flex flex-wrap justify-center gap-6 px-4 mt-8">
         {mockWorkouts.map((workout) => (
           <UserWorkoutWithUserPlannedExerciseCard
@@ -135,7 +134,6 @@ export default function WorkoutPage() {
         ))}
       </div>
 
-      {/* Completed Workouts Section */}
       <h2 className="text-4xl text-gray-800 mt-12 text-center">
         Completed Workouts
       </h2>

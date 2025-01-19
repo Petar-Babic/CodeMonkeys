@@ -1,11 +1,12 @@
+"use client";
 import React from "react";
-import { UserWorkoutWithUserPlannedExercise } from "@/types/userWorkout";
+import { WorkoutWithPlannedExercise } from "@/types/workout";
 import UserWorkoutWithUserPlannedExerciseCard from "./UserWorkoutWithUserPlannedExerciseCard";
 
 export default function UserWorkoutWithUserPlannedExerciseList({
   workouts,
 }: {
-  workouts: UserWorkoutWithUserPlannedExercise[];
+  workouts: WorkoutWithPlannedExercise[];
 }) {
   return (
     <div className="w-full flex-col space-y-3 flex">

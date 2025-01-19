@@ -6,15 +6,12 @@ export type UserBase = {
   emailVerified?: Date;
   image?: string;
   role: Role;
-  height?: number;
-  weight?: number;
   gender?: Gender;
-  activityLevel?: ActivityLevel;
   currentNutritionPlanId?: string;
   trainerId?: string;
   workoutPlanId?: string;
-  createdAt: Date;
-  updatedAt: Date;
+  bodyMeasurementIds: string[];
+  goalBodyMeasurementIds: string[];
 };
 
 export type CreateUserInput = Omit<

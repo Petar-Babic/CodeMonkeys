@@ -4,22 +4,23 @@ import { Button } from "./ui/button";
 import { useAppContext } from "@/contexts/AppContext";
 import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { CreateWorkoutPlanInput } from "@/types/workoutPlan";
 
 export default function ApplyWorkoutPlanToUserButton({
-  workoutPlanId,
+  workoutPlan,
 }: {
-  workoutPlanId: string;
+  workoutPlan: CreateWorkoutPlanInput;
 }) {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
-  const { applyWorkoutPlanToUser } = useAppContext();
+  const { createUserWorkoutPlan } = useAppContext();
 
   const handleApplyWorkoutPlanToUser = async () => {
     setIsLoading(true);
 
     try {
-      await applyWorkoutPlanToUser(workoutPlanId);
+      await createUserWorkoutPlan(workoutPlan);
       router.push("/workout-plans");
     } catch (error) {
       console.error(error);

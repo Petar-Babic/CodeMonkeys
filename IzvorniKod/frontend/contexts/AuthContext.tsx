@@ -57,18 +57,16 @@ function useAuth(): AuthContextType {
 
   useEffect(() => {
     if (status === "authenticated" && session?.user) {
+      console.log("Session authenticated, setting user:", session.user);
       setUser(session.user as UserBase);
       setIsAuthenticated(true);
     } else {
+      console.log("Session not authenticated, clearing user");
       setUser(null);
       setIsAuthenticated(false);
     }
     setLoading(status === "loading");
   }, [session, status]);
-
-  useEffect(() => {
-    console.log("User:", user);
-  }, [user]);
 
   const login = useCallback(
     async (credentials: LoginCredentials): Promise<SignInResponse> => {
@@ -163,6 +161,8 @@ function useAuth(): AuthContextType {
   return {
     user,
     session: session as SessionWithRelations | null,
+    accessToken: session?.accessToken || null,
+    refreshToken: session?.refreshToken || null,
     isAuthenticated,
     login,
     signUp,

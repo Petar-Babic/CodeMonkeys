@@ -1,4 +1,9 @@
-import { WorkoutWithPlannedExercises } from "./workout";
+import {
+  WorkoutWithPlannedExercise,
+  WorkoutWithPlannedExerciseBaseCreateInput,
+  WorkoutWithPlannedExerciseBaseUpdateInput,
+  WorkoutWithPlannedExercisesBase,
+} from "./workout";
 
 export type WorkoutPlanBase = {
   id: string;
@@ -6,21 +11,22 @@ export type WorkoutPlanBase = {
   description?: string;
   image?: string;
   userId?: string;
-  trainerId?: string;
   createdById: string;
-  createdAt: Date;
-  updatedAt: Date;
+  originalWorkoutPlanId?: string;
 };
 
 export type CreateWorkoutPlanInput = Omit<
   WorkoutPlanBase,
-  "id" | "createdAt" | "updatedAt"
->;
+  "id" | "createdById"
+> & {
+  workouts: WorkoutWithPlannedExerciseBaseCreateInput[];
+};
 
-export type UpdateWorkoutPlanInput = Partial<
-  Omit<WorkoutPlanBase, "createdAt" | "updatedAt">
-> & { id: string };
+export type UpdateWorkoutPlanInput = Partial<WorkoutPlanBase> & {
+  id: string;
+  workouts: WorkoutWithPlannedExerciseBaseUpdateInput[];
+};
 
 export type WorkoutPlanWithWorkouts = WorkoutPlanBase & {
-  workouts: WorkoutWithPlannedExercises[];
+  workouts: WorkoutWithPlannedExercisesBase[];
 };

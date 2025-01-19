@@ -1,10 +1,7 @@
 package GymFitnessTrackerApplication.service.impl;
 
 import GymFitnessTrackerApplication.model.dao.MyUserRepository;
-import GymFitnessTrackerApplication.model.domain.Measurement;
-import GymFitnessTrackerApplication.model.domain.MyUser;
-import GymFitnessTrackerApplication.model.domain.NutrionPlan;
-import GymFitnessTrackerApplication.model.domain.Role;
+import GymFitnessTrackerApplication.model.domain.*;
 import GymFitnessTrackerApplication.model.dto.forms.BodyGoalsForm;
 import GymFitnessTrackerApplication.service.MyUserService;
 import GymFitnessTrackerApplication.exception.UserAlreadyExistsException;
@@ -26,7 +23,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URL;
 import java.time.LocalDateTime;
 import java.util.Date;
@@ -58,35 +54,13 @@ public class MyUserServiceJpa implements MyUserService {
 
         return userRepository.save(newUser);
     }
-
     @Transactional
     @Override
-    public void updateMeasurements(MyUser user,Measurement m){
-        userRepository.findByEmail(user.getEmail()).ifPresent(
-                user1 -> {
-                    user1.setBodyMeasurement(m);
-                    userRepository.save(user1);
-                }
-        );
-    }
-
-    @Transactional
-    @Override
-    public void updateGoalMeasurements(MyUser user,Measurement m){
-        userRepository.findByEmail(user.getEmail()).ifPresent(
-                (user1) -> {
-                    user1.setGoalBodyMeasurements(m);
-                    userRepository.save(user1);
-                }
-        );
-    }
-
-    @Transactional
-    @Override
-    public void updateCurrentNutrion(MyUser user, NutrionPlan nutrionPlan){
+    public void updateUserFromForm(MyUser user,BodyGoalsForm form){
         userRepository.findByEmail(user.getEmail()).ifPresent(
                 (usr) -> {
-                    usr.setNutrionPlan(nutrionPlan);
+                    usr.setActivityLevel(form.getActivityLevel());
+                    usr.setGender(form.getGender());
                     userRepository.save(usr);
                 }
         );
@@ -151,6 +125,9 @@ public class MyUserServiceJpa implements MyUserService {
         if (optionalUser.isPresent()){
             MyUser myUser = optionalUser.get();
             String fileName = myUser.getImage();
+            if(fileName==null){
+                return null;
+            }
             Date expiration = new Date(System.currentTimeMillis() + 3600 * 1000);
             URL url = s3Client.generatePresignedUrl(bucketName,fileName,expiration, HttpMethod.GET);
             return url.toString();

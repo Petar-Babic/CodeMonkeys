@@ -3,7 +3,7 @@ export type PerformedSetBase = {
   performedExerciseId: string;
   reps: number;
   weight: number;
-  rpe?: number;
+  rpe: number;
 };
 
 export type CreatePerformedSetInput = Omit<PerformedSetBase, "id">;

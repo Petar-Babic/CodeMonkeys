@@ -2,6 +2,10 @@ package GymFitnessTrackerApplication.model.domain;
 
 import GymFitnessTrackerApplication.model.dto.forms.WorkoutPlanForm;
 import jakarta.persistence.*;
+import net.minidev.json.annotate.JsonIgnore;
+
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 public class WorkoutPlan {
@@ -12,33 +16,50 @@ public class WorkoutPlan {
     private String name;
     private String description;
     private String image;
-    //created by user
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "created_by_user_id")
     private MyUser creator;
-    @OneToOne
-    @JoinColumn(name = "owner_user_id")
+    @JsonIgnore
+    @ManyToOne
+    @JoinColumn(name = "owner_user_id",nullable = true)
     private MyUser owner;
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "original_workout_plan_id")
     private WorkoutPlan originalWorkoutPlan;
+    @OneToMany(mappedBy = "workoutPlan", cascade = CascadeType.ALL)
+    private Set<Workout> workouts;
+    private boolean isActive=false;
 
-    public WorkoutPlan(String name, String description, String image, MyUser creator, MyUser owner) {
+
+    public WorkoutPlan(String name, String description, MyUser creator, MyUser owner, WorkoutPlan originalWorkoutPlan) {
         this.name = name;
         this.description = description;
-        this.image = image;
         this.creator = creator;
         this.owner = owner;
+        this.originalWorkoutPlan = originalWorkoutPlan;
+        workouts = new HashSet<>();
     }
-    public WorkoutPlan() {}
+    public WorkoutPlan(String name, String description, MyUser creator, MyUser owner) {
+        this.name = name;
+        this.description = description;
+        this.creator = creator;
+        this.owner = owner;
+        this.originalWorkoutPlan = null;
+        workouts = new HashSet<>();
+    }
+
+    public WorkoutPlan() {
+        workouts = new HashSet<>();
+    }
 
     public WorkoutPlan(MyUser user, WorkoutPlanForm workoutPlanForm) {
         this.creator = user;
         this.name = workoutPlanForm.name();
         this.description = workoutPlanForm.description();
-        this.image = workoutPlanForm.image();
-
     }
+
 
     public Long getId() {
         return id;
@@ -90,5 +111,21 @@ public class WorkoutPlan {
 
     public void setOriginalWorkoutPlan(WorkoutPlan originalWorkoutPlan) {
         this.originalWorkoutPlan = originalWorkoutPlan;
+    }
+
+    public Set<Workout> getWorkouts() {
+        return workouts;
+    }
+
+    public void addWorkout(Workout workout) {
+        workouts.add(workout);
+    }
+
+    public boolean isActive() {
+        return isActive;
+    }
+
+    public void setActive(boolean active) {
+        isActive = active;
     }
 }

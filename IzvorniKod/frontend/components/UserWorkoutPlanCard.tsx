@@ -7,16 +7,22 @@ import React from "react";
 import { Button } from "./ui/button";
 import UserWorkoutWithUserPlannedExerciseList from "./UserWorkoutWithUserPlannedExerciseList";
 import Calendar from "./Calendar";
+import { useWorkoutSession } from "@/hooks/workoutSession";
 
 export default function UserWorkoutPlanCard() {
   const { userWorkoutPlan } = useAppContext();
+  const { exercises } = useAppContext();
 
-  const events =
-    userWorkoutPlan?.workoutSessions.map((session) => ({
-      name: userWorkoutPlan.name,
-      date: session.createdAt,
-      href: `/workout-session/${session.id}`,
-    })) || [];
+  const { workoutSessions } = useWorkoutSession();
+
+  const events = workoutSessions.map((workoutSession) => ({
+    name:
+      userWorkoutPlan?.workouts.find(
+        (workout) => workout.id === workoutSession.workoutId
+      )?.name || "",
+    href: `/workout-session/${workoutSession.id}`,
+    date: workoutSession.date,
+  }));
 
   return (
     <section className="w-full  flex-col space-y-3 flex px-4 xl:px-6 2xl:px-8 py-2 ">
@@ -41,9 +47,20 @@ export default function UserWorkoutPlanCard() {
               Workout&apos;s list
             </h4>
           </div>
-          <UserWorkoutWithUserPlannedExerciseList
-            workouts={userWorkoutPlan.userWorkouts}
-          />
+
+          {userWorkoutPlan?.workouts && (
+            <UserWorkoutWithUserPlannedExerciseList
+              workouts={userWorkoutPlan?.workouts?.map((workout) => ({
+                ...workout,
+                exercises: workout.exercises.map((exercise) => ({
+                  ...exercise,
+                  exercise: exercises.find(
+                    (e) => e.id === exercise.exerciseId
+                  )!,
+                })),
+              }))}
+            />
+          )}
           <div className="p-5 shadow-md rounded-sm bg-white">
             <Calendar events={events} />
           </div>

@@ -1,8 +1,11 @@
 package GymFitnessTrackerApplication.model.dto.response;
 
+import GymFitnessTrackerApplication.model.domain.Measurement;
+import GymFitnessTrackerApplication.model.dto.forms.BodyMeasurementForm;
 import org.springframework.cglib.core.Local;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
 public class BodyMeasurementsResponse {
@@ -14,10 +17,28 @@ public class BodyMeasurementsResponse {
     public float hips;
     public float thighs;
     public float biceps;
-    public ZonedDateTime createdAt;
-    public ZonedDateTime updatedAt;
 
-    public BodyMeasurementsResponse(String id, String userId, ZonedDateTime date, float chest, float waist, float hips, float thighs, float biceps, ZonedDateTime createdAt, ZonedDateTime updatedAt) {
+    public float height;
+    public float weight;
+
+    public boolean isGoal;
+
+    public BodyMeasurementsResponse(Measurement m){
+        this.weight=m.getWeight();
+        this.height=m.getHeight();
+        this.date=m.getDate().toInstant().atZone(ZoneId.systemDefault());
+        this.biceps=m.getBiceps();
+        this.id = m.getMeasurementId().toString();
+        this.userId = m.getMyuser().getId().toString();
+        this.chest = m.getChest();
+        this.waist = m.getWaist();
+        this.thighs = m.getThighs();
+        this.isGoal = m.isGoal();
+        this.hips=m.getHips();
+
+    }
+
+    public BodyMeasurementsResponse(String id, String userId, ZonedDateTime date, float chest, float waist, float hips, float thighs, float biceps,float height,float weight, boolean isGoal) {
         this.id = id;
         this.userId = userId;
         this.date = date;
@@ -26,8 +47,8 @@ public class BodyMeasurementsResponse {
         this.hips = hips;
         this.thighs = thighs;
         this.biceps = biceps;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
+        this.height = height;
+        this.weight = weight;
     }
 
     public String getId() {
@@ -62,11 +83,11 @@ public class BodyMeasurementsResponse {
         return biceps;
     }
 
-    public ZonedDateTime getCreatedAt() {
-        return createdAt;
+    public float getHeight() {
+        return height;
     }
 
-    public ZonedDateTime getUpdatedAt() {
-        return updatedAt;
+    public float getWeight() {
+        return weight;
     }
 }

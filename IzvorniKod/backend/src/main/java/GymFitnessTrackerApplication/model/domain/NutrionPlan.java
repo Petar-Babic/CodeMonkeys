@@ -7,6 +7,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 public class NutrionPlan {
@@ -35,6 +37,10 @@ public class NutrionPlan {
 
     // nezz jel
     private ZonedDateTime updatedAt;
+
+    private String createdBy;
+
+    private boolean isCurrent;
 
     public Long getId() {
         return id;
@@ -116,20 +122,39 @@ public class NutrionPlan {
         this.updatedAt = updatedAt;
     }
 
-    public NutrionPlan(){}
+    public String getCreatedBy() {
+        return createdBy;
+    }
 
+    public void setCreatedBy(String createdBy) {
+        this.createdBy = createdBy;
+    }
+
+
+    public boolean isCurrent() {
+        return isCurrent;
+    }
+
+    public void setCurrent(boolean current) {
+        isCurrent = current;
+    }
+
+    public NutrionPlan(){
+
+    }
     public NutrionPlan(MyUser user, @RequestBody NutrionPlanForm form){
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         this.myUser = user;
-        this.calories=form.getCalories();
-        this.fat=form.getFat();
-        this.carbs=form.getCarbs();
-        this.protein=form.getProtein();
-        this.startDate=LocalDate.parse(form.getStartDate(),formatter);
-        this.endDate = LocalDate.parse(form.getEndDate(),formatter);
+        this.calories = form.getCalories();
+        this.fat = form.getFat();
+        this.carbs = form.getCarbs();
+        this.protein = form.getProtein();
+        
+        // Parse ISO format date and extract only the date part
+        this.startDate = LocalDate.parse(form.getStartDate().substring(0, 10));
+        this.endDate = LocalDate.parse(form.getEndDate().substring(0, 10));
+        
         this.createdAt = ZonedDateTime.now();
         this.updatedAt = ZonedDateTime.now();
-
     }
 
 }

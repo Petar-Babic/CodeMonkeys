@@ -1,19 +1,19 @@
 package GymFitnessTrackerApplication.model.dto.forms;
 
+import GymFitnessTrackerApplication.model.domain.ActivityLevel;
+import GymFitnessTrackerApplication.model.domain.Gender;
+
+import java.time.LocalDate;
 import java.time.ZonedDateTime;
 
 public class BodyGoalsForm {
 
+    private ActivityLevel activityLevel;
+
+    private Gender gender;
+
     private float height;
     private float weight;
-
-    private float goalWeight;
-
-    private String activityLevel;
-
-    private String gender;
-
-    private int timelineWeeks;
 
     private int protein;
 
@@ -23,17 +23,22 @@ public class BodyGoalsForm {
 
     private float calories;
 
+    private LocalDate startDate;
 
-    public BodyGoalsForm(float height,float weight,float goalWeight,String activityLevel,String gender,int timelineWeeks,int protein,int carbs,int fat,int calories,ZonedDateTime time){
+    private LocalDate endDate;
+
+
+    public BodyGoalsForm(ActivityLevel activityLevel,Gender gender,float height,float weight,int protein,int carbs,int fat,int calories,LocalDate startDate,LocalDate endDate ){
+        this.activityLevel = activityLevel;
+        this.gender = gender;
         this.height=height;
         this.weight=weight;
-        this.goalWeight=goalWeight;
-        this.activityLevel=activityLevel;
-        this.gender=gender;
         this.protein=protein;
         this.carbs=carbs;
         this.fat=fat;
         this.calories=calories;
+        this.endDate=endDate;
+        this.startDate = startDate;
     }
 
     public float getHeight() {
@@ -50,38 +55,6 @@ public class BodyGoalsForm {
 
     public void setWeight(float weight) {
         this.weight = weight;
-    }
-
-    public float getGoalWeight() {
-        return goalWeight;
-    }
-
-    public void setGoalWeight(float goalWeight) {
-        this.goalWeight = goalWeight;
-    }
-
-    public String getActivityLevel() {
-        return activityLevel;
-    }
-
-    public void setActivityLevel(String activityLevel) {
-        this.activityLevel = activityLevel;
-    }
-
-    public String getGender() {
-        return gender;
-    }
-
-    public void setGender(String gender) {
-        this.gender = gender;
-    }
-
-    public int getTimelineWeeks() {
-        return timelineWeeks;
-    }
-
-    public void setTimelineWeeks(int timelineWeeks) {
-        this.timelineWeeks = timelineWeeks;
     }
 
     public int getProtein() {
@@ -114,5 +87,37 @@ public class BodyGoalsForm {
 
     public void setCalories(float calories) {
         this.calories = calories;
+    }
+
+    public LocalDate getStartDate() {
+        return startDate;
+    }
+
+    public void setStartDate(LocalDate startDate) {
+        this.startDate = startDate;
+    }
+
+    public LocalDate getEndDate() {
+        return endDate;
+    }
+
+    public void setEndDate(LocalDate endDate) {
+        this.endDate = endDate;
+    }
+
+    public ActivityLevel getActivityLevel() {
+        return activityLevel;
+    }
+
+    public void setActivityLevel(ActivityLevel activityLevel) {
+        this.activityLevel = activityLevel;
+    }
+
+    public Gender getGender() {
+        return gender;
+    }
+
+    public void setGender(Gender gender) {
+        this.gender = gender;
     }
 }

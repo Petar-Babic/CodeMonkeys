@@ -4,6 +4,7 @@ import { workoutsWithExercises } from "@/data/workout";
 import { WorkoutPlanWithWorkouts } from "@/types/workoutPlan";
 import Image from "next/image";
 import ApplyWorkoutPlanToUserButton from "@/components/ApplyWorkoutPlanToUserButton";
+import WorkoutsFromPublicWorkoutPlan from "@/components/WorkoutsFromPublicWorkoutPlan";
 
 const getWorkoutPlanWithWorkoutsAPI = async (
   id: string
@@ -73,16 +74,12 @@ export default async function WorkoutPlanPage(props: {
             <p className="text-sm text-gray-600">{workout.description}</p>
             <h6 className="text-xs text-gray-600">Exercises:</h6>
             <ul className="list-disc ml-4 mt-1">
-              {workout.exercises.map((exercise) => (
-                <li className="text-xs" key={exercise.id}>
-                  {exercise.exercise.name}
-                </li>
-              ))}
+              <WorkoutsFromPublicWorkoutPlan workouts={workoutPlan.workouts} />
             </ul>
           </div>
         ))}
       </div>
-      <ApplyWorkoutPlanToUserButton workoutPlanId={workoutPlan.id} />
+      <ApplyWorkoutPlanToUserButton workoutPlan={workoutPlan} />
     </div>
   );
 }
