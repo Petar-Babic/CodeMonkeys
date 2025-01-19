@@ -8,11 +8,11 @@ export default function UserProfilePage() {
   // Prijasnje unesene mjere koje se pokazuju u grafovima
   const goals = [
     {
-      name: "Weight"
+      name: "Weight",
     },
     {
-      name: "Steps"
-    }
+      name: "Steps",
+    },
   ];
 
   const measurements = [

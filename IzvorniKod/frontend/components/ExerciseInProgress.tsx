@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
+import SetCard from "@/components/SetCard";
 
 type Exercise = {
   id: number;
@@ -15,25 +16,36 @@ export default function ExerciseInProgress({
   onComplete,
 }: {
   exercise: Exercise;
-  onComplete: (rpe: number[]) => void;
+  onComplete: (sets: { weight: number; rpe: number }[]) => void;
 }) {
   const [currentSet, setCurrentSet] = useState(1);
-  const [rpes, setRpes] = useState<number[]>(Array(exercise.sets).fill(0));
-  const [extraSets, setExtraSets] = useState<number>(0);
+  const [sets, setSets] = useState(
+    Array.from({ length: exercise.sets }, () => ({ weight: 0, rpe: 0 }))
+  );
 
-  const totalSets = exercise.sets + extraSets;
-
-  const handleRpeChange = (value: number) => {
-    const updatedRpes = [...rpes];
-    updatedRpes[currentSet - 1] = value;
-    setRpes(updatedRpes);
+  const handleWeightChange = (setIndex: number, value: number) => {
+    const updatedSets = [...sets];
+    updatedSets[setIndex].weight = value;
+    setSets(updatedSets);
   };
 
-  const handleNextSet = () => {
-    if (currentSet < totalSets) {
-      setCurrentSet(currentSet + 1);
-    } else {
-      onComplete(rpes.slice(0, totalSets));
+  const handleRpeChange = (setIndex: number, value: number) => {
+    const updatedSets = [...sets];
+    updatedSets[setIndex].rpe = value;
+    setSets(updatedSets);
+  };
+
+  const handleAddSet = () => {
+    setSets([...sets, { weight: 0, rpe: 0 }]);
+  };
+
+  const handleRemoveSet = () => {
+    if (sets.length > 1) {
+      const updatedSets = sets.slice(0, -1);
+      setSets(updatedSets);
+      if (currentSet > updatedSets.length) {
+        setCurrentSet(updatedSets.length);
+      }
     }
   };
 
@@ -42,40 +54,89 @@ export default function ExerciseInProgress({
       "Are you sure you want to finish this exercise early?"
     );
     if (confirmFinish) {
-      onComplete(rpes.slice(0, currentSet)); // Završava s unesenim RPE-ovima
+      onComplete(sets.slice(0, currentSet));
     }
   };
 
-  const handleAddExtraSet = () => {
-    setExtraSets(extraSets + 1);
-    setRpes([...rpes, 0]); // Dodaj RPE za novi set
-  };
-
   return (
-    <div className="flex flex-col items-center justify-center h-screen bg-gray-100 p-4">
-      <h2 className="text-xl font-bold mb-4">{exercise.name}</h2>
+    <div className="flex flex-col items-center justify-center min-h-screen p-4 bg-black text-white rounded-lg">
+      <h2 className="text-2xl font-bold mb-6 uppercase text-center border-b border-gray-700 pb-2">
+        {exercise.name}
+      </h2>
       <p className="text-lg mb-4">
-        Set {currentSet} of {totalSets} - {exercise.reps} reps
+        SET {currentSet} OF {sets.length} - {exercise.reps} REPS
       </p>
 
-      <label className="mb-2 text-sm">RPE (Rate of Perceived Exertion):</label>
-      <input
-        type="number"
-        min="1"
-        max="10"
-        value={rpes[currentSet - 1] || ""}
-        onChange={(e) => handleRpeChange(Number(e.target.value))}
-        className="border border-gray-300 rounded-md p-2 mb-4 w-20 text-center"
-      />
+      <div className="w-full max-w-md space-y-4">
+        {sets.map((set, index) => (
+          <div
+            key={index}
+            className="bg-gray-900 p-4 rounded-md space-y-2 border border-gray-700"
+          >
+            <div className="flex justify-between items-center">
+              <label className="text-sm font-semibold">Set {index + 1}</label>
+              <div className="flex space-x-4">
+                <div className="flex flex-col items-center">
+                  <label className="text-xs text-gray-400">Weight</label>
+                  <input
+                    type="number"
+                    placeholder="Weight"
+                    value={set.weight}
+                    onChange={(e) =>
+                      handleWeightChange(index, parseFloat(e.target.value) || 0)
+                    }
+                    className="w-20 bg-black text-white border border-gray-700 rounded-md p-2"
+                  />
+                </div>
+                <div className="flex flex-col items-center">
+                  <label className="text-xs text-gray-400">RPE</label>
+                  <input
+                    type="number"
+                    placeholder="RPE"
+                    value={set.rpe}
+                    onChange={(e) =>
+                      handleRpeChange(index, parseFloat(e.target.value) || 0)
+                    }
+                    className="w-20 bg-black text-white border border-gray-700 rounded-md p-2"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
 
-      <div className="flex space-x-4">
-        <Button onClick={handleNextSet} className="bg-black text-white">
-          {currentSet < totalSets ? "Next Set" : "Finish Exercise"}
+      <div className="flex space-x-4 mt-6">
+        <Button
+          onClick={() =>
+            currentSet < sets.length
+              ? setCurrentSet(currentSet + 1)
+              : onComplete(sets)
+          }
+          className="bg-green-500 text-black font-semibold py-2 px-4 rounded-md"
+        >
+          {currentSet < sets.length ? "Next Set" : "Finish Exercise"}
         </Button>
-        <Button onClick={handleAddExtraSet} className="bg-blue-500 text-white">
-          Add Extra Set
+
+        <Button
+          onClick={handleAddSet}
+          className="bg-blue-500 text-white font-semibold py-2 px-4 rounded-md"
+        >
+          Add Set
         </Button>
-        <Button onClick={handleFinishEarly} className="bg-red-500 text-white">
+
+        <Button
+          onClick={handleRemoveSet}
+          className="bg-yellow-500 text-black font-semibold py-2 px-4 rounded-md"
+          disabled={sets.length === 1}
+        >
+          Remove Set
+        </Button>
+
+        <Button
+          onClick={handleFinishEarly}
+          className="bg-red-500 text-white font-semibold py-2 px-4 rounded-md"
+        >
           Finish Early
         </Button>
       </div>

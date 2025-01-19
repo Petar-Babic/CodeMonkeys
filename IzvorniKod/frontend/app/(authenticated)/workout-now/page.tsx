@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { useRouter } from "next/navigation"; // Importiramo useRouter
+import { useRouter } from "next/navigation";
 import WorkoutNowExerciseCard from "@/components/WorkoutNowExerciseCard";
 import ExerciseInProgress from "@/components/ExerciseInProgress";
 
@@ -22,17 +22,17 @@ const selectedWorkout = {
 };
 
 export default function WorkoutNowPage() {
-  const router = useRouter(); // Koristimo router za navigaciju
+  const router = useRouter();
   const [activeExercise, setActiveExercise] = useState<Exercise | null>(null);
   const [completedExercises, setCompletedExercises] = useState<{
     [key: number]: number[];
   }>({});
 
-  const handleComplete = (rpes: number[]) => {
+  const handleComplete = (sets: { weight: number; rpe: number }[]) => {
     if (activeExercise) {
       setCompletedExercises({
         ...completedExercises,
-        [activeExercise.id]: rpes,
+        [activeExercise.id]: sets.map((set) => set.rpe),
       });
     }
     setActiveExercise(null);
@@ -45,13 +45,12 @@ export default function WorkoutNowPage() {
     if (confirmFinish) {
       console.log("Workout completed!", completedExercises);
       alert("Workout finished! Returning to workouts page.");
-      // Navigiraj na "Workout" stranicu
       router.push("/workouts");
     }
   };
 
   return (
-    <div className="p-4">
+    <div className="flex flex-col items-center justify-center min-h-screen p-4">
       {activeExercise ? (
         <ExerciseInProgress
           exercise={activeExercise}
@@ -60,7 +59,7 @@ export default function WorkoutNowPage() {
       ) : (
         <>
           <h2 className="text-xl font-bold mb-4">{selectedWorkout.name}</h2>
-          <div className="space-y-4">
+          <div className="w-full max-w-md space-y-4">
             {selectedWorkout.exercises.map((exercise) => (
               <div
                 key={exercise.id}
