@@ -136,7 +136,7 @@ public class WorkoutController {
     public ResponseEntity<?> getAllExercisesCreatedByUser(@RequestHeader("Authorization") String token){
         String email = jwtService.extractEmail(token.trim().substring(7));
         MyUser user = (MyUser) myUserService.getMyUser(email);
-        List<ExerciseResponse> exercises = workoutPlanService.listAllExercises();
+        List<ExerciseResponse> exercises = workoutPlanService.listAllExercisesCreatedByUser(user);
         return ResponseEntity.status(HttpStatus.OK).body(exercises);
     }
 
