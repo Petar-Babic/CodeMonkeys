@@ -28,6 +28,13 @@ jobs:
           mkdir -p IzvorniKod/backend/src/main/resources
           touch IzvorniKod/backend/src/main/resources/application.properties
 
+      - name: Check application.properties file
+        run: |
+          if [ ! -f IzvorniKod/backend/src/main/resources/application.properties ]; then
+            echo "application.properties file not found"
+            exit 1
+          fi
+
       - name: Update db url
         run: sed -i 's|<db_url>|${{ secrets.DB_URL }}|' IzvorniKod/backend/src/main/resources/application.properties
       - name: Update db username
