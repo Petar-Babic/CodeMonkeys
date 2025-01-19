@@ -104,7 +104,7 @@ public class WorkoutController {
         String email = jwtService.extractEmail(token.trim().substring(7));
         MyUser user = (MyUser) myUserService.getMyUser(email);
         workoutSessionService.createWorkoutSession(workoutSessionForm, user);
-        return ResponseEntity.status(HttpStatus.OK).body("Workout session successfully created.");
+        return ResponseEntity.status(HttpStatus.OK).body("Workout session successfully created..");
     }
 
     @GetMapping("workout-session")

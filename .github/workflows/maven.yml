@@ -3,8 +3,7 @@
 
 # This workflow uses actions that are not certified by GitHub.
 # They are provided by a third-party and are governed by
-# separate terms of service, privacy policy, and support
-# documentation.
+# separate terms of service, privacy policy, and support documentation.
 
 name: Java CI with Maven
 
@@ -23,6 +22,11 @@ jobs:
       - uses: actions/checkout@v4
         with:
           ref: dev
+
+      - name: Create application.properties
+        run: |
+          mkdir -p IzvorniKod/backend/src/main/resources
+          touch IzvorniKod/backend/src/main/resources/application.properties
 
       - name: Update db url
         run: sed -i 's|<db_url>|${{ secrets.DB_URL }}|' IzvorniKod/backend/src/main/resources/application.properties
