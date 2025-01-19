@@ -53,6 +53,14 @@ jobs:
       - name: Update mail password
         run: sed -i 's/<aws_bucket>/${{ secrets.AWS_S3_BUCKET }}/' IzvorniKod/backend/src/main/resources/application.properties
 
+      # Dodaj provjeru application.properties file-a
+      - name: Check application.properties file
+        run: |
+          if [ ! -f IzvorniKod/backend/src/main/resources/application.properties ]; then
+            echo "application.properties file not found"
+            exit 1
+          fi
+
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
