@@ -1,5 +1,6 @@
 package GymFitnessTrackerApplication.model.domain;
 
+import GymFitnessTrackerApplication.model.dto.forms.FoodMealForm;
 import jakarta.persistence.*;
 
 @Entity
@@ -40,6 +41,15 @@ public class FoodMeal {
     }
 
     public void setQuantity(float quantity) {
+        this.quantity = quantity;
+    }
+
+    public FoodMeal(){}
+
+    public FoodMeal(float quantity,Meal meal,Food food){
+
+        this.meal = meal;
+        this.food = food;
         this.quantity = quantity;
     }
 

@@ -1,5 +1,6 @@
 package GymFitnessTrackerApplication.model.domain;
 
+import GymFitnessTrackerApplication.model.dto.forms.MealForm;
 import jakarta.persistence.*;
 
 import java.time.ZonedDateTime;
@@ -29,6 +30,8 @@ public class Meal {
 
     @OneToMany(mappedBy = "meal", cascade = CascadeType.ALL)
     private List<FoodMeal> mealFoods;
+
+    private ZonedDateTime createdAt;
 
 
     public boolean isSuggestion() {
@@ -87,5 +90,31 @@ public class Meal {
         this.mealFoods = mealFoods;
     }
 
+    public ZonedDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(ZonedDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public Long getId(){
+        return this.id;
+    }
+
+    public Meal(){}
+
+    public Meal(MyUser user, MealForm mealForm,MyUser createdFor){
+        this.createdBy= user.getId().toString();
+        this.name = mealForm.getName();
+        this.time = mealForm.getTime();
+
+       /* if(user.getRole().equals(Role.ADMIN))
+            this.isSuggestion = true;
+        else this.isSuggestion = false;*/
+
+        this.user = createdFor;
+        this.createdAt = ZonedDateTime.now();
+    }
 
 }
