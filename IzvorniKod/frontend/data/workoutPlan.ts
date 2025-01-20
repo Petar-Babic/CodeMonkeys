@@ -1,4 +1,4 @@
-import { WorkoutPlanBase } from "@/types/workoutPlan";
+import { WorkoutPlanBase, WorkoutPlanWithWorkouts } from "@/types/workoutPlan";
 
 export const workoutPlans: WorkoutPlanBase[] = [
   {
@@ -40,3 +40,5 @@ export const workoutPlans: WorkoutPlanBase[] = [
     createdById: 1,
   },
 ];
+
+export const workoutPlansWithWorkouts: WorkoutPlanWithWorkouts[] = [];

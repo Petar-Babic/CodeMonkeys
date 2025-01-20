@@ -40,6 +40,7 @@ import {
 import {
   UpdateWorkoutPlanInput,
   CreateWorkoutPlanInput,
+  WorkoutPlanWithWorkouts,
 } from "@/types/workoutPlan";
 import { useAppContext } from "@/contexts/AppContext";
 import { Loader2 } from "lucide-react";
@@ -73,7 +74,11 @@ const formSchema = z.object({
 
 type FormValues = z.infer<typeof formSchema>;
 
-export function AdminWorkoutPlanForm() {
+export function AdminWorkoutPlanForm({
+  workoutPlan,
+}: {
+  workoutPlan: WorkoutPlanWithWorkouts | null;
+}) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [editingWorkout, setEditingWorkout] =
@@ -82,33 +87,32 @@ export function AdminWorkoutPlanForm() {
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const router = useRouter();
 
-  const { userWorkoutPlan, updateWorkoutPlan, createWorkoutPlan, exercises } =
-    useAppContext();
+  const { updateWorkoutPlan, createWorkoutPlan, exercises } = useAppContext();
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: userWorkoutPlan?.name || "",
-      userId: userWorkoutPlan?.userId || 0,
-      image: userWorkoutPlan?.image || "",
-      description: userWorkoutPlan?.description || "",
-      workouts: userWorkoutPlan?.workouts || [],
+      name: workoutPlan?.name || "",
+      userId: workoutPlan?.userId || 0,
+      image: workoutPlan?.image || "",
+      description: workoutPlan?.description || "",
+      workouts: workoutPlan?.workouts || [],
     },
   });
 
   useEffect(() => {
     form.reset({
-      name: userWorkoutPlan?.name || "",
-      userId: userWorkoutPlan?.userId || 0,
-      image: userWorkoutPlan?.image || "",
-      description: userWorkoutPlan?.description || "",
-      workouts: userWorkoutPlan?.workouts || [],
+      name: workoutPlan?.name || "",
+      userId: workoutPlan?.userId || 0,
+      image: workoutPlan?.image || "",
+      description: workoutPlan?.description || "",
+      workouts: workoutPlan?.workouts || [],
     });
 
-    if (userWorkoutPlan?.image) {
-      setPreviewUrl(userWorkoutPlan.image);
+    if (workoutPlan?.image) {
+      setPreviewUrl(workoutPlan.image);
     }
-  }, [userWorkoutPlan, form]);
+  }, [workoutPlan, form]);
 
   const { fields, append, remove, update } = useFieldArray({
     control: form.control,
@@ -127,12 +131,12 @@ export function AdminWorkoutPlanForm() {
       const formattedData: UpdateWorkoutPlanInput = {
         ...values,
         image: imageUrl,
-        id: Number(userWorkoutPlan?.id),
+        id: Number(workoutPlan?.id),
         userId: Number(values.userId),
         workouts: fields.map((field) => ({
           ...field,
           description: "",
-          workoutPlanId: Number(userWorkoutPlan?.id),
+          workoutPlanId: Number(workoutPlan?.id),
           exercises: field.exercises.map((exercise) => ({
             ...exercise,
             workoutId: Number(field.id || 0),
@@ -141,7 +145,7 @@ export function AdminWorkoutPlanForm() {
         })) as WorkoutWithPlannedExercise[],
       };
 
-      if (!userWorkoutPlan) {
+      if (!workoutPlan) {
         const data: CreateWorkoutPlanInput = {
           ...values,
           image: imageUrl,
@@ -317,7 +321,7 @@ export function AdminWorkoutPlanForm() {
                         name: workout.name,
                         order: workout.order,
                         description: "",
-                        workoutPlanId: Number(userWorkoutPlan?.id),
+                        workoutPlanId: Number(workoutPlan?.id),
                         exercises: workout.exercises.map((exercise) => {
                           const foundExercise = exercises.find(
                             (e) => e.id === exercise.exerciseId
@@ -402,7 +406,7 @@ export function AdminWorkoutPlanForm() {
         <Button type="submit" disabled={isSubmitting}>
           {isSubmitting ? (
             <Loader2 className="animate-spin mr-2" size={16} />
-          ) : userWorkoutPlan ? (
+          ) : workoutPlan ? (
             "Update Plan"
           ) : (
             "Create Plan"
@@ -434,7 +438,7 @@ export function AdminWorkoutPlanForm() {
                   onSubmit={(data) => {
                     handleCreateWorkout(data);
                   }}
-                  userWorkoutPlanId={Number(userWorkoutPlan?.id)}
+                  userWorkoutPlanId={Number(workoutPlan?.id)}
                 />
               )}
             </div>

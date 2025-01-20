@@ -1,15 +1,20 @@
 "use client";
-import React, { useEffect, useState } from "react";
-import { workoutPlans as workoutPlansData } from "@/data/workoutPlan";
+import React from "react";
 import UniversalTable from "@/components/UniversalTable";
-import { WorkoutPlanBase } from "@/types/workoutPlan";
+import {
+  CreateWorkoutPlanInput,
+  WorkoutPlanBase,
+  WorkoutPlanWithWorkouts,
+} from "@/types/workoutPlan";
 import { Button } from "./ui/button";
 import Link from "next/link";
-import { Trash2, Pencil, Eye, UserPlus } from "lucide-react";
+import { Trash2, Pencil, Eye, Users } from "lucide-react";
 import { toast } from "sonner";
 import { useAppContext } from "@/contexts/AppContext";
+import { workoutsWithExercises } from "@/data/workout";
+
 export default function WorkoutPlansTable() {
-  const { workoutPlans, setWorkoutPlans } = useAppContext();
+  const { workoutPlans, setWorkoutPlans, createWorkoutPlan } = useAppContext();
 
   const columns = [
     {
@@ -87,7 +92,7 @@ export default function WorkoutPlansTable() {
               size="sm"
               onClick={() => makePublic(row.id)}
             >
-              <UserPlus className="h-4 w-4" />
+              <Users className="h-4 w-4" />
             </Button>
           )}
         </div>
@@ -107,10 +112,31 @@ export default function WorkoutPlansTable() {
 
   const makePublic = async (id: number) => {
     const workoutPlan = workoutPlans.find((plan) => plan.id === id);
-    if (workoutPlan) {
-      workoutPlan.userId = 0;
-      setWorkoutPlans([...workoutPlans]);
+    // now i need to createa a workout plan with the same id and the same name and description
+    // and the same image
+    // and the same createdById
+    // with undefined userId
+    // and the same workouts
+
+    // kasnije kada se napravi API prvo ce se pozvati za dobijanje workout
+    // plan-a te onda ce se pozvati kreiranje workout plan-a
+
+    const workoutPlanWorkouts = workoutsWithExercises.filter(
+      (workout) => workout.workoutPlanId === id
+    );
+
+    if (!workoutPlan) {
+      toast.error("Plan vježbanja nije pronađen");
+      return;
     }
+
+    const newWorkoutPlan: CreateWorkoutPlanInput = {
+      ...workoutPlan,
+      userId: undefined,
+      workouts: workoutPlanWorkouts,
+    };
+
+    await createWorkoutPlan(newWorkoutPlan);
   };
 
   return (
