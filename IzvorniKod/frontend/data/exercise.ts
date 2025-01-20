@@ -1,3 +1,4 @@
+// src/data/exercise.ts
 import { ExerciseBase } from "@/types/exercise";
 
 export const exercises: ExerciseBase[] = [

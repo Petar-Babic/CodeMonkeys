@@ -62,6 +62,8 @@ public class WorkoutController {
         return ResponseEntity.status(HttpStatus.OK).body(publicWorkoutPlans);
     }
 
+    // TODO: Add endpoint for getting all workout plans for admin
+
     @PostMapping("/create-workout-plan")
     public ResponseEntity<?> createWorkoutPlan(@RequestParam("name") String name,
                                                @RequestParam("description") String description,
@@ -132,11 +134,15 @@ public class WorkoutController {
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
+
+
+    // TODO: This should be endpoint for getting all exercises for admin
     @GetMapping("all-exercises")
     public ResponseEntity<?> getAllExercises(){
         List<ExerciseResponse> exercises = workoutPlanService.listAllExercises();
         return ResponseEntity.status(HttpStatus.OK).body(exercises);
     }
+
 
     @GetMapping("all-exercises/created-by-user")
     public ResponseEntity<?> getAllExercisesCreatedByUser(@RequestHeader("Authorization") String token){
@@ -145,6 +151,8 @@ public class WorkoutController {
         List<ExerciseResponse> exercises = workoutPlanService.listAllExercisesCreatedByUser(user);
         return ResponseEntity.status(HttpStatus.OK).body(exercises);
     }
+
+    // TODO: Make endpoint for getting all public exercises
 
     @PostMapping("create-exercise")
     public ResponseEntity<?> createExercise(@RequestHeader("Authorization") String token,

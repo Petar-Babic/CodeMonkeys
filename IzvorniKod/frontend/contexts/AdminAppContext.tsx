@@ -49,9 +49,9 @@ type AppContextType = UseUserContextType &
     accessToken: string;
   };
 
-const AppContext = createContext<AppContextType | undefined>(undefined);
+const AdminAppContext = createContext<AppContextType | undefined>(undefined);
 
-export function AppProvider({
+export function AdminAppProvider({
   children,
   initialData,
 }: {
@@ -59,12 +59,9 @@ export function AppProvider({
   initialData: {
     exercises: ExerciseBase[];
     muscleGroups: MuscleGroupBase[];
-    nutritionPlan?: NutritionPlanBase | null;
-    userWorkoutPlan?: WorkoutPlanWithWorkouts | null;
     workoutPlans: WorkoutPlanBase[];
     accessToken: string;
     user: UserBase;
-    role: "ADMIN" | "USER" | "TRAINER";
   };
 }) {
   const userContext = useUser();
@@ -75,7 +72,7 @@ export function AppProvider({
   const userWorkoutPlanContext = useUserWorkoutPlan();
   const workoutSessionContext = useWorkoutSession();
   const [isLoading, setIsLoading] = useState(true);
-  const [role, setRole] = useState<"ADMIN" | "USER" | "TRAINER">("USER");
+
   useEffect(() => {
     localStorage.setItem("accessToken", initialData.accessToken);
   }, [initialData.accessToken]);
@@ -83,28 +80,21 @@ export function AppProvider({
   const { setExercises } = exerciseContext;
   const { setMuscleGroups } = muscleGroupContext;
   const { setWorkoutPlans } = workoutPlanContext;
-  const { setUserWorkoutPlan } = userWorkoutPlanContext;
-  const { setNutritionPlan } = nutritionPlanContext;
   const { setUserData } = userContext;
 
   useEffect(() => {
     setExercises(initialData.exercises);
     setMuscleGroups(initialData.muscleGroups);
     setWorkoutPlans(initialData.workoutPlans);
-    setUserWorkoutPlan(initialData.userWorkoutPlan ?? null);
-    setNutritionPlan(initialData.nutritionPlan ?? null);
+
     setIsLoading(false);
     setUserData(initialData.user);
-    setRole(initialData.role);
   }, [
     initialData,
     setExercises,
     setMuscleGroups,
     setWorkoutPlans,
-    setUserWorkoutPlan,
-    setNutritionPlan,
     setUserData,
-    setRole,
   ]);
 
   const appContextValue = useMemo<AppContextType>(
@@ -118,7 +108,6 @@ export function AppProvider({
       ...userWorkoutPlanContext,
       isLoading: isLoading,
       accessToken: initialData.accessToken,
-      role,
     }),
     [
       userContext,
@@ -130,21 +119,22 @@ export function AppProvider({
       userWorkoutPlanContext,
       isLoading,
       initialData.accessToken,
-      role,
     ]
   );
 
   return (
-    <AppContext.Provider value={appContextValue}>
+    <AdminAppContext.Provider value={appContextValue}>
       {children}
-    </AppContext.Provider>
+    </AdminAppContext.Provider>
   );
 }
 
-export function useAppContext() {
-  const context = useContext(AppContext);
+export function useAdminAppContext() {
+  const context = useContext(AdminAppContext);
   if (context === undefined) {
-    throw new Error("useAppContext must be used within an AppProvider");
+    throw new Error(
+      "useAdminAppContext must be used within an AdminAppProvider"
+    );
   }
   return context;
 }

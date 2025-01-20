@@ -4,21 +4,30 @@ import {
   CreateWorkoutPlanInput,
   UpdateWorkoutPlanInput,
 } from "@/types/workoutPlan";
+import { useAuthContext } from "@/contexts/AuthContext";
 
 export const useWorkoutPlan = () => {
   const [workoutPlans, setWorkoutPlans] = useState<WorkoutPlanBase[]>([]);
+
+  const { user } = useAuthContext();
+
+  const userId = user?.id;
 
   const createWorkoutPlan = useCallback(
     async (input: CreateWorkoutPlanInput): Promise<WorkoutPlanBase> => {
       try {
         await new Promise((resolve) => setTimeout(resolve, 1000));
 
+        if (!userId) {
+          throw new Error("User ID is not set");
+        }
+
         // Simulated logic (replace with actual API call)
         const newWorkoutPlan: WorkoutPlanBase = {
           id: Date.now(),
           name: input.name,
           userId: input.userId,
-          createdById: 1,
+          createdById: userId,
         };
         setWorkoutPlans((prevPlans) => [...prevPlans, newWorkoutPlan]);
         return newWorkoutPlan;
@@ -27,7 +36,7 @@ export const useWorkoutPlan = () => {
         throw new Error("Failed to create workout plan");
       }
     },
-    []
+    [userId]
   );
 
   const getWorkoutPlanById = useCallback(

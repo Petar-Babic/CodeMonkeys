@@ -9,6 +9,7 @@ import {
   LayoutList,
   User,
   Utensils,
+  Settings,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -24,7 +25,7 @@ interface NavItem {
   icon: LucideIcon;
 }
 
-const navItems: NavItem[] = [
+const navItemsForUser: NavItem[] = [
   {
     title: "Workout Plans",
     href: "/workout-plans",
@@ -52,27 +53,63 @@ const navItems: NavItem[] = [
   },
 ];
 
+const navItemsForAdmin: NavItem[] = [
+  {
+    title: "Admin",
+    href: "/admin",
+    icon: Settings,
+  },
+  {
+    title: "Workout Plans",
+    href: "/admin/workout-plans",
+    icon: NotebookText,
+  },
+];
+
+const navItemsForTrainer: NavItem[] = [
+  {
+    title: "Trainer",
+    href: "/trainer",
+    icon: Settings,
+  },
+];
+
 export default function Navigation({
   orientation = "vertical",
+  role,
 }: {
   orientation?: "vertical" | "horizontal";
+  role?: string;
 }) {
   const pathname = usePathname();
+
+  const getNavItems = (role: string | undefined) => {
+    if (role === "ADMIN") {
+      return navItemsForAdmin;
+    }
+    if (role === "TRAINER") {
+      return navItemsForTrainer;
+    }
+    return navItemsForUser;
+  };
 
   return (
     <TooltipProvider delayDuration={0}>
       <div
-        className={`flex ${orientation === "vertical"
+        className={`flex ${
+          orientation === "vertical"
             ? "flex-col w-[60px] h-full"
             : "w-full h-[60px]"
-          } items-center bg-background p-3 ${orientation === "vertical" ? "border-r" : "border-t"
-          }`}
+        } items-center bg-background p-3 ${
+          orientation === "vertical" ? "border-r" : "border-t"
+        }`}
       >
         <div
-          className={`flex ${orientation === "vertical" ? "flex-col" : "justify-around w-full"
-            } gap-3`}
+          className={`flex ${
+            orientation === "vertical" ? "flex-col" : "justify-around w-full"
+          } gap-3`}
         >
-          {navItems.map((item) => (
+          {getNavItems(role).map((item) => (
             <Tooltip key={item.href}>
               <TooltipTrigger asChild>
                 <Button

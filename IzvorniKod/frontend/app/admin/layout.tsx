@@ -4,6 +4,7 @@ import LoadingAppScreen from "@/components/LoadingAppScreen";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/lib/auth";
 import { redirect } from "next/navigation";
+import AdminAppLayoutComponent from "@/components/AdminAppLayoutComponent";
 
 export default async function AdminLayout({
   children,
@@ -18,17 +19,17 @@ export default async function AdminLayout({
 
   const userId = session.user.id;
   const accessToken = session.accessToken;
-  const refreshToken = session.refreshToken;
+
+  session.user.role = "ADMIN";
 
   return (
     <Suspense fallback={<LoadingAppScreen />}>
-      <AppLayoutComponent
+      <AdminAppLayoutComponent
         userId={Number(userId)}
         accessToken={accessToken ?? ""}
-        refreshToken={refreshToken ?? ""}
       >
         {children}
-      </AppLayoutComponent>
+      </AdminAppLayoutComponent>
     </Suspense>
   );
 }

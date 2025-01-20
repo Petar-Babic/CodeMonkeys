@@ -28,7 +28,6 @@ export default async function AppLayout({
       <AppLayoutComponent
         userId={Number(userId)}
         accessToken={accessToken ?? ""}
-        refreshToken={refreshToken ?? ""}
       >
         {children}
       </AppLayoutComponent>

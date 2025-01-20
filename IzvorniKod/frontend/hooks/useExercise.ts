@@ -12,7 +12,7 @@ const createExerciseAPI = async (
 
   // Simulated logic (replace with actual API call)
   const newExercise: ExerciseBase = {
-    id: Math.random().toString(36).substr(2, 9),
+    id: Math.random(),
     ...data,
     isApproved: false,
   };
@@ -27,7 +27,7 @@ const createExerciseAPI = async (
 
 // Simulated API call for updating an exercise
 const updateExerciseAPI = async (
-  id: string,
+  id: number,
   data: Partial<ExerciseBase>
 ): Promise<ExerciseBase> => {
   // Simulate API delay
@@ -54,7 +54,7 @@ const updateExerciseAPI = async (
 
 // Simulated API call for getting all exercises that are approved or this user created
 const getExercisesAPI = async (
-  userId: string | null
+  userId: number | null
 ): Promise<ExerciseBase[]> => {
   // Simulate API delay
   await new Promise((resolve) => setTimeout(resolve, 1000));
@@ -72,10 +72,6 @@ export const useExercise = () => {
 
   const userId = useMemo(() => user?.id ?? null, [user?.id]);
 
-  useEffect(() => {
-    console.log("exercises", exercises);
-  }, [exercises]);
-
   const getAllExercises = useCallback(async () => {
     const fetchedExercises = await getExercisesAPI(userId);
     setExercises(fetchedExercises);
@@ -87,7 +83,7 @@ export const useExercise = () => {
       const res = await createExerciseAPI(exerciseInput);
       const newExercise = {
         ...res,
-        createdById: userId ?? "unknown",
+        createdById: userId ?? 0,
       };
       setExercises((prevExercises) => [...prevExercises, newExercise]);
       return newExercise;
@@ -96,12 +92,12 @@ export const useExercise = () => {
   );
 
   const getExerciseById = useCallback(
-    (id: string) => exercises.find((exercise) => exercise.id === id),
+    (id: number) => exercises.find((exercise) => exercise.id === id),
     [exercises]
   );
 
   const updateExercise = useCallback(
-    async (id: string, updateData: Partial<ExerciseBase>) => {
+    async (id: number, updateData: Partial<ExerciseBase>) => {
       const res = await updateExerciseAPI(id, updateData);
       setExercises((prevExercises) =>
         prevExercises.map((exercise) =>
@@ -112,7 +108,7 @@ export const useExercise = () => {
     []
   );
 
-  const deleteExercise = useCallback((id: string) => {
+  const deleteExercise = useCallback((id: number) => {
     setExercises((prevExercises) =>
       prevExercises.filter((exercise) => exercise.id !== id)
     );
@@ -133,11 +129,11 @@ export type UseExerciseContextType = {
   exercises: ExerciseBase[];
   setExercises: (exercises: ExerciseBase[]) => void;
   createExercise: (exerciseInput: CreateExerciseInput) => Promise<ExerciseBase>;
-  getExerciseById: (id: string) => ExerciseBase | undefined;
+  getExerciseById: (id: number) => ExerciseBase | undefined;
   getAllExercises: () => Promise<ExerciseBase[]>;
   updateExercise: (
-    id: string,
+    id: number,
     updateData: Partial<ExerciseBase>
   ) => Promise<void>;
-  deleteExercise: (id: string) => void;
+  deleteExercise: (id: number) => void;
 };

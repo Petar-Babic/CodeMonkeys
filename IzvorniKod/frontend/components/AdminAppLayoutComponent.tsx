@@ -14,14 +14,13 @@ import { backendUrl } from "@/data/backendUrl";
 import { UserBase } from "@/types/user";
 import Link from "next/link";
 import { Toaster } from "sonner";
-
+import { workoutPlans as workoutPlansData } from "@/data/workoutPlan";
 const getInitialData = async (
   userId: number,
   accessToken: string
 ): Promise<{
   exercises: ExerciseBase[];
   muscleGroups: MuscleGroupBase[];
-  nutritionPlan: NutritionPlanBase | null;
   userWorkoutPlan: WorkoutPlanWithWorkouts | null;
   workoutPlans: WorkoutPlanBase[];
   accessToken: string;
@@ -40,48 +39,6 @@ const getInitialData = async (
     console.log("GET /api/user/profile", user);
   } catch (error) {
     console.error("Error fetching user:", error);
-  }
-
-  let nutritionPlan = null;
-  try {
-    nutritionPlan = await fetch(`${backendUrl}/api/nutrition-plan`, {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-      credentials: "include",
-      mode: "cors",
-    }).then((response) => {
-      return response.json();
-    });
-  } catch (error) {
-    console.error("Error fetching nutrition plan:", error);
-  }
-
-  let publicWorkoutPlans: WorkoutPlanBase[] = [];
-  try {
-    const response = await fetch(`${backendUrl}/api/workout-plans/public`, {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-      credentials: "include",
-    });
-
-    publicWorkoutPlans = await response.json();
-  } catch (error) {
-    console.error("Error fetching workout plans:", error);
-  }
-
-  let workoutPlansCreatedByUser: WorkoutPlanBase[] = [];
-  try {
-    const response = await fetch(`${backendUrl}/api/workout-plans/created-by`, {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-      credentials: "include",
-    });
-    workoutPlansCreatedByUser = await response.json();
-  } catch (error) {
-    console.error("Error fetching workout plans created by user:", error);
   }
 
   let exercises: ExerciseBase[] = [];
@@ -103,15 +60,14 @@ const getInitialData = async (
   return {
     muscleGroups: predefinedMuscleGroups,
     exercises,
-    nutritionPlan,
     userWorkoutPlan,
-    workoutPlans: [...publicWorkoutPlans, ...workoutPlansCreatedByUser],
+    workoutPlans: [...workoutPlansData],
     accessToken,
     user,
   };
 };
 
-export default async function AppLayoutComponent({
+export default async function AdminAppLayoutComponent({
   children,
   userId,
   accessToken,
@@ -139,40 +95,26 @@ export default async function AppLayoutComponent({
   const safeInitialData = {
     ...initialData,
     user: initialData.user,
-    role: "USER",
+    role: "ADMIN",
   } as const;
-
-  if (initialData.nutritionPlan) {
-    return (
-      <AuthProvider>
-        <AppProvider initialData={safeInitialData}>
-          <div className="flex flex-col min-h-screen">
-            <Toaster />
-            <Header />
-            <div className="flex flex-1 h-[calc(100dvh-60px)]">
-              <div className="hidden xl:block">
-                <Navigation orientation="vertical" role={"USER"} />
-              </div>
-              <main className="flex-1 overflow-y-auto max-xl:pb-[60px]">
-                {children}
-              </main>
-            </div>
-            <div className="xl:hidden fixed bottom-0 w-full">
-              <Navigation orientation="horizontal" role={"USER"} />
-            </div>
-          </div>
-        </AppProvider>
-      </AuthProvider>
-    );
-  }
 
   return (
     <AuthProvider>
       <AppProvider initialData={safeInitialData}>
-        <div className="flex bg-black flex-col min-h-screen">
+        <div className="flex flex-col min-h-screen">
           <Toaster />
-          <NutritionPlanRedirect nutritionPlan={initialData.nutritionPlan} />
-          {children}
+          <Header />
+          <div className="flex flex-1 h-[calc(100dvh-60px)]">
+            <div className="hidden xl:block">
+              <Navigation orientation="vertical" role={"ADMIN"} />
+            </div>
+            <main className="flex-1 overflow-y-auto max-xl:pb-[60px]">
+              {children}
+            </main>
+          </div>
+          <div className="xl:hidden fixed bottom-0 w-full">
+            <Navigation orientation="horizontal" role={"ADMIN"} />
+          </div>
         </div>
       </AppProvider>
     </AuthProvider>
