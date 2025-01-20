@@ -2,12 +2,10 @@ import { AppProvider } from "@/contexts/AppContext";
 import Header from "@/components/Header";
 import Navigation from "@/components/Navigation";
 import { AuthProvider } from "@/contexts/AuthContext";
-import { exercises as predefinedExercises } from "@/data/exercise";
 import { ExerciseBase } from "@/types/exercise";
 import { muscleGroups as predefinedMuscleGroups } from "@/data/muscleGroup";
 import { MuscleGroupBase } from "@/types/muscleGroup";
 import { userWorkoutPlans } from "@/data/userWorkoutPlan";
-import { workoutPlans } from "@/data/workoutPlan";
 import { NutritionPlanBase } from "@/types/nutritionPlan";
 import { WorkoutPlanWithWorkouts } from "@/types/workoutPlan";
 import { WorkoutPlanBase } from "@/types/workoutPlan";
@@ -17,7 +15,7 @@ import { UserBase } from "@/types/user";
 import Link from "next/link";
 
 const getInitialData = async (
-  userId: string,
+  userId: number,
   accessToken: string,
   refreshToken: string
 ): Promise<{
@@ -30,11 +28,6 @@ const getInitialData = async (
   refreshToken: string;
   user: UserBase | null;
 }> => {
-  const filteredExercises = predefinedExercises.filter(
-    (exercise: ExerciseBase) =>
-      exercise.isApproved || exercise.createdById === userId
-  );
-
   let user = null;
 
   try {
@@ -65,15 +58,61 @@ const getInitialData = async (
     console.error("Error fetching nutrition plan:", error);
   }
 
+  let publicWorkoutPlans: WorkoutPlanBase[] = [];
+  try {
+    const response = await fetch(`${backendUrl}/api/workout-plans/public`, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+      credentials: "include",
+    });
+
+    publicWorkoutPlans = await response.json();
+  } catch (error) {
+    console.error("Error fetching workout plans:", error);
+  }
+
+  console.log("publicWorkoutPlans", publicWorkoutPlans);
+
+  let workoutPlansCreatedByUser: WorkoutPlanBase[] = [];
+  try {
+    const response = await fetch(`${backendUrl}/api/workout-plans/created-by`, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+      credentials: "include",
+    });
+    workoutPlansCreatedByUser = await response.json();
+  } catch (error) {
+    console.error("Error fetching workout plans created by user:", error);
+  }
+
+  console.log("workoutPlansCreatedByUser", workoutPlansCreatedByUser);
+
+  let exercises: ExerciseBase[] = [];
+  try {
+    const response = await fetch(`${backendUrl}/api/all-exercises`, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+      credentials: "include",
+    });
+    exercises = await response.json();
+  } catch (error) {
+    console.error("Error fetching exercises:", error);
+  }
+
+  console.log("exercises", exercises);
+
   const userWorkoutPlan =
     userWorkoutPlans.find((plan) => plan.userId === userId) || null;
 
   return {
-    exercises: filteredExercises,
     muscleGroups: predefinedMuscleGroups,
+    exercises,
     nutritionPlan,
     userWorkoutPlan,
-    workoutPlans,
+    workoutPlans: [...publicWorkoutPlans, ...workoutPlansCreatedByUser],
     accessToken,
     refreshToken,
     user,
@@ -87,7 +126,7 @@ export default async function AppLayoutComponent({
   refreshToken,
 }: Readonly<{
   children: React.ReactNode;
-  userId: string;
+  userId: number;
   accessToken: string;
   refreshToken: string;
 }>) {

@@ -2,7 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 
 interface ExerciseCategoryProps {
-  id: string;
+  id: number;
   name: string;
   image: string | undefined;
 }

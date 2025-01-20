@@ -1,5 +1,5 @@
 export type ReviewBase = {
-  id: string;
+  id: number;
   rating: number;
   comment: string;
 };

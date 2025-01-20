@@ -2,9 +2,24 @@
 
 import React, { useState, useEffect } from "react";
 import { Pie, Bar } from "react-chartjs-2";
-import { Chart as ChartJS, ArcElement, BarElement, Tooltip, Legend, CategoryScale, LinearScale } from "chart.js";
+import {
+  Chart as ChartJS,
+  ArcElement,
+  BarElement,
+  Tooltip,
+  Legend,
+  CategoryScale,
+  LinearScale,
+} from "chart.js";
 
-ChartJS.register(ArcElement, BarElement, Tooltip, Legend, CategoryScale, LinearScale);
+ChartJS.register(
+  ArcElement,
+  BarElement,
+  Tooltip,
+  Legend,
+  CategoryScale,
+  LinearScale
+);
 
 type Goals = {
   calories: number;
@@ -84,7 +99,6 @@ type Meal = {
 };
 
 const NutritionPage = () => {
-  
   const [meals, setMeals] = useState<Meal[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isFoodModalOpen, setIsFoodModalOpen] = useState(false);
@@ -243,7 +257,7 @@ const NutritionPage = () => {
   const [currentDate, setCurrentDate] = useState(new Date());
 
   const formatDateKey = (date: Date) => date.toISOString().split("T")[0];
-  
+
   const handleDateChange = (direction: "prev" | "next") => {
     const newDate =
       direction === "prev"
@@ -255,11 +269,15 @@ const NutritionPage = () => {
   };
 
   const formatDay = (date: Date) => {
-    return new Intl.DateTimeFormat('en-US', { weekday: 'long' }).format(date);
+    return new Intl.DateTimeFormat("en-US", { weekday: "long" }).format(date);
   };
-  
+
   const formatDate = (date: Date) => {
-    return new Intl.DateTimeFormat('en-US', { month: 'long', day: 'numeric', year: 'numeric' }).format(date);
+    return new Intl.DateTimeFormat("en-US", {
+      month: "long",
+      day: "numeric",
+      year: "numeric",
+    }).format(date);
   };
 
   useEffect(() => {
@@ -271,7 +289,7 @@ const NutritionPage = () => {
   const calculateTotalCalories = () => {
     return meals.reduce((total, meal) => total + meal.calories, 0);
   };
-  
+
   const calculateTotalNutrients = () => {
     return meals.reduce(
       (totals, meal) => {
@@ -319,7 +337,6 @@ const NutritionPage = () => {
       }
     );
   };
-  
 
   useEffect(() => {
     calculateTotalCalories();
@@ -332,31 +349,35 @@ const NutritionPage = () => {
   const [tempGoals, setTempGoals] = useState<Goals>(goals);
   const [isGoalsModalOpen, setIsGoalsModalOpen] = useState(false);
 
-  const [goalFields, setGoalFields] = useState<{ label: string; name: keyof Goals; isPercentage?: boolean }[]>([
+  const [goalFields, setGoalFields] = useState<
+    { label: string; name: keyof Goals; isPercentage?: boolean }[]
+  >([
     { label: "Calories (kcal)", name: "calories" }, //1.1
-    { label: "Trans Fats (g)", name: "transFats" },//2.1
-    { label: "Fiber (g)", name: "fiber" },//3.1
-    { label: "Net Carbs (g)", name: "netCarbs" },//4.1
+    { label: "Trans Fats (g)", name: "transFats" }, //2.1
+    { label: "Fiber (g)", name: "fiber" }, //3.1
+    { label: "Net Carbs (g)", name: "netCarbs" }, //4.1
     { label: "Carbohydrates (g)", name: "carbs", isPercentage: false }, //1.2
-    { label: "Polyunsaturated Fats (g)", name: "polyunsaturatedFats" },//2.2
-    { label: "Sodium (mg)", name: "sodium" },//3.2
+    { label: "Polyunsaturated Fats (g)", name: "polyunsaturatedFats" }, //2.2
+    { label: "Sodium (mg)", name: "sodium" }, //3.2
     { label: "Magnesium (mg)", name: "magnesium" },
-    { label: "Protein (g)", name: "protein", isPercentage: false },//1.3
-    { label: "Monounsaturated Fats (g)", name: "monosaturatedFats" },//2.3
-    { label: "Potassium (mg)", name: "potassium" },//3.3
-    { label: "Vitamin C (mg)", name: "C" },//4.3
-    { label: "Fats (g)", name: "fats", isPercentage: false },//1.4
-    { label: "Cholesterol (mg)", name: "cholesterol" },//2.4
-    { label: "Calcium (mg)", name: "calcium" },//3.4
-    { label: "Vitamin D (µg)", name: "D" },//4.4
-    { label: "Saturated Fats (g)", name: "saturatedFats", isPercentage: false },//1.5
-    { label: "Sugars (g)", name: "sugars" },//2.5
-    { label: "Iron (mg)", name: "iron" },//3.5
-    { label: "Vitamin B12 (µg)", name: "B12" },//4.5
+    { label: "Protein (g)", name: "protein", isPercentage: false }, //1.3
+    { label: "Monounsaturated Fats (g)", name: "monosaturatedFats" }, //2.3
+    { label: "Potassium (mg)", name: "potassium" }, //3.3
+    { label: "Vitamin C (mg)", name: "C" }, //4.3
+    { label: "Fats (g)", name: "fats", isPercentage: false }, //1.4
+    { label: "Cholesterol (mg)", name: "cholesterol" }, //2.4
+    { label: "Calcium (mg)", name: "calcium" }, //3.4
+    { label: "Vitamin D (µg)", name: "D" }, //4.4
+    { label: "Saturated Fats (g)", name: "saturatedFats", isPercentage: false }, //1.5
+    { label: "Sugars (g)", name: "sugars" }, //2.5
+    { label: "Iron (mg)", name: "iron" }, //3.5
+    { label: "Vitamin B12 (µg)", name: "B12" }, //4.5
   ]);
 
   const activeGoals = goalFields.filter(
-    ({ name }) => !["calories", "fats", "carbs", "protein"].includes(name as string) && tempGoals[name] > 0
+    ({ name }) =>
+      !["calories", "fats", "carbs", "protein"].includes(name as string) &&
+      tempGoals[name] > 0
   );
 
   const handleToggle = (fieldName: keyof Goals) => {
@@ -367,13 +388,13 @@ const NutritionPage = () => {
           : field
       )
     );
-  };  
+  };
 
   const openGoalsModal = () => {
     setTempGoals(goals);
     setIsGoalsModalOpen(true);
   };
-  
+
   const closeGoalsModal = () => {
     setIsGoalsModalOpen(false);
   };
@@ -385,14 +406,16 @@ const NutritionPage = () => {
       [name]: Number(value),
     }));
   };
-  
+
   const saveGoals = () => {
     setGoals(tempGoals);
     console.log("Ranges for each goal:", goalRanges);
     setIsGoalsModalOpen(false);
-  };  
+  };
 
-  const [goalRanges, setGoalRanges] = useState<{ [key in keyof Goals]?: string }>({});
+  const [goalRanges, setGoalRanges] = useState<{
+    [key in keyof Goals]?: string;
+  }>({});
 
   const handleRangeChange = (goalName: keyof Goals, range: string) => {
     setGoalRanges((prev) => ({ ...prev, [goalName]: range }));
@@ -408,64 +431,59 @@ const NutritionPage = () => {
     if (isPercentage) {
       const calorieValue = current * (range === "fats" ? 9 : 4);
       const percentage = (calorieValue / dailyCalories) * 100;
-  
+
       const lowerBound = goal * 0.8;
       const upperBound = goal * 1.2;
-  
+
       if (range === "under") {
         if (percentage < goal) return "green";
         if (percentage < upperBound) return "yellow";
         return "red";
       }
-  
+
       if (range === "over") {
         if (percentage > goal) return "green";
         if (percentage >= lowerBound) return "yellow";
         return "red";
       }
-  
+
       const within10 = goal * 0.9 <= percentage && percentage <= goal * 1.1;
       const within20 = goal * 0.8 <= percentage && percentage <= goal * 1.2;
-  
+
       if (within10) return "green";
       if (within20) return "yellow";
       return "red";
     }
-  
+
     return getMicronutrientColor(current, goal, range);
   };
-  
+
   const getMicronutrientColor = (
     current: number,
     goal: number,
-    range: string = "exact",
+    range: string = "exact"
   ) => {
     const lowerBound = goal * 0.8;
     const upperBound = goal * 1.2;
     const within10 = goal * 0.9 <= current && current <= goal * 1.1;
     const within20 = goal * 0.8 <= current && current <= goal * 1.2;
-  
-  
+
     if (range === "under") {
       if (current < goal) return "green";
       else if (current <= upperBound) return "yellow";
       return "red";
-    }
-  
-    else if (range === "over") {
+    } else if (range === "over") {
       if (current > goal) return "green";
       else if (current >= lowerBound) return "yellow";
       return "red";
-    }
-
-    else if (range === "exact") {
+    } else if (range === "exact") {
       if (within10) return "green";
       if (within20) return "yellow";
       return "red";
     }
 
     return "gray";
-  };  
+  };
 
   //Pie chart--------------------------------------------------------------------------------------------------------------------------------------------------------
   const CHART_PROPERTIES_Pie = {
@@ -557,7 +575,7 @@ const NutritionPage = () => {
 
   const confirmModalClose = () => {
     setShowConfirmDialog(false);
-    setHasUnsavedChanges(false); 
+    setHasUnsavedChanges(false);
     setIsModalOpen(false);
   };
 
@@ -577,31 +595,31 @@ const NutritionPage = () => {
 
   const addMealFromMyMeals = (meal: Meal) => {
     const dateKey = formatDateKey(currentDate);
-  
+
     setMealsByDate((prev) => {
       const updatedMeals = [
         ...(prev[dateKey] || []),
         { ...meal, id: (prev[dateKey]?.length || 0) + 1 },
       ];
-  
+
       return {
         ...prev,
         [dateKey]: updatedMeals,
       };
     });
-  
+
     setMeals((prevMeals) => [
       ...prevMeals,
       { ...meal, id: prevMeals.length + 1 },
     ]);
   };
-  
+
   const saveMeal = () => {
     if (!currentMeal.name?.trim()) {
       alert("Please provide a name for your meal!");
       return;
     }
-  
+
     const updatedMacros = calculateMealMacros(currentMeal);
     const updatedMeal: Meal = {
       ...currentMeal,
@@ -626,7 +644,7 @@ const NutritionPage = () => {
       D: updatedMacros.D,
       B12: updatedMacros.B12,
     };
-  
+
     const dateKey = formatDateKey(currentDate);
     setMealsByDate((prev) => ({
       ...prev,
@@ -634,23 +652,28 @@ const NutritionPage = () => {
         ? prev[dateKey].map((meal) =>
             meal.id === updatedMeal.id ? updatedMeal : meal
           )
-        : [...(prev[dateKey] || []), { ...updatedMeal, id: prev[dateKey]?.length + 1 || 1 }],
+        : [
+            ...(prev[dateKey] || []),
+            { ...updatedMeal, id: prev[dateKey]?.length + 1 || 1 },
+          ],
     }));
-  
+
     if (saveToMyMeals) {
       setMyMeals((prevMeals) => {
-        const mealExists = prevMeals.some((meal) => meal.name.toLowerCase() === updatedMeal.name.toLowerCase());
+        const mealExists = prevMeals.some(
+          (meal) => meal.name.toLowerCase() === updatedMeal.name.toLowerCase()
+        );
         if (!mealExists) {
           return [...prevMeals, { ...updatedMeal, id: prevMeals.length + 1 }];
         }
         return prevMeals;
       });
     }
-  
+
     setSaveToMyMeals(false);
     setHasUnsavedChanges(false);
     setIsModalOpen(false);
-  };  
+  };
 
   const deleteMeal = (id: number) => {
     setMeals((prevMeals) => prevMeals.filter((meal) => meal.id !== id));
@@ -702,7 +725,7 @@ const NutritionPage = () => {
         B12: 0,
       }
     );
-  };  
+  };
 
   const calculateMealCalories = (meal: Meal) => {
     return meal.foods.reduce((total, food) => total + food.calories, 0);
@@ -721,8 +744,12 @@ const NutritionPage = () => {
       fats: parseFloat((food.fats * ratio).toFixed(1)),
       saturatedFats: parseFloat((food.saturatedFats * ratio).toFixed(1)),
       transFats: parseFloat((food.transFats * ratio).toFixed(1)),
-      polyunsaturatedFats: parseFloat((food.polyunsaturatedFats * ratio).toFixed(1)),
-      monosaturatedFats: parseFloat((food.monosaturatedFats * ratio).toFixed(1)),
+      polyunsaturatedFats: parseFloat(
+        (food.polyunsaturatedFats * ratio).toFixed(1)
+      ),
+      monosaturatedFats: parseFloat(
+        (food.monosaturatedFats * ratio).toFixed(1)
+      ),
       cholesterol: parseFloat((food.cholesterol * ratio).toFixed(1)),
       sodium: parseFloat((food.sodium * ratio).toFixed(1)),
       potassium: parseFloat((food.potassium * ratio).toFixed(1)),
@@ -736,7 +763,7 @@ const NutritionPage = () => {
       protein: parseFloat((food.protein * ratio).toFixed(1)),
       C: parseFloat((food.C * ratio).toFixed(1)),
       D: parseFloat((food.D * ratio).toFixed(1)),
-      B12: parseFloat((food.B12 * ratio).toFixed(1))
+      B12: parseFloat((food.B12 * ratio).toFixed(1)),
     };
 
     setCurrentMeal((prevMeal) => ({
@@ -745,9 +772,9 @@ const NutritionPage = () => {
         f.id === updatedFood.id ? updatedFood : f
       ),
     }));
-    
+
     setEditingFoodId(null);
-  }
+  };
 
   const [editingFoodId, setEditingFoodId] = useState<number | null>(null);
 
@@ -776,37 +803,38 @@ const NutritionPage = () => {
     { label: "Vitamin C", name: "C" },
     { label: "Vitamin D", name: "D" },
     { label: "Vitamin B12", name: "B12" },
-  ];  
-  
+  ];
+
   const openFoodModal = (food?: Food) => {
     setNewFood(
       food
         ? { ...food }
-        : { id: 0,
-          name: "",
-          servingSize: 0,
-          servingSizeType: "",
-          calories: 0,
-          fats: 0,
-          saturatedFats: 0,
-          transFats: 0,
-          polyunsaturatedFats: 0,
-          monosaturatedFats: 0,
-          cholesterol: 0,
-          sodium: 0,
-          potassium: 0,
-          calcium: 0,
-          iron: 0,
-          magnesium: 0,
-          carbs: 0,
-          netCarbs: 0,
-          fiber: 0,
-          sugars: 0,
-          protein: 0,
-          C: 0,
-          D: 0,
-          B12: 0,
-        }
+        : {
+            id: 0,
+            name: "",
+            servingSize: 0,
+            servingSizeType: "",
+            calories: 0,
+            fats: 0,
+            saturatedFats: 0,
+            transFats: 0,
+            polyunsaturatedFats: 0,
+            monosaturatedFats: 0,
+            cholesterol: 0,
+            sodium: 0,
+            potassium: 0,
+            calcium: 0,
+            iron: 0,
+            magnesium: 0,
+            carbs: 0,
+            netCarbs: 0,
+            fiber: 0,
+            sugars: 0,
+            protein: 0,
+            C: 0,
+            D: 0,
+            B12: 0,
+          }
     );
     setIsFoodModalOpen(true);
   };
@@ -827,7 +855,7 @@ const NutritionPage = () => {
 
   const handleFoodInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-  
+
     const numericFields = [
       "id",
       "servingSize",
@@ -852,15 +880,14 @@ const NutritionPage = () => {
       "D",
       "B12",
     ];
-  
+
     setNewFood((prevFood) => ({
       ...prevFood,
       [name]: numericFields.includes(name) ? Number(value) : value,
     }));
-  
+
     setHasUnsavedChangesFood(true);
   };
-  
 
   const [myFoods, setMyFoods] = useState<Food[]>([]);
   const [isMyFoodsModalOpen, setIsMyFoodsModalOpen] = useState(false);
@@ -875,7 +902,10 @@ const NutritionPage = () => {
 
   const addFoodFromMyFoods = (food: Food) => {
     setCurrentMeal((prevMeal) => {
-      const updatedFoods = [...prevMeal.foods, { ...food, id: prevMeal.foods.length + 1 }];
+      const updatedFoods = [
+        ...prevMeal.foods,
+        { ...food, id: prevMeal.foods.length + 1 },
+      ];
       const updatedMeal = {
         ...prevMeal,
         foods: updatedFoods,
@@ -913,12 +943,12 @@ const NutritionPage = () => {
       const foodExists = prevFoods.some(
         (food) => food.name.toLowerCase() === newFood.name.toLowerCase()
       );
-  
+
       if (!foodExists) {
         return [...prevFoods, { ...newFood, id: prevFoods.length + 1 }];
       }
-  
-      return prevFoods; 
+
+      return prevFoods;
     });
 
     setHasUnsavedChangesFood(false);
@@ -945,28 +975,32 @@ const NutritionPage = () => {
 
   const getDaysInMonth = (date: Date) => {
     return new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
-  };  
-  
+  };
+
   const calculateDailyCalories = () => {
     const monthKey = formatMonthKey(currentMonth);
     const daysInMonth = getDaysInMonth(currentMonth); // Dynamically get days in the month
-  
+
     const dailyCalories = Array(daysInMonth).fill(0); // Initialize array with the correct size
-  
+
     Object.entries(mealsByDate).forEach(([dateKey, meals]) => {
-      if (dateKey.startsWith(monthKey)) { // Check if the date belongs to the current month
+      if (dateKey.startsWith(monthKey)) {
+        // Check if the date belongs to the current month
         const day = parseInt(dateKey.split("-")[2], 10) - 1; // Extract day (0-based index)
-        dailyCalories[day] = meals.reduce((sum, meal) => sum + meal.calories, 0); // Sum up calories for the day
+        dailyCalories[day] = meals.reduce(
+          (sum, meal) => sum + meal.calories,
+          0
+        ); // Sum up calories for the day
       }
     });
-  
+
     return dailyCalories;
-  };  
+  };
 
   useEffect(() => {
     const dailyCalories = calculateDailyCalories();
     const daysInMonth = getDaysInMonth(currentMonth);
-  
+
     setDataMonthCalories({
       labels: Array.from({ length: daysInMonth }, (_, i) => `${i + 1}`),
       datasets: [
@@ -977,11 +1011,11 @@ const NutritionPage = () => {
         },
       ],
     });
-  }, [currentMonth, mealsByDate]);  
+  }, [currentMonth, mealsByDate]);
 
   const CHART_PROPERTIES_Bar = {
-    labels: Array.from({ length: 30 }, (_, i) => `${i + 1}`), 
-    backgroundColor: "green", 
+    labels: Array.from({ length: 30 }, (_, i) => `${i + 1}`),
+    backgroundColor: "green",
   };
 
   const [dataMonthCalories, setDataMonthCalories] = useState({
@@ -996,10 +1030,14 @@ const NutritionPage = () => {
   });
 
   //Month Selector--------------------------------------------------------------------------------------------------------------------------------------------------------
-  const [mealsByMonth, setMealsByMonth] = useState<{ [key: string]: any[] }>({});
+  const [mealsByMonth, setMealsByMonth] = useState<{ [key: string]: any[] }>(
+    {}
+  );
 
   const formatMonthKey = (date: Date) => {
-    return `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, "0")}`;
+    return `${date.getFullYear()}-${(date.getMonth() + 1)
+      .toString()
+      .padStart(2, "0")}`;
   };
 
   const handleMonthChange = (direction: "prev" | "next") => {
@@ -1013,7 +1051,10 @@ const NutritionPage = () => {
   };
 
   const formatMonth = (date: Date) => {
-    return new Intl.DateTimeFormat("en-US", { month: "long", year: "numeric" }).format(date);
+    return new Intl.DateTimeFormat("en-US", {
+      month: "long",
+      year: "numeric",
+    }).format(date);
   };
 
   useEffect(() => {
@@ -1021,7 +1062,7 @@ const NutritionPage = () => {
     setMeals(mealsByMonth[monthKey] || []);
   }, [currentMonth, mealsByMonth]);
 
-//-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+  //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
   return (
     <div className="flex flex-col w-full h-screen bg-white p-8 items-center relative">
       <h1 className="text-4xl font-bold text-black mb-8 text-center">
@@ -1040,7 +1081,7 @@ const NutritionPage = () => {
           className="px-4 py-2 bg-white-200 text-gray-800 text-center"
           style={{ width: "150px" }}
         >
-          <p className="text-base font-medium">{formatDay(currentDate)}</p> 
+          <p className="text-base font-medium">{formatDay(currentDate)}</p>
           <p className="text-base font-semibold">{formatDate(currentDate)}</p>
         </div>
         <button
@@ -1050,7 +1091,7 @@ const NutritionPage = () => {
           {">"}
         </button>
       </div>
-      
+
       <div className="flex w-full max-w-5xl justify-between mb-4 space-x-4">
         <div className="bg-gray-200 p-4 rounded-md shadow-md w-1/4 text-center">
           <h2 className="text-xl font-semibold">Total Calories</h2>
@@ -1064,34 +1105,50 @@ const NutritionPage = () => {
           const value = totalNutrients[name as keyof typeof totalNutrients];
           const goal = goals[name as keyof Goals];
           const range = goalRanges[name as keyof Goals] ?? "exact";
-          const isPercentage = goalFields.find((field) => field.name === name)?.isPercentage ?? false;
+          const isPercentage =
+            goalFields.find((field) => field.name === name)?.isPercentage ??
+            false;
 
-          const content = goal > 0 ? (
-            <>
-              <h2 className="text-xl font-semibold">{label}</h2>
-              <p className={`text-xl font-semibold ${
-                  getMacronutrientColor(value, goal, range, isPercentage, calculateTotalCalories()) ===
-                  "green"
-                    ? "text-green-500"
-                    : getMacronutrientColor(value, goal, range, isPercentage, calculateTotalCalories()) ===
-                      "yellow"
-                    ? "text-yellow-500"
-                    : "text-red-500"
-                }`}
+          const content =
+            goal > 0 ? (
+              <>
+                <h2 className="text-xl font-semibold">{label}</h2>
+                <p
+                  className={`text-xl font-semibold ${
+                    getMacronutrientColor(
+                      value,
+                      goal,
+                      range,
+                      isPercentage,
+                      calculateTotalCalories()
+                    ) === "green"
+                      ? "text-green-500"
+                      : getMacronutrientColor(
+                          value,
+                          goal,
+                          range,
+                          isPercentage,
+                          calculateTotalCalories()
+                        ) === "yellow"
+                      ? "text-yellow-500"
+                      : "text-red-500"
+                  }`}
                 >
-                {isPercentage
-                  ? `${((value * (name === "fats" ? 9 : 4)) / calculateTotalCalories() * 100).toFixed(
-                      1
-                    )}%`
-                  : `${value}g`}
-              </p>
-            </>
-          ) : (
-            <>
-              <h2 className="text-xl font-semibold text-gray-800">{label}</h2>
-              <p>{value}g</p>
-            </>
-          );
+                  {isPercentage
+                    ? `${(
+                        ((value * (name === "fats" ? 9 : 4)) /
+                          calculateTotalCalories()) *
+                        100
+                      ).toFixed(1)}%`
+                    : `${value}g`}
+                </p>
+              </>
+            ) : (
+              <>
+                <h2 className="text-xl font-semibold text-gray-800">{label}</h2>
+                <p>{value}g</p>
+              </>
+            );
 
           return (
             <div
@@ -1102,54 +1159,66 @@ const NutritionPage = () => {
             </div>
           );
         })}
-      </div> 
-      
+      </div>
+
       {/* Micronutrients Tracker */}
       <div className="flex justify-center">
-      <div
-        className="grid gap-6 mt-2"
-        style={{
-          gridTemplateColumns: `repeat(${activeGoals.length}, 1fr)`,
-          width: "100%",
-          maxWidth: "80rem",
-        }}
-      >
-        {activeGoals.map(({ label, name }) => {
-          const value = totalNutrients[name as keyof typeof totalNutrients];
-          const goal = goals[name as keyof Goals];
-          const range = goalRanges[name as keyof Goals];
-          const isPercentage = goalFields.find((field) => field.name === name)?.isPercentage ?? false;
-          const unitMatch = label.match(/\((.*?)\)/);
+        <div
+          className="grid gap-6 mt-2"
+          style={{
+            gridTemplateColumns: `repeat(${activeGoals.length}, 1fr)`,
+            width: "100%",
+            maxWidth: "80rem",
+          }}
+        >
+          {activeGoals.map(({ label, name }) => {
+            const value = totalNutrients[name as keyof typeof totalNutrients];
+            const goal = goals[name as keyof Goals];
+            const range = goalRanges[name as keyof Goals];
+            const isPercentage =
+              goalFields.find((field) => field.name === name)?.isPercentage ??
+              false;
+            const unitMatch = label.match(/\((.*?)\)/);
 
-          const displayValue = isPercentage
-            ? `${((value * 9) / calculateTotalCalories() * 100).toFixed(1)}%`
-            : `${value}${unitMatch ? unitMatch[1] : ""}`;
-            
-          const color = isPercentage
-            ? getMacronutrientColor(value, goal, range, isPercentage, calculateTotalCalories())
-            : getMicronutrientColor(value, goal, range);
+            const displayValue = isPercentage
+              ? `${(((value * 9) / calculateTotalCalories()) * 100).toFixed(
+                  1
+                )}%`
+              : `${value}${unitMatch ? unitMatch[1] : ""}`;
 
-          return (
-            <div key={name} className="text-center">
-              <p
-                className={`text-3xl font-bold ${
-                  color === "green"
-                    ? "text-green-500"
-                    : color === "yellow"
-                    ? "text-yellow-500"
-                    : color === "red"
-                    ? "text-red-500"
-                    : "text-gray-800"
-                }`}
-              >
-                {displayValue}
-              </p>
-              <p className="text-sm text-gray-500">{label.replace(/\s\((.*?)\)/, "")}</p>
-            </div>
-          );
-        })}
+            const color = isPercentage
+              ? getMacronutrientColor(
+                  value,
+                  goal,
+                  range,
+                  isPercentage,
+                  calculateTotalCalories()
+                )
+              : getMicronutrientColor(value, goal, range);
+
+            return (
+              <div key={name} className="text-center">
+                <p
+                  className={`text-3xl font-bold ${
+                    color === "green"
+                      ? "text-green-500"
+                      : color === "yellow"
+                      ? "text-yellow-500"
+                      : color === "red"
+                      ? "text-red-500"
+                      : "text-gray-800"
+                  }`}
+                >
+                  {displayValue}
+                </p>
+                <p className="text-sm text-gray-500">
+                  {label.replace(/\s\((.*?)\)/, "")}
+                </p>
+              </div>
+            );
+          })}
+        </div>
       </div>
-      </div>  
 
       {/* Edit Goals Button */}
       <button
@@ -1166,23 +1235,29 @@ const NutritionPage = () => {
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-2xl font-semibold">Edit Your Goals</h2>
               <div className="relative group">
-                <div className="w-6 h-6 flex items-center justify-center bg-gray-300 text-white rounded-full text-sm font-bold cursor-pointer">?</div>
+                <div className="w-6 h-6 flex items-center justify-center bg-gray-300 text-white rounded-full text-sm font-bold cursor-pointer">
+                  ?
+                </div>
                 <div className="absolute right-0 mt-2 w-[700px] p-4 bg-gray-600 text-white text-sm rounded shadow-md opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto transition-opacity">
                   <p>
-                    Here, you can set your personal goals for calories and nutrients. 
-                    Recommended daily intakes vary depending on age, activity level, and overall health.
-                    By setting ranges for calories and nutrients you can specify whether you aim to be under, over, or match the exact amount set for each goal.
+                    Here, you can set your personal goals for calories and
+                    nutrients. Recommended daily intakes vary depending on age,
+                    activity level, and overall health. By setting ranges for
+                    calories and nutrients you can specify whether you aim to be
+                    under, over, or match the exact amount set for each goal.
                     For general guidance, adults may aim for:
                   </p>
                   <ul className="mt-2 list-disc list-inside">
                     <li>Calories: ~2000–2500 kcal/day</li>
                     <li>Fats: ~70–90 g/day (about 30% of daily calories)</li>
-                    <li>Saturated fats: {'<'}10% of daily calories (~20 g/day)</li>
-                    <li>Trans Fats: {'<'}2 g/day</li>
+                    <li>
+                      Saturated fats: {"<"}10% of daily calories (~20 g/day)
+                    </li>
+                    <li>Trans Fats: {"<"}2 g/day</li>
                     <li>Polyunsaturated Fats: ~11–22 g/day</li>
                     <li>Monounsaturated Fats: ~33–44 g/day</li>
-                    <li>Cholesterol: {'<'}300 mg/day</li>
-                    <li>Sodium: {'<'}2,300 mg/day</li>
+                    <li>Cholesterol: {"<"}300 mg/day</li>
+                    <li>Sodium: {"<"}2,300 mg/day</li>
                     <li>Potassium: ~4,700 mg/day</li>
                     <li>Calcium: ~1,000–1,200 mg/day</li>
                     <li>Iron: ~8–18 mg/day</li>
@@ -1190,16 +1265,20 @@ const NutritionPage = () => {
                     <li>Carbs: ~225–325 g/day (55% of daily calories)</li>
                     <li>Net Carbs: Varies based on dietary goals</li>
                     <li>Fiber: ~28–30 g/day</li>
-                    <li>Sugars: {'<'}50 g/day</li>
+                    <li>Sugars: {"<"}50 g/day</li>
                     <li>Protein: ~50–60 g/day (10–15% of daily calories)</li>
                     <li>Vitamin C: ~75–90 mg/day</li>
                     <li>Vitamin D: ~15–20 µg/day</li>
                     <li>Vitamin B12: ~2.4 µg/day</li>
                   </ul>
                   <p className="mt-2">
-                    Before setting goals, it's important to consult a doctor and undergo a blood test to ensure your targets are realistic and safe, and not potentially harmful.<br />
+                    Before setting goals, it's important to consult a doctor and
+                    undergo a blood test to ensure your targets are realistic
+                    and safe, and not potentially harmful.
                     <br />
-                    *If your nutrition label lists sodium instead of salt, you can convert it: 1 g salt = 400 mg of sodium.
+                    <br />
+                    *If your nutrition label lists sodium instead of salt, you
+                    can convert it: 1 g salt = 400 mg of sodium.
                   </p>
                 </div>
               </div>
@@ -1222,7 +1301,9 @@ const NutritionPage = () => {
                     />
                   </div>
 
-                  {["fats", "carbs", "protein", "saturatedFats"].includes(field.name as string) && (
+                  {["fats", "carbs", "protein", "saturatedFats"].includes(
+                    field.name as string
+                  ) && (
                     <div>
                       <label className="flex items-center space-x-2">
                         <span className="text-sm">Track as Percentage</span>
@@ -1234,7 +1315,9 @@ const NutritionPage = () => {
                         >
                           <span
                             className={`absolute top-1 left-1 w-4 h-4 bg-white rounded-full transition-transform ${
-                              field.isPercentage ? "translate-x-4" : "translate-x-0"
+                              field.isPercentage
+                                ? "translate-x-4"
+                                : "translate-x-0"
                             }`}
                           ></span>
                         </div>
@@ -1247,16 +1330,23 @@ const NutritionPage = () => {
                     <p className="text-sm font-medium text-gray-600">Range</p>
                     <div className="flex space-x-2">
                       {["under", "exact", "over"].map((range) => (
-                        <label key={range} className="flex items-center space-x-1">
+                        <label
+                          key={range}
+                          className="flex items-center space-x-1"
+                        >
                           <input
                             type="radio"
                             name={`${field.name}-range`}
                             value={range}
                             checked={goalRanges[field.name] === range}
-                            onChange={() => handleRangeChange(field.name, range)}
+                            onChange={() =>
+                              handleRangeChange(field.name, range)
+                            }
                             className="form-radio"
                           />
-                          <span className="text-sm">{range.charAt(0).toUpperCase() + range.slice(1)}</span>
+                          <span className="text-sm">
+                            {range.charAt(0).toUpperCase() + range.slice(1)}
+                          </span>
                         </label>
                       ))}
                     </div>
@@ -1347,7 +1437,9 @@ const NutritionPage = () => {
                       </li>
                     ))
                   ) : (
-                    <li className="text-gray-500">No meals in your list yet.</li>
+                    <li className="text-gray-500">
+                      No meals in your list yet.
+                    </li>
                   )}
                 </ul>
                 <div className="mt-4 text-right">
@@ -1367,7 +1459,9 @@ const NutritionPage = () => {
         <div className="flex flex-col items-center w-1/2 space-y-4">
           <div className="w-full max-w-md h-[400px] flex items-center justify-center">
             {isAllZero ? (
-              <p className="text-center text-gray-500">No data available. Add meals to see your macros chart!</p>
+              <p className="text-center text-gray-500">
+                No data available. Add meals to see your macros chart!
+              </p>
             ) : (
               <Pie
                 data={data}
@@ -1404,26 +1498,32 @@ const NutritionPage = () => {
                     : "bg-green-500"
                 }`}
                 style={{
-                  width: `${(calculateTotalCalories() / goals.calories) * 100}%`,
+                  width: `${
+                    (calculateTotalCalories() / goals.calories) * 100
+                  }%`,
                 }}
               ></div>
               <p className="absolute inset-0 flex items-center justify-center text-gray-500 text-sm font-semibold">
-                {((calculateTotalCalories() / goals.calories) * 100).toFixed(1)}% of goal complete
+                {((calculateTotalCalories() / goals.calories) * 100).toFixed(1)}
+                % of goal complete
               </p>
             </div>
           ) : (
-            <p className="text-gray-500 text-sm mt-2">Set your calorie goal to see progress.</p>
+            <p className="text-gray-500 text-sm mt-2">
+              Set your calorie goal to see progress.
+            </p>
           )}
         </div>
       </div>
-  
+
       {isModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-10">
           <div className="bg-white p-8 rounded-md shadow-md w-[90%] h-[90%] relative overflow-y-auto">
             {showConfirmDialog ? (
               <div className="absolute inset-0 bg-white p-6 rounded-md shadow-lg flex flex-col items-center justify-center z-20">
                 <p className="mb-4 text-center text-gray-700">
-                  You have unsaved changes. Are you sure you want to leave without saving?
+                  You have unsaved changes. Are you sure you want to leave
+                  without saving?
                 </p>
                 <div className="flex space-x-4">
                   <button
@@ -1437,7 +1537,7 @@ const NutritionPage = () => {
                       setShowConfirmDialog(false);
                       setHasUnsavedChanges(false);
                       setIsModalOpen(false);
-                      confirmModalClose
+                      confirmModalClose;
                     }}
                     className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
                   >
@@ -1475,7 +1575,9 @@ const NutritionPage = () => {
                         <th className="px-4 py-2">Carbs</th>
                         <th className="px-4 py-2">Fats</th>
                         {activeGoals.map(({ label }) => (
-                          <th key={label} className="px-4 py-2">{label}</th>
+                          <th key={label} className="px-4 py-2">
+                            {label}
+                          </th>
                         ))}
                       </tr>
                     </thead>
@@ -1522,7 +1624,9 @@ const NutritionPage = () => {
                           <td className="px-4 py-2">{food.carbs}</td>
                           <td className="px-4 py-2">{food.fats}</td>
                           {activeGoals.map(({ name }) => (
-                            <td key={name} className="px-4 py-2">{food[name as keyof typeof food]}</td>
+                            <td key={name} className="px-4 py-2">
+                              {food[name as keyof typeof food]}
+                            </td>
                           ))}
                           <td className="px-4 py-2">
                             <button
@@ -1580,7 +1684,9 @@ const NutritionPage = () => {
                                 </li>
                               ))
                             ) : (
-                              <li className="text-gray-500">No foods in your list yet.</li>
+                              <li className="text-gray-500">
+                                No foods in your list yet.
+                              </li>
                             )}
                           </ul>
                           <div className="mt-4 text-right">
@@ -1610,17 +1716,17 @@ const NutritionPage = () => {
                     Save Meal
                   </button>
                   <div className="flex items-center mt-6 ml-4">
-                      <input
-                        type="checkbox"
-                        id="saveToMyMeals"
-                        checked={saveToMyMeals}
-                        onChange={(e) => setSaveToMyMeals(e.target.checked)}
-                        className="mr-2"
-                      />
-                      <label htmlFor="saveToMyMeals" className="text-gray-700">
-                        Save this meal to My Meals
-                      </label>
-                    </div>
+                    <input
+                      type="checkbox"
+                      id="saveToMyMeals"
+                      checked={saveToMyMeals}
+                      onChange={(e) => setSaveToMyMeals(e.target.checked)}
+                      className="mr-2"
+                    />
+                    <label htmlFor="saveToMyMeals" className="text-gray-700">
+                      Save this meal to My Meals
+                    </label>
+                  </div>
                   <button
                     onClick={() => {
                       if (hasUnsavedChanges) {
@@ -1639,84 +1745,90 @@ const NutritionPage = () => {
           </div>
         </div>
       )}
-      
+
       {isFoodModalOpen && (
-      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-10">
-        <div className="bg-white p-8 rounded-md shadow-md w-3/4 h-[87.5%] relative overflow-y-auto">
-          {showConfirmDialogFood ? (
-            <div className="absolute inset-0 bg-white p-6 rounded-md shadow-lg flex flex-col items-center justify-center z-20">
-              <p className="mb-4 text-center text-gray-700">
-                You have unsaved changes. Are you sure you want to leave without saving?
-              </p>
-              <div className="flex space-x-4">
-                <button
-                  onClick={() => setShowConfirmDialogFood(false)}
-                  className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
-                >
-                  Cancel
-                </button>
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-10">
+          <div className="bg-white p-8 rounded-md shadow-md w-3/4 h-[87.5%] relative overflow-y-auto">
+            {showConfirmDialogFood ? (
+              <div className="absolute inset-0 bg-white p-6 rounded-md shadow-lg flex flex-col items-center justify-center z-20">
+                <p className="mb-4 text-center text-gray-700">
+                  You have unsaved changes. Are you sure you want to leave
+                  without saving?
+                </p>
+                <div className="flex space-x-4">
+                  <button
+                    onClick={() => setShowConfirmDialogFood(false)}
+                    className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={() => {
+                      setShowConfirmDialogFood(false);
+                      setHasUnsavedChangesFood(false);
+                      setIsFoodModalOpen(false);
+                      confirmFoodModalClose;
+                    }}
+                    className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+                  >
+                    Exit
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <>
+                <h2 className="text-2xl font-bold mb-4">Add Custom Food</h2>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {fields.map((field, idx) => (
+                    <div key={idx} className="mb-4">
+                      <label className="block text-gray-700">
+                        {field.label}
+                      </label>
+                      <input
+                        type="text"
+                        inputMode="text"
+                        name={field.name}
+                        value={newFood[field.name] as string | number}
+                        onChange={handleFoodInputChange}
+                        className="p-2 border border-gray-300 rounded-md w-full"
+                        placeholder={
+                          field.name === "servingSizeType"
+                            ? "e.g., grams, cup, piece, glass"
+                            : ""
+                        }
+                      />
+                    </div>
+                  ))}
+                </div>
+                <div className="mt-2 flex justify-between">
+                  <button
+                    onClick={addFood}
+                    className="bg-blue-500 text-white p-2 rounded-md shadow-md hover:bg-blue-700"
+                  >
+                    Save Food
+                  </button>
+                </div>
                 <button
                   onClick={() => {
-                    setShowConfirmDialogFood(false);
-                    setHasUnsavedChangesFood(false);
-                    setIsFoodModalOpen(false);
-                    confirmFoodModalClose;
+                    if (hasUnsavedChangesFood) {
+                      setShowConfirmDialogFood(true);
+                    } else {
+                      closeFoodModal();
+                    }
                   }}
-                  className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+                  className="absolute top-2 right-2 text-gray-500 hover:text-gray-700 font-bold text-2xl p-1"
                 >
-                  Exit
+                  &times;
                 </button>
-              </div>
-            </div>
-          ) : (
-            <>
-              <h2 className="text-2xl font-bold mb-4">Add Custom Food</h2>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {fields.map((field, idx) => (
-                  <div key={idx} className="mb-4">
-                    <label className="block text-gray-700">{field.label}</label>
-                    <input
-                      type="text"
-                      inputMode="text"
-                      name={field.name}
-                      value={newFood[field.name] as string | number}
-                      onChange={handleFoodInputChange}
-                      className="p-2 border border-gray-300 rounded-md w-full"
-                      placeholder={
-                        field.name === "servingSizeType"
-                          ? "e.g., grams, cup, piece, glass"
-                          : ""
-                      }
-                    />
-                  </div>
-                ))}
-              </div>
-              <div className="mt-2 flex justify-between">
-                <button
-                  onClick={addFood}
-                  className="bg-blue-500 text-white p-2 rounded-md shadow-md hover:bg-blue-700"
-                >
-                  Save Food
-                </button>
-              </div>
-              <button
-                onClick={() => {
-                  if (hasUnsavedChangesFood) {
-                    setShowConfirmDialogFood(true);
-                  } else {
-                    closeFoodModal();
-                  }
-                }}
-                className="absolute top-2 right-2 text-gray-500 hover:text-gray-700 font-bold text-2xl p-1"
-              >
-                &times;
-              </button>
-            </>
-          )}
+              </>
+            )}
+          </div>
         </div>
-      </div>
-    )}
-      <h2 className="text-3xl font-bold text-black mb-8 mt-20 md-4 text-center"> Your monthly stats </h2>
+      )}
+      <h2 className="text-3xl font-bold text-black mb-8 mt-20 md-4 text-center">
+        {" "}
+        Your monthly stats{" "}
+      </h2>
 
       <div className="flex items-center justify-center mb-6">
         <button
@@ -1727,9 +1839,10 @@ const NutritionPage = () => {
         </button>
         <div
           className="px-4 py-2 bg-white-200 text-gray-800 text-center"
-          style={{ width: "200px" }} 
+          style={{ width: "200px" }}
         >
-          <p className="text-base font-semibold">{formatMonth(currentMonth)}</p> {/* Month and year */}
+          <p className="text-base font-semibold">{formatMonth(currentMonth)}</p>{" "}
+          {/* Month and year */}
         </div>
         <button
           onClick={() => handleMonthChange("next")}
@@ -1738,7 +1851,10 @@ const NutritionPage = () => {
           {">"}
         </button>
       </div>
-      <h2 className="text-xl font-bold text-black mb-8 mt-4 md-4 text-center"> Monthly calorie intake </h2>
+      <h2 className="text-xl font-bold text-black mb-8 mt-4 md-4 text-center">
+        {" "}
+        Monthly calorie intake{" "}
+      </h2>
       <Bar
         data={dataMonthCalories}
         options={{
@@ -1761,8 +1877,8 @@ const NutritionPage = () => {
           },
         }}
       />
-      </div>
-    );
-  };
-  
-  export default NutritionPage;
+    </div>
+  );
+};
+
+export default NutritionPage;

@@ -4,12 +4,9 @@ import {
   CreateWorkoutPlanInput,
   UpdateWorkoutPlanInput,
 } from "@/types/workoutPlan";
-import { workoutPlans as predefinedWorkoutPlans } from "@/data/workoutPlan";
 
 export const useWorkoutPlan = () => {
   const [workoutPlans, setWorkoutPlans] = useState<WorkoutPlanBase[]>([]);
-
-  const [workoutPlansLoading, setWorkoutPlansLoading] = useState(false);
 
   const createWorkoutPlan = useCallback(
     async (input: CreateWorkoutPlanInput): Promise<WorkoutPlanBase> => {
@@ -18,10 +15,10 @@ export const useWorkoutPlan = () => {
 
         // Simulated logic (replace with actual API call)
         const newWorkoutPlan: WorkoutPlanBase = {
-          id: Date.now().toString(),
+          id: Date.now(),
           name: input.name,
           userId: input.userId,
-          createdById: "user-",
+          createdById: 1,
         };
         setWorkoutPlans((prevPlans) => [...prevPlans, newWorkoutPlan]);
         return newWorkoutPlan;
@@ -34,23 +31,11 @@ export const useWorkoutPlan = () => {
   );
 
   const getWorkoutPlanById = useCallback(
-    (id: string): WorkoutPlanBase | undefined => {
+    (id: number): WorkoutPlanBase | undefined => {
       return workoutPlans.find((plan) => plan.id === id);
     },
     [workoutPlans]
   );
-
-  const getAllWorkoutPlans = useCallback(async (): Promise<
-    WorkoutPlanBase[]
-  > => {
-    setWorkoutPlansLoading(true);
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    const plans = predefinedWorkoutPlans;
-    setWorkoutPlans(plans);
-    console.log("Plans", plans);
-    setWorkoutPlansLoading(false);
-    return plans;
-  }, []);
 
   const updateWorkoutPlan = useCallback(
     (input: UpdateWorkoutPlanInput): WorkoutPlanBase | undefined => {
@@ -74,7 +59,7 @@ export const useWorkoutPlan = () => {
     []
   );
 
-  const deleteWorkoutPlan = useCallback((id: string): void => {
+  const deleteWorkoutPlan = useCallback((id: number): void => {
     setWorkoutPlans((prevPlans) => prevPlans.filter((plan) => plan.id !== id));
   }, []);
 
@@ -83,10 +68,8 @@ export const useWorkoutPlan = () => {
     setWorkoutPlans,
     createWorkoutPlan,
     getWorkoutPlanById,
-    getAllWorkoutPlans,
     updateWorkoutPlan,
     deleteWorkoutPlan,
-    workoutPlansLoading,
   } as UseWorkoutPlanContextType;
 };
 
@@ -96,11 +79,10 @@ export type UseWorkoutPlanContextType = {
   createWorkoutPlan: (
     input: CreateWorkoutPlanInput
   ) => Promise<WorkoutPlanBase>;
-  getWorkoutPlanById: (id: string) => WorkoutPlanBase | undefined;
-  getAllWorkoutPlans: () => Promise<WorkoutPlanBase[]>;
+  getWorkoutPlanById: (id: number) => WorkoutPlanBase | undefined;
   updateWorkoutPlan: (
     input: UpdateWorkoutPlanInput
   ) => WorkoutPlanBase | undefined;
-  deleteWorkoutPlan: (id: string) => void;
+  deleteWorkoutPlan: (id: number) => void;
   workoutPlansLoading: boolean;
 };

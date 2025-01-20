@@ -26,6 +26,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
+import java.text.SimpleDateFormat;
 
 @RestController
 @RequestMapping("/api")
@@ -110,11 +111,16 @@ public class WorkoutController {
 
     @GetMapping("workout-session")
     public ResponseEntity<?> getWorkoutSession(@RequestHeader("Authorization") String token,
-                                               @RequestBody DateRangeDTO dateRange){
+                                               @RequestParam("startDate") String startDate,
+                                               @RequestParam("endDate") String endDate) throws Exception {
         String email = jwtService.extractEmail(token.trim().substring(7));
         MyUser user = (MyUser) myUserService.getMyUser(email);
-        Set<WorkoutSessionResponse> wsr = workoutSessionService.getWorkoutSessionsBetweenDates(user,
-                                                dateRange.startDate(), dateRange.endDate());
+        
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy.");
+        Date start = dateFormat.parse(startDate);
+        Date end = dateFormat.parse(endDate);
+        
+        Set<WorkoutSessionResponse> wsr = workoutSessionService.getWorkoutSessionsBetweenDates(user, start, end);
         return ResponseEntity.status(HttpStatus.OK).body(wsr);
     }
 

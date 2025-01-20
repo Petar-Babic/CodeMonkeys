@@ -1,6 +1,6 @@
 export type TrainerBase = {
-  id: string;
-  userId: string;
+  id: number;
+  userId: number;
   createdAt: Date;
   updatedAt: Date;
 };
@@ -12,4 +12,4 @@ export type CreateTrainerInput = Omit<
 
 export type UpdateTrainerInput = Partial<
   Omit<TrainerBase, "createdAt" | "updatedAt">
-> & { id: string };
+> & { id: number };

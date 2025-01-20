@@ -1,7 +1,7 @@
 export type PersonalRecordBase = {
-  id: string;
-  userId: string;
-  exerciseId: string;
+  id: number;
+  userId: number;
+  exerciseId: number;
   weight: number;
   reps: number;
   date: Date;
@@ -16,4 +16,4 @@ export type CreatePersonalRecordInput = Omit<
 
 export type UpdatePersonalRecordInput = Partial<
   Omit<PersonalRecordBase, "createdAt" | "updatedAt">
-> & { id: string };
+> & { id: number };

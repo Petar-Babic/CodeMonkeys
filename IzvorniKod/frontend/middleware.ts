@@ -1,14 +1,14 @@
 import { withAuth } from "next-auth/middleware";
 
-export default withAuth({
-  pages: {
-    signIn: "/sign-in",
-    signOut: "/sign-out",
-    error: "/error",
-    verifyRequest: "/verify-request",
-    newUser: "/sign-up",
-  },
-});
+// export default withAuth({
+//   pages: {
+//     signIn: "/sign-in",
+//     signOut: "/sign-out",
+//     error: "/error",
+//     verifyRequest: "/verify-request",
+//     newUser: "/sign-up",
+//   },
+// });
 
 export const config = {
   matcher: [
@@ -26,5 +26,24 @@ export const config = {
      * 10. /terms-of-service
      */
     "/((?!api|_next|fonts|icons|[\\w-]+\\.\\w+|$|sign-in|sign-up|privacy-policy|terms-of-service).*)",
+    "/admin/:path*",
   ],
 };
+
+export default withAuth(
+  async function middleware(req) {
+    const token = req.nextauth.token;
+
+    // Provjera admin rute
+    if (req.nextUrl.pathname.startsWith("/admin")) {
+      if (token?.role !== "admin") {
+        // return Response.redirect(new URL("/", req.url));
+      }
+    }
+  },
+  {
+    callbacks: {
+      authorized: ({ token }) => !!token,
+    },
+  }
+);

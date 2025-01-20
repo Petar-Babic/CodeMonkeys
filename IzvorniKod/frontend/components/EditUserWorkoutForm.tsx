@@ -28,26 +28,16 @@ import { AlertCircle, Loader2 } from "lucide-react";
 
 const formSchema = z.object({
   name: z.string().min(1, "Name is required"),
-  order: z.number().min(1, "Order must be at least 1"),
+  order: z.coerce.number().min(1, "Order must be at least 1"),
   exercises: z
     .array(
       z.object({
-        id: z.string().optional(),
-        exerciseId: z.string().min(1, "Exercise is required"),
-        sets: z.number().min(1, "Sets must be at least 1"),
-        reps: z.number().min(1, "Reps must be at least 1"),
-        rpe: z.number().optional(),
-        order: z.number().min(1, "Order must be at least 1"),
-        exercise: z.object({
-          id: z.string(),
-          name: z.string(),
-          description: z.string().optional(),
-          gif: z.string().optional(),
-          createdById: z.string(),
-          isApproved: z.boolean(),
-          primaryMuscleGroupsIds: z.array(z.string()),
-          secondaryMuscleGroupsIds: z.array(z.string()),
-        }),
+        id: z.number().optional(),
+        exerciseId: z.number(),
+        sets: z.coerce.number().min(1, "Sets must be at least 1"),
+        reps: z.coerce.number().min(1, "Reps must be at least 1"),
+        rpe: z.coerce.number().optional(),
+        order: z.coerce.number().min(1, "Order must be at least 1"),
       })
     )
     .min(1, "At least one exercise is required"),
@@ -101,7 +91,7 @@ export function EditUserWorkoutForm({
         order: values.order,
         exercises: values.exercises.map((exercise) => ({
           ...exercise,
-          id: exercise.id || "",
+          id: exercise.id || 0,
           order: exercise.order,
           sets: exercise.sets,
           reps: exercise.reps,
@@ -155,7 +145,7 @@ export function EditUserWorkoutForm({
 
   return (
     <Form {...form}>
-      <div className="space-y-8">
+      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-8">
         {submitError && (
           <Alert variant="destructive">
             <AlertCircle className="h-4 w-4" />
@@ -324,7 +314,7 @@ export function EditUserWorkoutForm({
           onExercisesSelected={handleExercisesSelected}
           initialSelectedExercises={getInitialSelectedExercises()}
         />
-      </div>
+      </form>
     </Form>
   );
 }

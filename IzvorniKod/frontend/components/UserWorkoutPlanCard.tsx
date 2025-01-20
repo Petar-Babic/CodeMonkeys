@@ -3,17 +3,28 @@
 import { useAppContext } from "@/contexts/AppContext";
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Button } from "./ui/button";
 import UserWorkoutWithUserPlannedExerciseList from "./UserWorkoutWithUserPlannedExerciseList";
 import Calendar from "./Calendar";
-import { useWorkoutSession } from "@/hooks/workoutSession";
+import { useWorkoutSession } from "@/hooks/useWorkoutSession";
+import { WorkoutSessionWithPerformedExercises } from "@/types/workoutSession";
 
 export default function UserWorkoutPlanCard() {
   const { userWorkoutPlan } = useAppContext();
+  const [workoutSessions, setWorkoutSessions] = useState<
+    WorkoutSessionWithPerformedExercises[]
+  >([]);
   const { exercises } = useAppContext();
 
-  const { workoutSessions } = useWorkoutSession();
+  const { getWorkoutSessions } = useWorkoutSession();
+
+  useEffect(() => {
+    getWorkoutSessions(
+      new Date(new Date().setDate(new Date().getDate() - 30)).toISOString(),
+      new Date().toISOString()
+    ).then((workoutSessions) => setWorkoutSessions(workoutSessions));
+  }, [getWorkoutSessions]);
 
   const events = workoutSessions.map((workoutSession) => ({
     name:

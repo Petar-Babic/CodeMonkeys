@@ -251,7 +251,7 @@ export default function BodyStatsAndGoalForm() {
     setIsLoadingNutritionalPlan(true);
     try {
       const data: BodyStatsAndGoalDataType = {
-        userId: user?.id || "", // Assuming user object has an id property
+        userId: Number(user?.id),
         createdAt: new Date(),
         updatedAt: new Date(),
         height: parseFloat(values.height),

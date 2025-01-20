@@ -1,6 +1,6 @@
 export type SleepLogBase = {
-  id: string;
-  userId: string;
+  id: number;
+  userId: number;
   date: Date;
   duration: number;
   quality: number;
@@ -16,4 +16,4 @@ export type CreateSleepLogInput = Omit<
 
 export type UpdateSleepLogInput = Partial<
   Omit<SleepLogBase, "createdAt" | "updatedAt">
-> & { id: string };
+> & { id: number };

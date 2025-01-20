@@ -1,5 +1,5 @@
 export type MuscleGroupBase = {
-  id: string;
+  id: number;
   name: string;
   description?: string;
   image?: string;
@@ -14,4 +14,4 @@ export type CreateMuscleGroupInput = Omit<
 
 export type UpdateMuscleGroupInput = Partial<
   Omit<MuscleGroupBase, "createdAt" | "updatedAt">
-> & { id: string };
+> & { id: number };

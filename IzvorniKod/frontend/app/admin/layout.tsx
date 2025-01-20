@@ -3,25 +3,22 @@ import AppLayoutComponent from "@/components/AppLayoutComponent";
 import LoadingAppScreen from "@/components/LoadingAppScreen";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/lib/auth";
+import { redirect } from "next/navigation";
 
-export default async function AppLayout({
+export default async function AdminLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   const session = await getServerSession(authOptions);
 
-  const userId = session?.user.id;
-  const accessToken = session?.accessToken;
-  const refreshToken = session?.refreshToken;
-
-  console.log("/app/(authenticated)/layout refreshToken", refreshToken);
-  console.log("/app/(authenticated)/layout accessToken", accessToken);
-
   if (!session) {
-    // Redirect to login or show an error
-    return <div>Please log in to access this page.</div>;
+    redirect("/");
   }
+
+  const userId = session.user.id;
+  const accessToken = session.accessToken;
+  const refreshToken = session.refreshToken;
 
   return (
     <Suspense fallback={<LoadingAppScreen />}>

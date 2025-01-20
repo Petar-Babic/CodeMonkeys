@@ -5,7 +5,7 @@ import { exercises } from "@/data/exercise";
 import { workoutsWithExercises } from "@/data/workout";
 
 const getWorkoutSessionAPI = async (
-  id: string
+  id: number
 ): Promise<WorkoutSessionWithExercisesForPage | undefined> => {
   // Simulate API delay
   await new Promise((resolve) => setTimeout(resolve, 100));
@@ -32,7 +32,7 @@ const getWorkoutSessionAPI = async (
 };
 
 export default async function WorkoutSessionPage(props: {
-  params: Promise<{ id: string }>;
+  params: Promise<{ id: number }>;
 }) {
   const { id } = await props.params;
 

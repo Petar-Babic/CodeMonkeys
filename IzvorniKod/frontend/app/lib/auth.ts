@@ -12,7 +12,7 @@ declare module "next-auth" {
     accessToken: string;
     refreshToken?: string;
     user: {
-      id: string;
+      id: number;
       name: string;
       email: string;
       role: string;
@@ -22,7 +22,7 @@ declare module "next-auth" {
   }
 
   interface User {
-    id: string;
+    id: number;
     name: string;
     email: string;
     role: string;
@@ -34,7 +34,7 @@ declare module "next-auth" {
 
 declare module "next-auth/jwt" {
   interface JWT {
-    id: string;
+    id: number;
     role: string;
     accessToken?: string;
     refreshToken?: string;
@@ -189,7 +189,7 @@ export const authOptions: NextAuthOptions = {
           throw new Error("refreshToken is not set in user");
         }
 
-        token.id = user.id;
+        token.id = Number(user.id);
         token.email = user.email;
         token.name = user.name;
         token.role = user.role;

@@ -26,11 +26,11 @@ const formSchema = z.object({
   order: z.number().min(1, "Order must be at least 1"),
   exercises: z.array(
     z.object({
-      exerciseId: z.string().min(1, "Exercise is required"),
-      sets: z.number().min(1, "Sets must be at least 1"),
-      reps: z.number().min(1, "Reps must be at least 1"),
-      rpe: z.number().optional(),
-      order: z.number().min(1, "Order must be at least 1"),
+      exerciseId: z.number(),
+      sets: z.coerce.number().min(1, "Sets must be at least 1"),
+      reps: z.coerce.number().min(1, "Reps must be at least 1"),
+      rpe: z.coerce.number().optional(),
+      order: z.coerce.number().min(1, "Order must be at least 1"),
     })
   ),
 });
@@ -42,7 +42,7 @@ export default function CreateUserWorkoutForm({
   userWorkoutPlanId,
 }: {
   onSubmit: (data: WorkoutWithPlannedExerciseBaseCreateInput) => void;
-  userWorkoutPlanId: string;
+  userWorkoutPlanId: number;
 }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
@@ -63,22 +63,21 @@ export default function CreateUserWorkoutForm({
   });
 
   const handleSubmit = async (values: FormValues) => {
+    console.log("values in handleSubmit", values);
     setIsSubmitting(true);
     try {
       const formattedData: WorkoutWithPlannedExerciseBaseCreateInput = {
         name: values.name,
         description: "",
-        order: values.order,
-        exercises: values.exercises
-          .map((exercise, index) => ({
-            exerciseId: exercise.exerciseId,
-            sets: exercise.sets,
-            reps: exercise.reps,
-            rpe: exercise.rpe || 0,
-            order: index + 1,
-            workoutId: userWorkoutPlanId,
-          }))
-          .filter((exercise) => exercise.exerciseId),
+        order: Number(values.order),
+        exercises: values.exercises.map((exercise, index) => ({
+          exerciseId: Number(exercise.exerciseId),
+          sets: Number(exercise.sets),
+          reps: Number(exercise.reps),
+          rpe: exercise.rpe ? Number(exercise.rpe) : 0,
+          order: index + 1,
+          workoutId: userWorkoutPlanId,
+        })),
       };
       await onSubmit(formattedData);
     } catch (error) {
@@ -107,7 +106,6 @@ export default function CreateUserWorkoutForm({
           reps: 1,
           rpe: 1,
           order: fields.length + 1,
-          exercise: exercise,
         };
       }
     });
@@ -122,7 +120,7 @@ export default function CreateUserWorkoutForm({
 
   return (
     <Form {...form}>
-      <div onSubmit={form.handleSubmit(handleSubmit)} className="space-y-8">
+      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-8">
         <FormField
           control={form.control}
           name="name"
@@ -246,7 +244,10 @@ export default function CreateUserWorkoutForm({
 
         <Button
           disabled={isSubmitting}
-          onClick={form.handleSubmit(handleSubmit)}
+          onClick={() => {
+            console.log("form values", form.getValues());
+            form.handleSubmit(handleSubmit)();
+          }}
           type="button"
         >
           {isSubmitting ? (
@@ -264,7 +265,7 @@ export default function CreateUserWorkoutForm({
           onExercisesSelected={handleExercisesSelected}
           initialSelectedExercises={getInitialSelectedExercises()}
         />
-      </div>
+      </form>
     </Form>
   );
 }

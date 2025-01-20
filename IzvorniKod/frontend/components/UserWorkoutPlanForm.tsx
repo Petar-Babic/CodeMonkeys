@@ -33,7 +33,6 @@ import {
 } from "@/components/ui/drawer";
 import CreateUserWorkoutForm from "./CreateUserWorkoutForm";
 import {
-  WorkoutWithPlannedExercisesBase,
   WorkoutWithPlannedExerciseBaseCreateInput,
   WorkoutWithPlannedExerciseBaseUpdateInput,
   WorkoutWithPlannedExercise,
@@ -48,17 +47,16 @@ import { EditUserWorkoutForm } from "./EditUserWorkoutForm";
 
 const formSchema = z.object({
   name: z.string().min(1, "Name is required"),
-  workoutPlanId: z.string().optional(),
   workouts: z
     .array(
       z.object({
-        id: z.string().optional(),
+        id: z.number().optional(),
         name: z.string().min(1, "Name is required"),
         order: z.number().min(1, "Order must be at least 1"),
         exercises: z.array(
           z.object({
-            id: z.string().optional(),
-            exerciseId: z.string().min(1, "Exercise is required"),
+            id: z.number().optional(),
+            exerciseId: z.number(),
             sets: z.number().min(1, "Sets must be at least 1"),
             reps: z.number().min(1, "Reps must be at least 1"),
             rpe: z.number().optional(),
@@ -90,7 +88,6 @@ export function UserWorkoutPlanForm() {
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: userWorkoutPlan?.name || "",
-      workoutPlanId: userWorkoutPlan?.id || undefined,
       workouts: userWorkoutPlan?.workouts || [],
     },
   });
@@ -98,7 +95,6 @@ export function UserWorkoutPlanForm() {
   useEffect(() => {
     form.reset({
       name: userWorkoutPlan?.name || "",
-      workoutPlanId: userWorkoutPlan?.id || undefined,
       workouts: userWorkoutPlan?.workouts || [],
     });
   }, [userWorkoutPlan, form]);
@@ -113,9 +109,18 @@ export function UserWorkoutPlanForm() {
     try {
       const formattedData: UpdateWorkoutPlanInput = {
         ...values,
-        id: userWorkoutPlan?.id || "",
-        userId: userWorkoutPlan?.userId || "",
-        workouts: fields as WorkoutWithPlannedExercise[],
+        id: Number(userWorkoutPlan?.id),
+        userId: Number(userWorkoutPlan?.userId),
+        workouts: fields.map((field) => ({
+          ...field,
+          description: "",
+          workoutPlanId: Number(userWorkoutPlan?.id),
+          exercises: field.exercises.map((exercise) => ({
+            ...exercise,
+            workoutId: Number(field.id || 0),
+            exercise: exercises.find((e) => e.id === exercise.exerciseId)!,
+          })),
+        })) as WorkoutWithPlannedExercise[],
       };
 
       if (!userWorkoutPlan) {
@@ -126,7 +131,7 @@ export function UserWorkoutPlanForm() {
             description: "",
             order: field.order,
             exercises: field.exercises.map((exercise) => ({
-              exerciseId: exercise.exerciseId,
+              exerciseId: Number(exercise.exerciseId),
               sets: exercise.sets,
               reps: exercise.reps,
               rpe: exercise.rpe || 0,
@@ -162,7 +167,7 @@ export function UserWorkoutPlanForm() {
       exercises: data.exercises.map((exercise) => ({
         ...exercise,
         order: exercise.order || 0,
-        exerciseId: exercise.exerciseId || "",
+        exerciseId: Number(exercise.exerciseId),
         sets: exercise.sets || 0,
         reps: exercise.reps || 0,
         rpe: exercise.rpe || 0,
@@ -185,7 +190,7 @@ export function UserWorkoutPlanForm() {
           data?.exercises?.map((exercise) => ({
             ...exercise,
             order: exercise.order || 0,
-            exerciseId: exercise.exerciseId || "",
+            exerciseId: Number(exercise.exerciseId),
             sets: exercise.sets || 0,
             reps: exercise.reps || 0,
             rpe: exercise.rpe || 0,
@@ -250,15 +255,15 @@ export function UserWorkoutPlanForm() {
                         name: workout.name,
                         order: workout.order,
                         description: "",
-                        workoutPlanId: userWorkoutPlan?.id || "",
+                        workoutPlanId: Number(userWorkoutPlan?.id),
                         exercises: workout.exercises.map((exercise) => {
                           const foundExercise = exercises.find(
                             (e) => e.id === exercise.exerciseId
                           );
                           return {
-                            id: exercise.id || `temp-${Date.now()}`,
-                            workoutId: workout.id || "",
-                            exerciseId: exercise.exerciseId,
+                            id: 0,
+                            workoutId: Number(workout.id || 0),
+                            exerciseId: Number(exercise.exerciseId),
                             sets: exercise.sets,
                             reps: exercise.reps,
                             rpe: exercise.rpe || 0,
@@ -319,7 +324,7 @@ export function UserWorkoutPlanForm() {
                   onSubmit={(data) => {
                     handleCreateWorkout(data);
                   }}
-                  userWorkoutPlanId={userWorkoutPlan?.id || ""}
+                  userWorkoutPlanId={Number(userWorkoutPlan?.id)}
                 />
               )}
             </div>

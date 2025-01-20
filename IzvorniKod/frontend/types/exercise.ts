@@ -1,12 +1,12 @@
 export type ExerciseBase = {
-  id: string;
+  id: number;
   name: string;
   description?: string;
   gif?: string;
-  createdById: string;
+  createdById: number;
   isApproved: boolean;
-  primaryMuscleGroupsIds: string[];
-  secondaryMuscleGroupsIds: string[];
+  primaryMuscleGroupsIds: number[];
+  secondaryMuscleGroupsIds: number[];
 };
 
 export type CreateExerciseInput = Omit<
@@ -16,4 +16,4 @@ export type CreateExerciseInput = Omit<
 
 export type UpdateExerciseInput = Partial<
   Omit<ExerciseBase, "createdAt" | "updatedAt">
-> & { id: string };
+> & { id: number };

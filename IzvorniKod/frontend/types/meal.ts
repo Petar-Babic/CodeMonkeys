@@ -1,12 +1,12 @@
 export type MealBase = {
-  id: string;
+  id: number;
   name: string;
   calories: number;
   protein: number;
   carbs: number;
   fat: number;
-  userId: string;
-  dailyNutritionLogId: string;
+  userId: number;
+  dailyNutritionLogId: number;
   createdAt: Date;
   updatedAt: Date;
 };
@@ -15,4 +15,4 @@ export type CreateMealInput = Omit<MealBase, "id" | "createdAt" | "updatedAt">;
 
 export type UpdateMealInput = Partial<
   Omit<MealBase, "createdAt" | "updatedAt">
-> & { id: string };
+> & { id: number };

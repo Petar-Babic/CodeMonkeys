@@ -6,10 +6,10 @@ import {
 } from "./plannedExercise";
 
 export type WorkoutBase = {
-  id: string;
+  id: number;
   name: string;
   description: string;
-  workoutPlanId: string;
+  workoutPlanId: number;
   order: number;
 };
 
@@ -20,7 +20,7 @@ export type CreateWorkoutInput = Omit<
 
 export type UpdateWorkoutInput = Partial<
   Omit<WorkoutBase, "createdAt" | "updatedAt">
-> & { id: string };
+> & { id: number };
 
 export type WorkoutWithPlannedExercisesBase = WorkoutBase & {
   exercises: PlannedExerciseBase[];
@@ -35,7 +35,7 @@ export type WorkoutWithPlannedExerciseBaseCreateInput = {
 
 export type WorkoutWithPlannedExerciseBaseUpdateInput = Partial<
   Omit<WorkoutBase, "id" | "workoutPlanId">
-> & { id: string } & {
+> & { id: number } & {
   exercises: UpdatePlannedExerciseInput[];
 };
 

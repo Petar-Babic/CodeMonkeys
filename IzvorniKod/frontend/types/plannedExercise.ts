@@ -1,9 +1,9 @@
 import { ExerciseBase } from "./exercise";
 
 export type PlannedExerciseBase = {
-  id: string;
-  workoutId: string;
-  exerciseId: string;
+  id: number;
+  workoutId: number;
+  exerciseId: number;
   sets: number;
   reps: number;
   rpe: number;
@@ -13,7 +13,7 @@ export type PlannedExerciseBase = {
 export type CreatePlannedExerciseInput = Omit<PlannedExerciseBase, "id">;
 
 export type UpdatePlannedExerciseInput = Partial<PlannedExerciseBase> & {
-  id: string;
+  id: number;
 };
 
 export type CreatePlannedExerciseInputForUserWorkout = Omit<

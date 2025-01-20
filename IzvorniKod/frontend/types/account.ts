@@ -1,6 +1,6 @@
 export type AccountBase = {
-  id: string;
-  userId: string;
+  id: number;
+  userId: number;
   type: string;
   provider: string;
   providerAccountId: string;

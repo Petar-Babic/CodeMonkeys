@@ -5,9 +5,9 @@ import {
 } from "./performedSet";
 
 export type PerformedExerciseBase = {
-  id: string;
-  workoutSessionId: string;
-  exerciseId: string;
+  id: number;
+  workoutSessionId: number;
+  exerciseId: number;
 };
 
 export type CreatePerformedExerciseInput = Omit<
@@ -18,7 +18,7 @@ export type CreatePerformedExerciseInput = Omit<
 };
 
 export type UpdatePerformedExerciseInput = Partial<PerformedExerciseBase> & {
-  id: string;
+  id: number;
   performedSets: UpdatePerformedSetInput[];
 };
 

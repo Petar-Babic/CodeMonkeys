@@ -1,5 +1,6 @@
 "use client";
 import { useAppContext } from "@/contexts/AppContext";
+import { ExerciseBase } from "@/types/exercise";
 import { WorkoutWithPlannedExercisesBase } from "@/types/workout";
 import React from "react";
 
@@ -12,10 +13,10 @@ export default function WorkoutsFromPublicWorkoutPlan({
 
   console.log("exercises in WorkoutsFromPublicWorkoutPlan", exercises);
 
-  const getExerciseName = (exerciseId: string) => {
+  const getExerciseName = (exerciseId: number) => {
     console.log(exerciseId);
     return (
-      exercises.find((e) => e.id === exerciseId)?.name ||
+      exercises.find((e: ExerciseBase) => e.id === exerciseId)?.name ||
       "Vježba nije pronađena"
     );
   };

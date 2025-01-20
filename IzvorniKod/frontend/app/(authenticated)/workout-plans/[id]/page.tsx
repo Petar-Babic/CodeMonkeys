@@ -7,7 +7,7 @@ import ApplyWorkoutPlanToUserButton from "@/components/ApplyWorkoutPlanToUserBut
 import WorkoutsFromPublicWorkoutPlan from "@/components/WorkoutsFromPublicWorkoutPlan";
 
 const getWorkoutPlanWithWorkoutsAPI = async (
-  id: string
+  id: number
 ): Promise<WorkoutPlanWithWorkouts | undefined> => {
   // Simulate API delay
   await new Promise((resolve) => setTimeout(resolve, 1000));
@@ -31,7 +31,7 @@ const getWorkoutPlanWithWorkoutsAPI = async (
 };
 
 export default async function WorkoutPlanPage(props: {
-  params: Promise<{ id: string }>;
+  params: Promise<{ id: number }>;
 }) {
   const { id } = await props.params;
 

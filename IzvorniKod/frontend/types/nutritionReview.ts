@@ -1,7 +1,7 @@
 export type NutritionReviewBase = {
-  id: string;
-  dailyNutritionLogId: string;
-  userId: string;
+  id: number;
+  dailyNutritionLogId: number;
+  userId: number;
   tasteRating: number;
   satisfactionRating: number;
   energyLevelRating: number;
@@ -17,4 +17,4 @@ export type CreateNutritionReviewInput = Omit<
 
 export type UpdateNutritionReviewInput = Partial<
   Omit<NutritionReviewBase, "createdAt" | "updatedAt">
-> & { id: string };
+> & { id: number };

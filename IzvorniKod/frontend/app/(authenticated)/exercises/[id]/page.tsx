@@ -14,7 +14,9 @@ import AddExerciseModal from "@/components/AddExercise";
 export default function MuscleGroupPage() {
   const pathname = usePathname();
   const id = pathname?.split("/").pop();
-  const group = muscleGroups.find((group) => group.id === id);
+  const group = muscleGroups.find((group) => group.id === Number(id));
+
+  console.log(group);
 
   const [searchQuery, setSearchQuery] = useState("");
   const [filteredExercises, setFilteredExercises] = useState(exercises);

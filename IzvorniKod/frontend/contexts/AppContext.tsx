@@ -35,7 +35,7 @@ import { UserBase } from "@/types/user";
 import {
   useWorkoutSession,
   UseWorkoutSessionType,
-} from "@/hooks/workoutSession";
+} from "@/hooks/useWorkoutSession";
 
 type AppContextType = UseUserContextType &
   UseNutritionPlanContextType &

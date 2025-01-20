@@ -1,18 +1,17 @@
 import {
-  WorkoutWithPlannedExercise,
   WorkoutWithPlannedExerciseBaseCreateInput,
   WorkoutWithPlannedExerciseBaseUpdateInput,
   WorkoutWithPlannedExercisesBase,
 } from "./workout";
 
 export type WorkoutPlanBase = {
-  id: string;
+  id: number;
   name: string;
   description?: string;
   image?: string;
-  userId?: string;
-  createdById: string;
-  originalWorkoutPlanId?: string;
+  userId?: number;
+  createdById: number;
+  originalWorkoutPlanId?: number;
 };
 
 export type CreateWorkoutPlanInput = Omit<
@@ -23,7 +22,7 @@ export type CreateWorkoutPlanInput = Omit<
 };
 
 export type UpdateWorkoutPlanInput = Partial<WorkoutPlanBase> & {
-  id: string;
+  id: number;
   workouts: WorkoutWithPlannedExerciseBaseUpdateInput[];
 };
 

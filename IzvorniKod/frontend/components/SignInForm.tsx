@@ -96,7 +96,7 @@ export function SignInForm() {
   };
 
   return (
-    <div className="flex flex-col bg-black/80 max-xl:pt-[2rem] max-xl:justify-start items-center h-screen justify-center overflow-auto w-full 2xl:w-2/5 xl:w-2/5 lg:w-1/2 md:w-full px-8 sm:px-24 xl:px-28 2xl:px-[10%] relative">
+    <div className="flex flex-col bg-black/80 max-xl:pt-[2rem] max-xl:justify-start items-center h-screen justify-center overflow-auto w-full 2xl:w-2/5 xl:w-2/5 md:w-full px-8 sm:px-24 xl:px-28 2xl:px-[10%] relative">
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}

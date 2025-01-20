@@ -2,7 +2,7 @@ import { MuscleGroupBase } from "@/types/muscleGroup";
 
 export const muscleGroups: MuscleGroupBase[] = [
   {
-    id: "1",
+    id: 1,
     name: "Quadriceps",
     description: "The large muscles in the front of the thigh.",
     image:
@@ -11,7 +11,7 @@ export const muscleGroups: MuscleGroupBase[] = [
     updatedAt: new Date("2023-01-01"),
   },
   {
-    id: "2",
+    id: 2,
     name: "Hamstrings",
     description: "The group of muscles at the back of the thigh.",
     image:
@@ -20,7 +20,7 @@ export const muscleGroups: MuscleGroupBase[] = [
     updatedAt: new Date("2023-01-01"),
   },
   {
-    id: "3",
+    id: 3,
     name: "Glutes",
     description: "The muscles that make up the buttocks.",
     image:
@@ -29,7 +29,7 @@ export const muscleGroups: MuscleGroupBase[] = [
     updatedAt: new Date("2023-01-01"),
   },
   {
-    id: "4",
+    id: 4,
     name: "Chest",
     description: "The muscles of the chest, primarily the pectoralis major.",
     image:
@@ -38,7 +38,7 @@ export const muscleGroups: MuscleGroupBase[] = [
     updatedAt: new Date("2023-01-01"),
   },
   {
-    id: "5",
+    id: 5,
     name: "Front Shoulder",
     description: "The deltoid muscles that cover the shoulder joint.",
     image:
@@ -48,7 +48,7 @@ export const muscleGroups: MuscleGroupBase[] = [
   },
 
   {
-    id: "6",
+    id: 6,
     name: "Middle Shoulder",
     description: "The deltoid muscles that cover the shoulder joint.",
     image:
@@ -57,7 +57,7 @@ export const muscleGroups: MuscleGroupBase[] = [
     updatedAt: new Date("2023-01-01"),
   },
   {
-    id: "7",
+    id: 7,
     name: "Rear Shoulder",
     description: "The deltoid muscles that cover the shoulder joint.",
     image:
@@ -66,7 +66,7 @@ export const muscleGroups: MuscleGroupBase[] = [
     updatedAt: new Date("2023-01-01"),
   },
   {
-    id: "8",
+    id: 8,
     name: "Triceps",
     description: "The deltoid muscles that cover the shoulder joint.",
     image:
@@ -75,7 +75,7 @@ export const muscleGroups: MuscleGroupBase[] = [
     updatedAt: new Date("2023-01-01"),
   },
   {
-    id: "9",
+    id: 9,
     name: "Biceps",
     description: "The deltoid muscles that cover the shoulder joint.",
     image:
@@ -84,7 +84,7 @@ export const muscleGroups: MuscleGroupBase[] = [
     updatedAt: new Date("2023-01-01"),
   },
   {
-    id: "10",
+    id: 10,
     name: "Forearms",
     description: "The deltoid muscles that cover the shoulder joint.",
     image:
@@ -93,7 +93,7 @@ export const muscleGroups: MuscleGroupBase[] = [
     updatedAt: new Date("2023-01-01"),
   },
   {
-    id: "11",
+    id: 11,
     name: "Abs",
     description: "The deltoid muscles that cover the shoulder joint.",
     image:
@@ -102,7 +102,7 @@ export const muscleGroups: MuscleGroupBase[] = [
     updatedAt: new Date("2023-01-01"),
   },
   {
-    id: "12",
+    id: 12,
     name: "Chest",
     description: "The deltoid muscles that cover the shoulder joint.",
     image:

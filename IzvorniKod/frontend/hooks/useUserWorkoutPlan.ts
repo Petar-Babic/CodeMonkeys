@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback } from "react";
 import {
   CreateWorkoutPlanInput,
   WorkoutPlanWithWorkouts,
@@ -9,6 +9,7 @@ import {
 import { userWorkoutPlans as initialUserWorkoutPlans } from "@/data/userWorkoutPlan";
 import { useAuthContext } from "@/contexts/AuthContext";
 import { exercises } from "@/data/exercise";
+import { backendUrl } from "@/data/backendUrl";
 
 const getUserWorkoutPlanAPI = async (
   userId: string
@@ -32,39 +33,65 @@ export function useUserWorkoutPlan() {
   const [error, setError] = useState<string | null>(null);
   const [userWorkoutPlan, setUserWorkoutPlan] =
     useState<WorkoutPlanWithWorkouts | null>(null);
-
-  useEffect(() => {
-    console.log("User Workout plan:", userWorkoutPlan);
-  }, [userWorkoutPlan]);
-
   const { user } = useAuthContext();
-
-  const userId = user?.id;
 
   const createUserWorkoutPlan = useCallback(
     async (data: CreateWorkoutPlanInput) => {
+      console.log("data for createUserWorkoutPlan", data);
+
+      console.log("user in createUserWorkoutPlan", user);
+
+      const dataSend = {
+        ...data,
+        userId: user?.id,
+        createdById: user?.id,
+      };
+
+      console.log("dataSend", dataSend);
+
       setIsLoadingUserWorkoutPlan(true);
       setError(null);
       try {
-        await new Promise((resolve) => setTimeout(resolve, 1000));
+        const token = localStorage.getItem("accessToken");
+        if (!token) {
+          throw new Error("No access token available");
+        }
 
-        const plan: WorkoutPlanWithWorkouts = {
-          ...data,
-          id: `userWorkoutPlan${initialUserWorkoutPlans.length + 1}`,
-          createdById: userId || "",
-          workouts: data.workouts.map((workout, index) => ({
-            ...workout,
-            id: `workout${index + 1}`,
-            workoutPlanId: `userWorkoutPlan${
-              initialUserWorkoutPlans.length + 1
-            }`,
-            exercises: workout.exercises.map((exercise, i) => ({
-              ...exercise,
-              id: `exercise${i + 1}`,
-              workoutId: `workout${index + 1}`,
-            })),
-          })),
-        };
+        const response = await fetch(`${backendUrl}/api/create-workout-plan`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+            Accept: "application/json",
+            "X-Requested-With": "XMLHttpRequest",
+          },
+          body: JSON.stringify(dataSend),
+        });
+
+        const plan = await response.json();
+
+        console.log("plan", plan);
+
+        // const plan: WorkoutPlanWithWorkouts = {
+        //   ...data,
+        //   id: `userWorkoutPlan${initialUserWorkoutPlans.length + 1}`,
+        //   createdById: user?.id || "",
+        //   userId: user?.id,
+        //   workouts: data.workouts.map((workout, index) => ({
+        //     ...workout,
+        //     id: `workout${index + 1}`,
+        //     workoutPlanId: `userWorkoutPlan${
+        //       initialUserWorkoutPlans.length + 1
+        //     }`,
+        //     exercises: workout.exercises.map((exercise, i) => ({
+        //       ...exercise,
+        //       id: `exercise${i + 1}`,
+        //       workoutId: `workout${index + 1}`,
+        //     })),
+        //   })),
+        // };
+
+        console.log("plan", plan);
 
         setUserWorkoutPlan(plan);
         return plan;
@@ -77,7 +104,7 @@ export function useUserWorkoutPlan() {
         setIsLoadingUserWorkoutPlan(false);
       }
     },
-    []
+    [user]
   );
 
   const getUserWorkoutPlan = useCallback(async (userId: string) => {
@@ -125,20 +152,20 @@ export function useUserWorkoutPlan() {
                 prevPlan.workouts.find((w) => w.id === workout.id)?.name ||
                 "",
               description: workout.description || "",
-              workoutPlanId: userWorkoutPlan.id,
+              workoutPlanId: Number(userWorkoutPlan.id),
               order: workout.order || 0,
               exercises: workout.exercises
                 .filter((exercise) => Boolean(exercise.exerciseId))
                 .map((exercise) => ({
                   id: exercise.id,
-                  workoutId: workout.id,
-                  exerciseId: exercise.exerciseId!,
-                  sets: exercise.sets || 0,
-                  reps: exercise.reps || 0,
-                  rpe: exercise.rpe || 0,
-                  order: exercise.order || 0,
+                  workoutId: Number(workout.id),
+                  exerciseId: Number(exercise.exerciseId),
+                  sets: Number(exercise.sets),
+                  reps: Number(exercise.reps),
+                  rpe: Number(exercise.rpe),
+                  order: Number(exercise.order),
                   exercise: exercises.find(
-                    (e) => e.id === exercise.exerciseId
+                    (e) => e.id === Number(exercise.exerciseId)
                   )!,
                 })),
             };
