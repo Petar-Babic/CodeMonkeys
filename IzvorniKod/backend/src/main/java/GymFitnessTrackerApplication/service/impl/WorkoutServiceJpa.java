@@ -50,6 +50,12 @@ public class WorkoutServiceJpa implements WorkoutPlanService {
 
 
     @Override
+    public Set<WorkoutPlanResponse> listAllWorkoutPlans() {
+        Set<WorkoutPlan> workoutPlans = new HashSet<>(workoutPlanRepo.findAll());
+        return generateWorkoutPlanResponses(workoutPlans);
+    }
+
+    @Override
     public Set<WorkoutPlanResponse> getUserCreatedWorkoutPlans(String userEmail) {
         MyUser user = (MyUser) myUserService.getMyUser(userEmail);
         Set<WorkoutPlan> workoutPlans = workoutPlanRepo.findAllByCreator(user);

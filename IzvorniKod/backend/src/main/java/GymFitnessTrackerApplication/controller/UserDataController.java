@@ -98,12 +98,14 @@ public class UserDataController {
     String email = jwtService.extractEmail(auth.trim().substring(7));
     MyUser user = (MyUser) myUserService.getMyUser(email);
 
+    String imageURl = myUserService.getURLToFile(user.getImage());
+
     UserInfoResponse userInfo = new UserInfoResponse(
         user.getId(),
         user.getName(),
         user.getEmail(),
         user.getRole(),  // Assuming user.getRole() returns Role enum
-        user.getImage(),
+        imageURl,
         user.getEmailVerified()
     );
     

@@ -42,14 +42,14 @@ public class WorkoutController {
     @Autowired
     private WorkoutSessionService workoutSessionService;
 
-    //treba dodat WorkoutPlanResponse klasu i popuniti ju
     @GetMapping("/workout-plans")
     public ResponseEntity<?> getAllWorkoutPlansForUser(@RequestHeader("Authorization") String token) {
         String email = jwtService.extractEmail(token.trim().substring(7));
-        Set<WorkoutPlanResponse> allWorkoutPlans=  workoutPlanService.getUserCreatedWorkoutPlans(email);
+        Set<WorkoutPlanResponse> allWorkoutPlans=  workoutPlanService.getUsersWorkoutPlans(email);
         return ResponseEntity.status(HttpStatus.OK).body(allWorkoutPlans);
     }
 
+    //mozda dodati u endpoint {id} i tako vratiti za tog usera, ako user koji to trazi nije taj navedeni u {id} onda vratiti samo public od tog
     @GetMapping("/workout-plans/created-by")
     public ResponseEntity<?> getAllCreatedBy(@RequestHeader("Authorization") String token) {
         String email = jwtService.extractEmail(token.trim().substring(7));
@@ -66,17 +66,7 @@ public class WorkoutController {
     // TODO: Add endpoint for getting all workout plans for admin
 
     @PostMapping("/create-workout-plan")
-    public ResponseEntity<?> createWorkoutPlan(@RequestBody WorkoutPlanForm workoutPlanForm ) throws JsonProcessingException {
-//        Long origigiWorkoutPlanId;
-//        try{ origigiWorkoutPlanId = Long.parseLong(originalWorkoutPlanId); }
-//        catch (NumberFormatException e) { origigiWorkoutPlanId = null; }
-//        ObjectMapper objectMapper = new ObjectMapper();
-//        List<WorkoutDTO> workouts = objectMapper.readValue(workoutsJson, new TypeReference<List<WorkoutDTO>>(){});
-
-//        WorkoutPlanForm workoutPlanForm = new WorkoutPlanForm(name, description, image, userId, createdByUserId, origigiWorkoutPlanId, workouts);
-
-
-        System.out.println("uso u kontroler");
+    public ResponseEntity<?> createWorkoutPlan(@RequestBody WorkoutPlanForm workoutPlanForm ) {
         workoutPlanService.createNewWorkoutPlan(workoutPlanForm);
         return ResponseEntity.status(HttpStatus.OK).body("Workout plan successfully created.");
     }

@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Set;
 
 public interface WorkoutPlanService {
+    public Set<WorkoutPlanResponse> listAllWorkoutPlans();
     public Set<WorkoutPlanResponse> getUserCreatedWorkoutPlans(String userEmail);
     public Set<WorkoutPlanResponse> getUsersWorkoutPlans(String userEmail);
     public Set<WorkoutPlanResponse> getPublicWorkoutPlans();
