@@ -63,7 +63,15 @@ public class WorkoutController {
         return ResponseEntity.status(HttpStatus.OK).body(publicWorkoutPlans);
     }
 
+    // TODO: Add endpoint for getting workout plan by id
+    // @GetMapping("/workout-plans/{id}")
+
     // TODO: Add endpoint for getting all workout plans for admin
+    // @GetMapping("/workout-plans")
+
+    // TODO: Add endpoint for deleting workout plan for admin
+    // @DeleteMapping("/workout-plans/{id}")
+
 
     @PostMapping("/create-workout-plan")
     public ResponseEntity<?> createWorkoutPlan(@RequestBody WorkoutPlanForm workoutPlanForm ) {
@@ -128,6 +136,9 @@ public class WorkoutController {
         List<ExerciseResponse> exercises = workoutPlanService.listAllExercises();
         return ResponseEntity.status(HttpStatus.OK).body(exercises);
     }
+
+    // TODO: Make the endpoint for getting exercise by id
+    // @GetMapping("exercise/{id}")
 
 
     @GetMapping("all-exercises/created-by-user")
