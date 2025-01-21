@@ -62,7 +62,7 @@ public class MealServiceJpa implements MealService {
         Meal m = new Meal(user,form,user);
         m.setSuggestion(false);
         // nadi suggested meal
-        List<Meal> suggestedMeals = mealRepo.findAllByUser(user);
+        /*List<Meal> suggestedMeals = mealRepo.findAllByUser(user);
         if(suggestedMeals.isEmpty())
             m.setSuggestedId(null);
         else{
@@ -78,8 +78,8 @@ public class MealServiceJpa implements MealService {
             if(sb.length() <= 0)
                 m.setSuggestedId("N/A");
             else
-                m.setSuggestedId(sb.toString().substring(0,sb.lastIndexOf(",")));
-        }
+                m.setSuggestedId(sb.toString().substring(0,sb.lastIndexOf(",")));*/
+        m.setSuggestedId(form.getSuggestedId());
         return mealRepo.save(m);
     }
 

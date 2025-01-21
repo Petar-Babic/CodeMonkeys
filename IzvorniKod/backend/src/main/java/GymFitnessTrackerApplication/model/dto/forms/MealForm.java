@@ -15,6 +15,8 @@ public class MealForm {
 
     private String userId;
 
+    private String suggestedId;
+
     public ZonedDateTime getTime() {
         return time;
     }
@@ -47,12 +49,21 @@ public class MealForm {
         this.userId = userId;
     }
 
+    public String getSuggestedId() {
+        return suggestedId;
+    }
+
+    public void setSuggestedId(String suggestedId) {
+        this.suggestedId = suggestedId;
+    }
+
     public MealForm(){}
 
-    public MealForm(ZonedDateTime time,String name,String userId,List<FoodMealForm> mealFoods){
+    public MealForm(ZonedDateTime time,String name,String userId,List<FoodMealForm> mealFoods,String suggestedId){
         this.mealFoods = mealFoods;
         this.time = time;
         this.userId = userId;
         this.name=name;
+        this.suggestedId = suggestedId;
     }
 }

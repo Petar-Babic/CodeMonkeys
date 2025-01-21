@@ -1,7 +1,9 @@
 package GymFitnessTrackerApplication.model.dto.forms;
 
 import GymFitnessTrackerApplication.model.domain.Unit;
+import com.fasterxml.jackson.annotation.JsonInclude;
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class FoodForm {
     private String name;
 
