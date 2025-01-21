@@ -1,6 +1,7 @@
 package GymFitnessTrackerApplication.controller;
 
 import GymFitnessTrackerApplication.model.domain.MyUser;
+import GymFitnessTrackerApplication.model.dto.forms.ExerciseForm;
 import GymFitnessTrackerApplication.model.dto.forms.WorkoutSessionForm;
 import GymFitnessTrackerApplication.model.dto.response.ExerciseResponse;
 import GymFitnessTrackerApplication.model.dto.response.WorkoutSessionResponse;
@@ -65,24 +66,19 @@ public class WorkoutController {
     // TODO: Add endpoint for getting all workout plans for admin
 
     @PostMapping("/create-workout-plan")
-    public ResponseEntity<?> createWorkoutPlan(@RequestParam("name") String name,
-                                               @RequestParam("description") String description,
-                                               @RequestParam("image") MultipartFile image,
-                                               @RequestParam("userId") Long userId,
-                                               @RequestParam("createdById") Long createdByUserId,
-                                               @RequestParam("originalWorkoutPlanId") String originalWorkoutPlanId,
-                                               @RequestParam("workouts") String workoutsJson
-    ) throws JsonProcessingException {
-        Long origigiWorkoutPlanId;
-        try{ origigiWorkoutPlanId = Long.parseLong(originalWorkoutPlanId); }
-        catch (NumberFormatException e) { origigiWorkoutPlanId = null; }
-        ObjectMapper objectMapper = new ObjectMapper();
-        List<WorkoutDTO> workouts = objectMapper.readValue(workoutsJson, new TypeReference<List<WorkoutDTO>>(){});
+    public ResponseEntity<?> createWorkoutPlan(@RequestBody WorkoutPlanForm workoutPlanForm ) throws JsonProcessingException {
+//        Long origigiWorkoutPlanId;
+//        try{ origigiWorkoutPlanId = Long.parseLong(originalWorkoutPlanId); }
+//        catch (NumberFormatException e) { origigiWorkoutPlanId = null; }
+//        ObjectMapper objectMapper = new ObjectMapper();
+//        List<WorkoutDTO> workouts = objectMapper.readValue(workoutsJson, new TypeReference<List<WorkoutDTO>>(){});
 
-        WorkoutPlanForm workoutPlanForm = new WorkoutPlanForm(name, description, image, userId, createdByUserId, origigiWorkoutPlanId, workouts);
+//        WorkoutPlanForm workoutPlanForm = new WorkoutPlanForm(name, description, image, userId, createdByUserId, origigiWorkoutPlanId, workouts);
 
-        String imageUrl = workoutPlanService.createNewWorkoutPlan(workoutPlanForm);
-        return ResponseEntity.status(HttpStatus.OK).body(imageUrl);
+
+        System.out.println("uso u kontroler");
+        workoutPlanService.createNewWorkoutPlan(workoutPlanForm);
+        return ResponseEntity.status(HttpStatus.OK).body("Workout plan successfully created.");
     }
 
     @GetMapping("/user/current-workout-plan")
@@ -97,7 +93,7 @@ public class WorkoutController {
     }
 
     @GetMapping("/workout-plans/{id}")
-    public ResponseEntity<?> specificanWorkout(@PathVariable Long id){
+    public ResponseEntity<?> specificWorkout(@PathVariable Long id){
         WorkoutPlanResponse workoutPlan = workoutPlanService.getWorkoutPlanById(id);
         return ResponseEntity.status(HttpStatus.OK).body(workoutPlan);
     }
@@ -156,25 +152,17 @@ public class WorkoutController {
 
     @PostMapping("create-exercise")
     public ResponseEntity<?> createExercise(@RequestHeader("Authorization") String token,
-                                            @RequestParam("name") String name,
-                                            @RequestParam("description") String description,
-                                            @RequestParam("gif") MultipartFile file,
-                                            @RequestParam("primaryMuscleGroupId") Set<Long> primaryMuscleGroupIds,
-                                            @RequestParam("secondaryMuscleGroupId") Set<Long> secondaryMuscleGroupIds){
+                                            @RequestBody ExerciseForm exerciseForm){
 
         String email = jwtService.extractEmail(token.trim().substring(7));
         MyUser user = (MyUser) myUserService.getMyUser(email);
-        workoutPlanService.createExercise(user, name, description, file, primaryMuscleGroupIds, secondaryMuscleGroupIds);
+        workoutPlanService.createExercise(user, exerciseForm);
         return ResponseEntity.status(HttpStatus.OK).body("Exercise successfully created.");
     }
 
     @PostMapping("create-muscle-group")
-    public ResponseEntity<?> createMuscleGroup(@RequestHeader("Authorization") String token,
-                                               @RequestParam("name") String name,
-                                               @RequestParam("description") String description,
-                                               @RequestParam("image") MultipartFile image){
-        workoutPlanService.createMuscleGroup(name, description, image);
-
+    public ResponseEntity<?> createMuscleGroup(@RequestBody MuscleGroupDTO muscleGroupDTO) {
+        workoutPlanService.createMuscleGroup(muscleGroupDTO);
         return ResponseEntity.status(HttpStatus.OK).body("Muscle Group successfully created.");
     }
 
@@ -182,5 +170,11 @@ public class WorkoutController {
     public ResponseEntity<?> getAllMuscleGroups(){
         Set<MuscleGroupDTO> muscleGroups = workoutPlanService.listAllMuscleGroups();
         return ResponseEntity.status(HttpStatus.OK).body(muscleGroups);
+    }
+
+    @PostMapping("upload-file")
+    public ResponseEntity<?> uploadFile(@RequestParam("file") MultipartFile file){
+        String fileName = workoutPlanService.uploadFile(file);
+        return ResponseEntity.status(HttpStatus.OK).body(fileName);
     }
 }

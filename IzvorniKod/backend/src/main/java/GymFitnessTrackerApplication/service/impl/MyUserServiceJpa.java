@@ -100,7 +100,6 @@ public class MyUserServiceJpa implements MyUserService {
             String keyName = email + "_" + System.currentTimeMillis();
             myUser.setImage(keyName);
             userRepository.save(myUser);
-            //usput prije obrisi onu staru
             s3Client.putObject(new PutObjectRequest(bucketName, keyName, fFile));
             fFile.delete();
         }

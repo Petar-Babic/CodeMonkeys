@@ -2,6 +2,7 @@ package GymFitnessTrackerApplication.service;
 
 
 import GymFitnessTrackerApplication.model.domain.MyUser;
+import GymFitnessTrackerApplication.model.dto.forms.ExerciseForm;
 import GymFitnessTrackerApplication.model.dto.forms.WorkoutPlanForm;
 import GymFitnessTrackerApplication.model.dto.response.ExerciseResponse;
 import GymFitnessTrackerApplication.model.dto.response.WorkoutPlanResponse;
@@ -22,10 +23,10 @@ public interface WorkoutPlanService {
     public List<ExerciseResponse> listAllExercises();
     public List<ExerciseResponse> listAllNotApprovedExercises();
     public List<ExerciseResponse> listAllExercisesCreatedByUser(MyUser user);
-    public void createExercise(MyUser user, String name, String description, MultipartFile file, Set<Long> primaryMuscleGroupIds, Set<Long> secondaryMuscleGroupIds);
-    public void createMuscleGroup(String name, String description, MultipartFile file);
+    public void createExercise(MyUser user, ExerciseForm exerciseForm);
+    public void createMuscleGroup(MuscleGroupDTO muscleGroupDTO);
     public Set<MuscleGroupDTO> listAllMuscleGroups();
-    void uploadFile(final String fileName, final MultipartFile file) throws AmazonClientException;
+    String uploadFile(final MultipartFile file) throws AmazonClientException;
     void deleteFile(final String fileName);
     String getURLToFile(final String fileName);
 }

@@ -1,5 +1,6 @@
 package GymFitnessTrackerApplication.model.domain;
 
+import GymFitnessTrackerApplication.model.dto.workoutDTOs.MuscleGroupDTO;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
@@ -25,10 +26,10 @@ public class MuscleGroup {
 
     public MuscleGroup() {}
 
-    public MuscleGroup(String name, String description, String image) {
-        this.name = name;
-        this.description = description;
-        this.image = image;
+    public MuscleGroup(MuscleGroupDTO muscleGroupDTO) {
+        this.name = muscleGroupDTO.name();
+        this.description = muscleGroupDTO.description();
+        this.image = muscleGroupDTO.image();
         primaryToExercises = new HashSet<>();
         secondaryToExercises = new HashSet<>();
     }

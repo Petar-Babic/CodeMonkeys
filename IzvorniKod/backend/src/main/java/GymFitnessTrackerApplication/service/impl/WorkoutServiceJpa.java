@@ -5,6 +5,7 @@ import GymFitnessTrackerApplication.model.dao.MuscleGroupRepo;
 import GymFitnessTrackerApplication.model.dao.MyUserRepository;
 import GymFitnessTrackerApplication.model.dao.WorkoutPlanRepo;
 import GymFitnessTrackerApplication.model.domain.*;
+import GymFitnessTrackerApplication.model.dto.forms.ExerciseForm;
 import GymFitnessTrackerApplication.model.dto.response.ExerciseResponse;
 import GymFitnessTrackerApplication.model.dto.workoutDTOs.MuscleGroupDTO;
 import GymFitnessTrackerApplication.model.dto.workoutDTOs.PlannedExerciseDTO;
@@ -88,10 +89,10 @@ public class WorkoutServiceJpa implements WorkoutPlanService {
 
     @Override
     public String createNewWorkoutPlan(WorkoutPlanForm workoutPlanForm) {
-
         MyUser creator = myUserRepo.findById(workoutPlanForm.createdByUserId())
                         .orElseThrow(() -> new UsernameNotFoundException("User doesn't exist."));
-        MyUser user = myUserRepo.findById(workoutPlanForm.createdByUserId())
+        System.out.println("proso creatora");
+        MyUser user = myUserRepo.findById(workoutPlanForm.userId())
                 .orElseThrow(() -> new UsernameNotFoundException("User doesn't exist."));
         WorkoutPlan originalWorkoutPlan=null;
         if(workoutPlanForm.originalWorkoutPlanId()!=null) {
@@ -99,9 +100,7 @@ public class WorkoutServiceJpa implements WorkoutPlanService {
         }
 
         WorkoutPlan newWorkoutPlan = new WorkoutPlan(workoutPlanForm.name(), workoutPlanForm.description(), creator, user, originalWorkoutPlan);
-        String imageName = newWorkoutPlan.getName() + "_" + System.currentTimeMillis();
-        newWorkoutPlan.setImage(imageName);
-        uploadFile(imageName,workoutPlanForm.image());
+        newWorkoutPlan.setImage(workoutPlanForm.image());
 
         for(WorkoutDTO workout : workoutPlanForm.workouts()){
             Workout newWorkout = new Workout(workout.name(),workout.description(), workout.order(), newWorkoutPlan);
@@ -122,9 +121,11 @@ public class WorkoutServiceJpa implements WorkoutPlanService {
 
 
     @Override
-    public void uploadFile(String fileName, MultipartFile file) throws AmazonClientException {
+    public String uploadFile(MultipartFile file) throws AmazonClientException {
+        String fileName = String.valueOf(System.currentTimeMillis());
         File fFile = convertMultipartFileToFile(file);
         s3Client.putObject(new PutObjectRequest(bucketName, fileName, fFile));
+        return fileName;
     }
 
     @Override
@@ -134,7 +135,7 @@ public class WorkoutServiceJpa implements WorkoutPlanService {
 
     @Override
     public String getURLToFile(String fileName) {
-        Date expiration = new Date(System.currentTimeMillis() + 3600 * 1000);
+        Date expiration = new Date(System.currentTimeMillis() + 7200 * 1000); //2 sata
         return s3Client.generatePresignedUrl(bucketName,fileName,expiration, HttpMethod.GET).toString();
     }
 
@@ -174,32 +175,27 @@ public class WorkoutServiceJpa implements WorkoutPlanService {
     }
 
     @Override
-    public void createExercise(MyUser user, String name, String description, MultipartFile file,
-                               Set<Long> primaryMuscleGroupIds, Set<Long> secondaryMuscleGroupIds) {
-        String fileName = name + "_" + System.currentTimeMillis();
-        Exercise newExercise = new Exercise(name, description, fileName, user);
-        for(Long pmgId : primaryMuscleGroupIds){
+    public void createExercise(MyUser user, ExerciseForm exerciseForm) {
+        Exercise newExercise = new Exercise(exerciseForm.name(), exerciseForm.description(), exerciseForm.gif(), user);
+        for(Long pmgId : exerciseForm.primaryMuscleGroupIds()){
             muscleGroupRepo.findById(pmgId).ifPresent(muscleGroup -> {
                 newExercise.addPrimaryMuscleGroup(muscleGroup);
                 muscleGroup.addPrimaryToExercises(newExercise);
             });
         }
-        for(Long smgId : secondaryMuscleGroupIds){
+        for(Long smgId : exerciseForm.secondaryMuscleGroupIds()){
             muscleGroupRepo.findById(smgId).ifPresent(muscleGroup -> {
                 newExercise.addSecondaryMuscleGroup(muscleGroup);
                 muscleGroup.addSecondaryToExercises(newExercise);
             });
         }
-        uploadFile(fileName, file);
         exerciseRepo.save(newExercise);
     }
 
     @Override
-    public void createMuscleGroup(String name, String description, MultipartFile file) {
-        String fileName = name + "_" + System.currentTimeMillis();
-        MuscleGroup newMuscleGroup = new MuscleGroup(name, description, fileName);
+    public void createMuscleGroup(MuscleGroupDTO muscleGroupDTO) {
+        MuscleGroup newMuscleGroup = new MuscleGroup(muscleGroupDTO);
         muscleGroupRepo.save(newMuscleGroup);
-        uploadFile(fileName, file);
     }
 
     @Override

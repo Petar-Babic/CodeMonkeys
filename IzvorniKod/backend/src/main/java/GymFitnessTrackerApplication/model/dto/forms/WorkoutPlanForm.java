@@ -5,7 +5,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
-public record WorkoutPlanForm(String name, String description, MultipartFile image,
+public record WorkoutPlanForm(String name, String description, String image,
                               Long userId, Long createdByUserId, Long originalWorkoutPlanId, List<WorkoutDTO> workouts) {
 
 }
