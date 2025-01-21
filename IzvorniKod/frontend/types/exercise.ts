@@ -11,9 +11,9 @@ export type ExerciseBase = {
 
 export type CreateExerciseInput = Omit<
   ExerciseBase,
-  "id" | "createdAt" | "updatedAt" | "isApproved"
+  "id" | "isApproved" | "createdById"
 >;
 
-export type UpdateExerciseInput = Partial<
-  Omit<ExerciseBase, "createdAt" | "updatedAt">
-> & { id: number };
+export type UpdateExerciseInput = Partial<Omit<ExerciseBase, "createdById">> & {
+  id: number;
+};

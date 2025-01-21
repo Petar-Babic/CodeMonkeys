@@ -63,6 +63,8 @@ public class FoodController {
         return ResponseEntity.status(200).body(food);
     }
 
+    // TODO: Add update food
+
     @PostMapping("/api/meal")
     public ResponseEntity<?> createMeal(@RequestBody MealForm form,@RequestHeader("Authorization") String auth){
         String email = jwtService.extractEmail(auth.trim().substring(7));

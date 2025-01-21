@@ -1,11 +1,7 @@
 "use client";
 import React from "react";
 import UniversalTable from "@/components/UniversalTable";
-import {
-  CreateWorkoutPlanInput,
-  WorkoutPlanBase,
-  WorkoutPlanWithWorkouts,
-} from "@/types/workoutPlan";
+import { CreateWorkoutPlanInput, WorkoutPlanBase } from "@/types/workoutPlan";
 import { Button } from "./ui/button";
 import Link from "next/link";
 import { Trash2, Pencil, Eye, Users } from "lucide-react";
@@ -106,6 +102,7 @@ export default function WorkoutPlansTable() {
       setWorkoutPlans(workoutPlans.filter((plan) => plan.id !== id));
       toast.success("Plan vježbanja je uspješno izbrisan");
     } catch (error) {
+      console.error(error);
       toast.error("Greška prilikom brisanja plana vježbanja");
     }
   };

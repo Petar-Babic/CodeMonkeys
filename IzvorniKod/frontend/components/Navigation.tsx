@@ -18,6 +18,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { useEffect } from "react";
 
 interface NavItem {
   title: string;
@@ -64,6 +65,16 @@ const navItemsForAdmin: NavItem[] = [
     href: "/admin/workout-plans",
     icon: NotebookText,
   },
+  {
+    title: "Food",
+    href: "/admin/food",
+    icon: Utensils,
+  },
+  {
+    title: "Muscle Groups",
+    href: "/admin/muscle-groups",
+    icon: User,
+  },
 ];
 
 const navItemsForTrainer: NavItem[] = [
@@ -93,6 +104,15 @@ export default function Navigation({
     return navItemsForUser;
   };
 
+  const getVariant = (href: string) => {
+    console.log("pathname", pathname);
+    console.log("href", href);
+    if (href === "/admin") {
+      return href === pathname ? "default" : "ghost";
+    }
+    return pathname.includes(href) ? "default" : "ghost";
+  };
+
   return (
     <TooltipProvider delayDuration={0}>
       <div
@@ -113,7 +133,7 @@ export default function Navigation({
             <Tooltip key={item.href}>
               <TooltipTrigger asChild>
                 <Button
-                  variant={pathname.includes(item?.href) ? "default" : "ghost"}
+                  variant={getVariant(item.href)}
                   size="icon"
                   className="h-10 w-10"
                   asChild

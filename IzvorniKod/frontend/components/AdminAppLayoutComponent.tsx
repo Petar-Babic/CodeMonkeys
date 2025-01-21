@@ -6,15 +6,15 @@ import { ExerciseBase } from "@/types/exercise";
 import { muscleGroups as predefinedMuscleGroups } from "@/data/muscleGroup";
 import { MuscleGroupBase } from "@/types/muscleGroup";
 import { userWorkoutPlans } from "@/data/userWorkoutPlan";
-import { NutritionPlanBase } from "@/types/nutritionPlan";
 import { WorkoutPlanWithWorkouts } from "@/types/workoutPlan";
 import { WorkoutPlanBase } from "@/types/workoutPlan";
-import NutritionPlanRedirect from "./NutritionPlanRedirect";
 import { backendUrl } from "@/data/backendUrl";
 import { UserBase } from "@/types/user";
 import Link from "next/link";
 import { Toaster } from "sonner";
 import { workoutPlans as workoutPlansData } from "@/data/workoutPlan";
+import { FoodBase } from "@/types/food";
+
 const getInitialData = async (
   userId: number,
   accessToken: string
@@ -25,6 +25,7 @@ const getInitialData = async (
   workoutPlans: WorkoutPlanBase[];
   accessToken: string;
   user: UserBase | null;
+  foods: FoodBase[];
 }> => {
   let user = null;
 
@@ -54,6 +55,19 @@ const getInitialData = async (
     console.error("Error fetching exercises:", error);
   }
 
+  let foods: FoodBase[] = [];
+  try {
+    const response = await fetch(`${backendUrl}/api/food`, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+      credentials: "include",
+    });
+    foods = await response.json();
+  } catch (error) {
+    console.error("Error fetching foods:", error);
+  }
+
   const userWorkoutPlan =
     userWorkoutPlans.find((plan) => plan.userId === userId) || null;
 
@@ -64,6 +78,7 @@ const getInitialData = async (
     workoutPlans: [...workoutPlansData],
     accessToken,
     user,
+    foods,
   };
 };
 

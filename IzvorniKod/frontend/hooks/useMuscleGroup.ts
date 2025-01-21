@@ -16,7 +16,7 @@ export const useMuscleGroup = () => {
     (muscleGroupInput: CreateMuscleGroupInput) => {
       const newMuscleGroup: MuscleGroupBase = {
         ...muscleGroupInput,
-        id: Date.now().toString(), // Generate a unique ID (in a real app, this would be handled by the backend)
+        id: Math.random(), // Generate a unique ID (in a real app, this would be handled by the backend)
         createdAt: new Date(),
         updatedAt: new Date(),
       };
@@ -31,7 +31,7 @@ export const useMuscleGroup = () => {
   );
 
   const getMuscleGroupById = useCallback(
-    (id: string) => {
+    (id: number) => {
       return muscleGroups.find((muscleGroup) => muscleGroup.id === id);
     },
     [muscleGroups]
@@ -45,10 +45,10 @@ export const useMuscleGroup = () => {
   }, []);
 
   const updateMuscleGroup = useCallback(
-    (id: string, updateData: UpdateMuscleGroupInput) => {
+    (updateData: UpdateMuscleGroupInput) => {
       setMuscleGroups((prevMuscleGroups) =>
         prevMuscleGroups.map((muscleGroup) =>
-          muscleGroup.id === id
+          muscleGroup.id === updateData.id
             ? { ...muscleGroup, ...updateData, updatedAt: new Date() }
             : muscleGroup
         )
@@ -57,7 +57,7 @@ export const useMuscleGroup = () => {
     []
   );
 
-  const deleteMuscleGroup = useCallback((id: string) => {
+  const deleteMuscleGroup = useCallback((id: number) => {
     setMuscleGroups((prevMuscleGroups) =>
       prevMuscleGroups.filter((muscleGroup) => muscleGroup.id !== id)
     );
@@ -80,8 +80,8 @@ export type UseMuscleGroupContextType = {
   createMuscleGroup: (
     muscleGroupInput: CreateMuscleGroupInput
   ) => MuscleGroupBase;
-  getMuscleGroupById: (id: string) => MuscleGroupBase | undefined;
+  getMuscleGroupById: (id: number) => MuscleGroupBase | undefined;
   getAllMuscleGroups: () => Promise<MuscleGroupBase[]>;
-  updateMuscleGroup: (id: string, updateData: UpdateMuscleGroupInput) => void;
-  deleteMuscleGroup: (id: string) => void;
+  updateMuscleGroup: (updateData: UpdateMuscleGroupInput) => void;
+  deleteMuscleGroup: (id: number) => void;
 };
