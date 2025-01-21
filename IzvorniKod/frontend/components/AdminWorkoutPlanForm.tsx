@@ -45,6 +45,7 @@ import {
 import { useAppContext } from "@/contexts/AppContext";
 import { Loader2 } from "lucide-react";
 import { EditUserWorkoutForm } from "./EditUserWorkoutForm";
+import Image from "next/image";
 
 const formSchema = z.object({
   name: z.string().min(1, "Name is required"),
@@ -390,7 +391,7 @@ export function AdminWorkoutPlanForm({
                   />
                   {previewUrl && (
                     <div className="mt-4">
-                      <img
+                      <Image
                         src={previewUrl}
                         alt="Preview"
                         className="max-w-[200px] h-auto rounded-lg"

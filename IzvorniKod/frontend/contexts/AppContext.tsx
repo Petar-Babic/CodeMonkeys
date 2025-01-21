@@ -36,6 +36,8 @@ import {
   useWorkoutSession,
   UseWorkoutSessionType,
 } from "@/hooks/useWorkoutSession";
+import { useFood, UseFoodContextType } from "@/hooks/useFood";
+import { FoodBase } from "@/types/food";
 
 type AppContextType = UseUserContextType &
   UseNutritionPlanContextType &
@@ -43,6 +45,7 @@ type AppContextType = UseUserContextType &
   UseWorkoutPlanContextType &
   UseMuscleGroupContextType &
   UseWorkoutSessionType &
+  UseFoodContextType &
   UseUserWorkoutPlanType & {
     isLoading: boolean;
   } & {
@@ -65,6 +68,7 @@ export function AppProvider({
     accessToken: string;
     user: UserBase;
     role: "ADMIN" | "USER" | "TRAINER";
+    foods: FoodBase[];
   };
 }) {
   const userContext = useUser();
@@ -74,6 +78,7 @@ export function AppProvider({
   const workoutPlanContext = useWorkoutPlan();
   const userWorkoutPlanContext = useUserWorkoutPlan();
   const workoutSessionContext = useWorkoutSession();
+  const foodContext = useFood();
   const [isLoading, setIsLoading] = useState(true);
   const [role, setRole] = useState<"ADMIN" | "USER" | "TRAINER">("USER");
   useEffect(() => {
@@ -86,7 +91,7 @@ export function AppProvider({
   const { setUserWorkoutPlan } = userWorkoutPlanContext;
   const { setNutritionPlan } = nutritionPlanContext;
   const { setUserData } = userContext;
-
+  const { setFoods } = foodContext;
   useEffect(() => {
     setExercises(initialData.exercises);
     setMuscleGroups(initialData.muscleGroups);
@@ -96,6 +101,7 @@ export function AppProvider({
     setIsLoading(false);
     setUserData(initialData.user);
     setRole(initialData.role);
+    setFoods(initialData.foods);
   }, [
     initialData,
     setExercises,
@@ -104,6 +110,7 @@ export function AppProvider({
     setUserWorkoutPlan,
     setNutritionPlan,
     setUserData,
+    setFoods,
     setRole,
   ]);
 
@@ -117,6 +124,7 @@ export function AppProvider({
       ...workoutSessionContext,
       ...userWorkoutPlanContext,
       isLoading: isLoading,
+      ...foodContext,
       accessToken: initialData.accessToken,
       role,
     }),
@@ -131,6 +139,7 @@ export function AppProvider({
       isLoading,
       initialData.accessToken,
       role,
+      foodContext,
     ]
   );
 

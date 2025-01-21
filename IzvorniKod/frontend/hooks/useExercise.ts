@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo, useEffect } from "react";
+import { useState, useCallback, useMemo } from "react";
 import { ExerciseBase, CreateExerciseInput } from "@/types/exercise";
 import { exercises as predefinedExercises } from "@/data/exercise";
 import { useUser } from "./useUser";
@@ -14,6 +14,7 @@ const createExerciseAPI = async (
   const newExercise: ExerciseBase = {
     id: Math.random(),
     ...data,
+    createdById: 1,
     isApproved: false,
   };
 
