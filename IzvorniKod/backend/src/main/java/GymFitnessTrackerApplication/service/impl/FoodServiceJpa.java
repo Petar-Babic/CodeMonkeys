@@ -5,6 +5,7 @@ import GymFitnessTrackerApplication.model.dao.FoodRepo;
 import GymFitnessTrackerApplication.model.domain.Food;
 import GymFitnessTrackerApplication.model.domain.MyUser;
 import GymFitnessTrackerApplication.model.domain.Role;
+import GymFitnessTrackerApplication.model.domain.Unit;
 import GymFitnessTrackerApplication.model.dto.forms.FoodForm;
 import GymFitnessTrackerApplication.service.FoodService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,5 +38,29 @@ public class FoodServiceJpa implements FoodService{
 
     public List<Food> foods(){
         return foodRepo.findAll();
+    }
+
+    @Override
+    public Food updateFood(String id,FoodForm form){
+        Optional<Food> f = foodRepo.findById(Long.parseLong(id));
+        if(f.isEmpty()) throw new NoExistingFoodException("No food item with ID : "+id);
+        Food food = f.get();
+
+        if(!Float.isNaN(form.getCalories()))
+            food.setCalories(form.getCalories());
+        if(!Float.isNaN(form.getCarbs()))
+            food.setCarbs(form.getCarbs());
+        if(!Float.isNaN(form.getFats()))
+            food.setFat(form.getFats());
+        if((form.getName() != null))
+            food.setName(form.getName());
+        if(form.getDefaultNumber() != 0)
+            food.setDefaultNumber(form.getDefaultNumber());
+        if(!Float.isNaN(form.getProtein()))
+            food.setProtein(form.getProtein());
+        if(form.getUnit() != null)
+            food.setUnit(form.getUnit());
+
+        return foodRepo.save(food);
     }
 }
