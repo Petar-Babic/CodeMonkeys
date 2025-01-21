@@ -43,19 +43,24 @@ export const useFood = () => {
     async (id: number): Promise<FoodBase | undefined> => {
       const accessToken = localStorage.getItem("accessToken");
 
-      if (!accessToken) {
-        throw new Error("Access token is not set");
+      try {
+        if (!accessToken) {
+          throw new Error("Access token is not set");
+        }
+
+        const res = await fetch(`${backendUrl}/api/food/${id}`, {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        });
+
+        const food = await res.json();
+        return food;
+      } catch (err) {
+        console.error(err);
+        throw new Error("Failed to get food by id");
       }
-
-      const res = await fetch(`${backendUrl}/api/food/${id}`, {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      });
-
-      const food = await res.json();
-      return food;
     },
     []
   );
@@ -63,43 +68,69 @@ export const useFood = () => {
   const updateFood = useCallback(
     async (input: UpdateFoodInput): Promise<FoodBase | undefined> => {
       const accessToken = localStorage.getItem("accessToken");
+      try {
+        if (!accessToken) {
+          throw new Error("Access token is not set");
+        }
 
-      if (!accessToken) {
-        throw new Error("Access token is not set");
+        const res = await fetch(`${backendUrl}/api/food/${input.id}`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${accessToken}`,
+          },
+          body: JSON.stringify(input),
+        });
+
+        const updatedFood = await res.json();
+
+        console.log(updatedFood);
+
+        return updatedFood;
+      } catch (err) {
+        console.error(err);
+        throw new Error("Failed to update food");
+      } finally {
+        setFoods((prevFoods) =>
+          prevFoods.map((food) => {
+            if (food.id === input.id) {
+              return {
+                ...food,
+                ...input,
+              };
+            }
+            return food;
+          })
+        );
       }
-
-      const res = await fetch(`${backendUrl}/api/food/${input.id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${accessToken}`,
-        },
-        body: JSON.stringify(input),
-      });
-
-      const updatedFood = await res.json();
-
-      setFoods((prevFoods) =>
-        prevFoods.map((food) => {
-          if (food.id === input.id) {
-            return {
-              ...food,
-              ...input,
-            };
-          }
-          return food;
-        })
-      );
-
-      console.log(updatedFood);
-
-      return updatedFood;
     },
     []
   );
 
-  const deleteFood = useCallback((id: number): void => {
-    setFoods((prevFoods) => prevFoods.filter((food) => food.id !== id));
+  const deleteFood = useCallback(async (id: number): Promise<void> => {
+    const accessToken = localStorage.getItem("accessToken");
+
+    try {
+      if (!accessToken) {
+        throw new Error("Access token is not set");
+      }
+
+      const res = await fetch(`${backendUrl}/api/food/${id}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+
+      const deletedFood = await res.json();
+
+      console.log(deletedFood);
+    } catch (err) {
+      console.error(err);
+      throw new Error("Failed to delete food");
+    } finally {
+      setFoods((prevFoods) => prevFoods.filter((food) => food.id !== id));
+    }
   }, []);
 
   return {
@@ -117,6 +148,6 @@ export type UseFoodContextType = {
   setFoods: (foods: FoodBase[]) => void;
   createFood: (input: CreateFoodInput) => Promise<FoodBase>;
   updateFood: (input: UpdateFoodInput) => Promise<FoodBase | undefined>;
-  deleteFood: (id: number) => void;
+  deleteFood: (id: number) => Promise<void>;
   getFoodById: (id: number) => Promise<FoodBase | undefined>;
 };

@@ -46,7 +46,7 @@ export default async function WorkoutPlanPage(props: {
       {workoutPlan?.image && (
         <div className="w-full h-[25rem] xl:h-[30rem] relative bg-black  border   overflow-hidden block">
           <Image
-            src={workoutPlan.image}
+            src={`/api/upload/${workoutPlan.image}`}
             alt={workoutPlan.name}
             priority
             quality={85}

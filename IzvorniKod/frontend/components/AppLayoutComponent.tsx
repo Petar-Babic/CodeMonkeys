@@ -73,7 +73,7 @@ const getInitialData = async (
     console.error("Error fetching workout plans:", error);
   }
 
-  let workoutPlansCreatedByUser: WorkoutPlanBase[] = [];
+  let workoutPlansCreatedByUser: WorkoutPlanWithWorkouts[] = [];
   try {
     const response = await fetch(`${backendUrl}/api/workout-plans/created-by`, {
       headers: {
@@ -85,6 +85,8 @@ const getInitialData = async (
   } catch (error) {
     console.error("Error fetching workout plans created by user:", error);
   }
+
+  console.log("workoutPlansCreatedByUser", workoutPlansCreatedByUser);
 
   let exercises: ExerciseBase[] = [];
   try {
@@ -112,14 +114,14 @@ const getInitialData = async (
     console.error("Error fetching foods:", error);
   }
 
-  const userWorkoutPlan =
-    userWorkoutPlans.find((plan) => plan.userId === userId) || null;
-
   return {
     muscleGroups: predefinedMuscleGroups,
     exercises,
     nutritionPlan,
-    userWorkoutPlan,
+    userWorkoutPlan:
+      workoutPlansCreatedByUser.length > 0
+        ? workoutPlansCreatedByUser[0]
+        : null,
     workoutPlans: [...publicWorkoutPlans, ...workoutPlansCreatedByUser],
     accessToken,
     user,

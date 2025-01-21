@@ -5,6 +5,7 @@ import {
   UpdateWorkoutPlanInput,
 } from "@/types/workoutPlan";
 import { useAuthContext } from "@/contexts/AuthContext";
+import { backendUrl } from "@/data/backendUrl";
 
 export const useWorkoutPlan = () => {
   const [workoutPlans, setWorkoutPlans] = useState<WorkoutPlanBase[]>([]);
@@ -16,19 +17,32 @@ export const useWorkoutPlan = () => {
   const createWorkoutPlan = useCallback(
     async (input: CreateWorkoutPlanInput): Promise<WorkoutPlanBase> => {
       try {
-        await new Promise((resolve) => setTimeout(resolve, 1000));
+        const accessToken = localStorage.getItem("accessToken");
 
-        if (!userId) {
-          throw new Error("User ID is not set");
+        if (!accessToken) {
+          throw new Error("Access token is not set");
         }
 
-        // Simulated logic (replace with actual API call)
-        const newWorkoutPlan: WorkoutPlanBase = {
-          id: Date.now(),
-          name: input.name,
-          userId: input.userId,
-          createdById: userId,
+        const workoutPlanForm = {
+          ...input,
+          createdByUserId: userId,
         };
+
+        console.log("workoutPlanForm", workoutPlanForm);
+
+        const res = await fetch(`${backendUrl}/api/create-workout-plan`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${accessToken}`,
+          },
+          body: JSON.stringify(workoutPlanForm),
+        });
+
+        console.log("res", res);
+
+        const newWorkoutPlan = await res.json();
+
         setWorkoutPlans((prevPlans) => [...prevPlans, newWorkoutPlan]);
         return newWorkoutPlan;
       } catch (err) {

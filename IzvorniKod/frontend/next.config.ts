@@ -15,6 +15,14 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "cdn3.iconfinder.com",
       },
+      {
+        protocol: "https",
+        hostname: "gym-progress-app.s3.us-east-1.amazonaws.com",
+      },
+      {
+        protocol: "https",
+        hostname: "gymprogresstrackerbucket.s3.eu-north-1.amazonaws.com",
+      },
     ],
   },
   /* other config options here */

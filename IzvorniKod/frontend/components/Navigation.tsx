@@ -75,6 +75,11 @@ const navItemsForAdmin: NavItem[] = [
     href: "/admin/muscle-groups",
     icon: User,
   },
+  {
+    title: "Exercises",
+    href: "/admin/exercises",
+    icon: LayoutList,
+  },
 ];
 
 const navItemsForTrainer: NavItem[] = [
@@ -105,8 +110,6 @@ export default function Navigation({
   };
 
   const getVariant = (href: string) => {
-    console.log("pathname", pathname);
-    console.log("href", href);
     if (href === "/admin") {
       return href === pathname ? "default" : "ghost";
     }

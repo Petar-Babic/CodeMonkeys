@@ -1,15 +1,34 @@
 import React from "react";
-import { exercises } from "@/data/exercise";
 import { ExerciseBase } from "@/types/exercise";
 import Image from "next/image";
+import { backendUrl } from "@/data/backendUrl";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/app/lib/auth";
 
 const getExerciseAPI = async (
   id: number
 ): Promise<ExerciseBase | undefined> => {
-  // Simulate API delay
-  await new Promise((resolve) => setTimeout(resolve, 1000));
+  const session = await getServerSession(authOptions);
+  const token = session?.accessToken;
 
-  return exercises.find((exercise) => exercise.id === id);
+  if (!token) {
+    throw new Error("No token found");
+  }
+
+  console.log(token);
+
+  try {
+    const response = await fetch(`${backendUrl}/exercise/${id}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error(error);
+    throw new Error("Failed to fetch exercise");
+  }
 };
 
 export default async function ExercisePage({
@@ -18,7 +37,13 @@ export default async function ExercisePage({
   params: { id: string };
 }) {
   const id = Number(params.id);
-  const exercise = await getExerciseAPI(id);
+  let exercise: ExerciseBase | undefined;
+  try {
+    exercise = await getExerciseAPI(id);
+  } catch (error) {
+    console.error(error);
+    return <div>Greška pri dohvaćanju vježbe</div>;
+  }
 
   if (!exercise) {
     return <div>Vježba nije pronađena</div>;

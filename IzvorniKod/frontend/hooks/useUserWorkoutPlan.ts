@@ -35,16 +35,20 @@ export function useUserWorkoutPlan() {
     useState<WorkoutPlanWithWorkouts | null>(null);
   const { user } = useAuthContext();
 
+  const userId = user?.id;
+
   const createUserWorkoutPlan = useCallback(
     async (data: CreateWorkoutPlanInput) => {
       console.log("data for createUserWorkoutPlan", data);
 
-      console.log("user in createUserWorkoutPlan", user);
+      if (!userId) {
+        throw new Error("User ID is not set");
+      }
 
       const dataSend = {
         ...data,
-        userId: user?.id,
-        createdById: user?.id,
+        userId: userId,
+        createdByUserId: userId,
       };
 
       console.log("dataSend", dataSend);
@@ -104,7 +108,7 @@ export function useUserWorkoutPlan() {
         setIsLoadingUserWorkoutPlan(false);
       }
     },
-    [user]
+    [userId]
   );
 
   const getUserWorkoutPlan = useCallback(async (userId: string) => {

@@ -1,10 +1,24 @@
+"use client";
 import React from "react";
 import UserWorkoutWithUserPlannedExerciseCard from "@/components/UserWorkoutWithUserPlannedExerciseCard"; // Ensure the import path is correct
 import CompletedWorkoutsCard from "@/components/CompletedWorkoutCard"; // Prikazuje workout zavrsen u proslosti
-import { workoutsWithExercises as mockWorkouts } from "@/data/workout";
 import { workoutSessionsWithExercises } from "@/data/workoutSession";
+import { useAppContext } from "@/contexts/AppContext";
+import { WorkoutWithPlannedExercise } from "@/types/workout";
+
 export default function WorkoutPage() {
   // Mock workouts data
+
+  const { userWorkoutPlan, exercises } = useAppContext();
+
+  const workouts: WorkoutWithPlannedExercise[] =
+    userWorkoutPlan?.workouts.map((workout) => ({
+      ...workout,
+      exercises: workout.exercises.map((exercise) => ({
+        ...exercise,
+        exercise: exercises.find((e) => e.id === exercise.exerciseId)!,
+      })),
+    })) || [];
 
   return (
     <div className="w-full bg-white h-full flex-col items-center pb-10 flex xl:flex-row relative max-xl:pt-14">
@@ -13,7 +27,7 @@ export default function WorkoutPage() {
       </h1>
 
       <div className="w-full max-w-4xl flex flex-wrap justify-center gap-6 px-4 mt-8">
-        {mockWorkouts.map((workout) => (
+        {workouts.map((workout) => (
           <UserWorkoutWithUserPlannedExerciseCard
             key={workout.id}
             workout={workout}

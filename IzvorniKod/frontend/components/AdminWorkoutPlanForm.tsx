@@ -46,6 +46,7 @@ import { useAppContext } from "@/contexts/AppContext";
 import { Loader2 } from "lucide-react";
 import { EditUserWorkoutForm } from "./EditUserWorkoutForm";
 import Image from "next/image";
+import { backendUrl } from "@/data/backendUrl";
 
 const formSchema = z.object({
   name: z.string().min(1, "Name is required"),
@@ -125,6 +126,8 @@ export function AdminWorkoutPlanForm({
     try {
       let imageUrl = values.image;
 
+      console.log("imageUrl", imageUrl);
+
       if (selectedImage) {
         imageUrl = await handleUploadImage(selectedImage);
       }
@@ -163,6 +166,7 @@ export function AdminWorkoutPlanForm({
             })),
           })),
         };
+        console.log("data in create workout plan", data);
 
         await createWorkoutPlan(data);
       } else {
@@ -225,20 +229,23 @@ export function AdminWorkoutPlanForm({
     try {
       const formData = new FormData();
       formData.append("file", file);
-      const response = await fetch("/api/upload", {
+
+      // Upload slike
+      const uploadResponse = await fetch("/api/upload", {
         method: "POST",
         body: formData,
       });
-      const data = await response.json();
+      const uploadData = await uploadResponse.json();
 
-      if (data.error) {
-        throw new Error(data.error);
+      if (!uploadData.success) {
+        throw new Error("Greška pri uploadu slike");
       }
 
-      return data.url;
+      // Vraćamo samo fileName koji će se spremiti u bazi
+      return uploadData.fileName;
     } catch (error) {
-      console.error("Error uploading image:", error);
-      return "/main-image-gym.webp";
+      console.error("Greška pri uploadu slike:", error);
+      return "main-image-gym.webp";
     }
   };
 
@@ -246,6 +253,7 @@ export function AdminWorkoutPlanForm({
     const file = event.target.files?.[0];
     if (file) {
       setSelectedImage(file);
+      // Prikazujemo lokalnu preview sliku
       const objectUrl = URL.createObjectURL(file);
       setPreviewUrl(objectUrl);
     }
@@ -395,6 +403,8 @@ export function AdminWorkoutPlanForm({
                         src={previewUrl}
                         alt="Preview"
                         className="max-w-[200px] h-auto rounded-lg"
+                        width={200}
+                        height={200}
                       />
                     </div>
                   )}

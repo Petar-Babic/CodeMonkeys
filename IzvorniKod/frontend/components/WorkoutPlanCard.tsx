@@ -17,7 +17,7 @@ export default function WorkoutPlanCard({
     >
       {workoutPlan?.image && (
         <Image
-          src={workoutPlan.image}
+          src={`/api/upload/${workoutPlan.image}`}
           alt={workoutPlan.name}
           priority
           quality={85}
