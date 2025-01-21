@@ -73,6 +73,16 @@ public class WorkoutSessionServiceJpa implements WorkoutSessionService {
     }
 
     @Override
+    public void updateWorkoutSession(WorkoutSessionForm workoutSessionForm, MyUser user) {
+
+    }
+
+    @Override
+    public void deleteWorkoutSession(Long workoutSessionId, MyUser user) {
+
+    }
+
+    @Override
     public Set<WorkoutSessionResponse> getAllWorkoutSessions(MyUser user) {
         return Set.of();
     }

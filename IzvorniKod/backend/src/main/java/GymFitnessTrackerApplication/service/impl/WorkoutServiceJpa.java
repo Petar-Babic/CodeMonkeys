@@ -97,7 +97,6 @@ public class WorkoutServiceJpa implements WorkoutPlanService {
     public String createNewWorkoutPlan(WorkoutPlanForm workoutPlanForm) {
         MyUser creator = myUserRepo.findById(workoutPlanForm.createdByUserId())
                         .orElseThrow(() -> new UsernameNotFoundException("User doesn't exist."));
-        System.out.println("proso creatora");
         MyUser user = myUserRepo.findById(workoutPlanForm.userId())
                 .orElseThrow(() -> new UsernameNotFoundException("User doesn't exist."));
         WorkoutPlan originalWorkoutPlan=null;
@@ -125,6 +124,16 @@ public class WorkoutServiceJpa implements WorkoutPlanService {
         return getURLToFile(newWorkoutPlan.getImage());
     }
 
+    @Override
+    public void updateWorkoutPlan(Long wpId, WorkoutPlanForm workoutPlanform) {
+
+    }
+
+    @Override
+    public void deleteWorkoutPlan(Long workoutPlanId) {
+
+    }
+
 
     @Override
     public String uploadFile(MultipartFile file) throws AmazonClientException {
@@ -143,77 +152,6 @@ public class WorkoutServiceJpa implements WorkoutPlanService {
     public String getURLToFile(String fileName) {
         Date expiration = new Date(System.currentTimeMillis() + 7200 * 1000); //2 sata
         return s3Client.generatePresignedUrl(bucketName,fileName,expiration, HttpMethod.GET).toString();
-    }
-
-
-    @Override
-    public List<ExerciseResponse> listAllExercises() {
-        List<Exercise> exercises =  exerciseRepo.findAll();
-        List<ExerciseResponse> result = new ArrayList<>();
-        for(Exercise exercise : exercises){
-            ExerciseResponse exerciseResponse = generateExerciseResponse(exercise);
-            result.add(exerciseResponse);
-        }
-        return result;
-    }
-
-    @Override
-    public List<ExerciseResponse> listAllNotApprovedExercises() {
-        List<Exercise> exercises =  exerciseRepo.findByIsApprovedFalse();
-        List<ExerciseResponse> result = new ArrayList<>();
-        for(Exercise exercise : exercises){
-            ExerciseResponse exerciseResponse = generateExerciseResponse(exercise);
-            result.add(exerciseResponse);
-        }
-        return result;
-    }
-
-    @Override
-    public List<ExerciseResponse> listAllExercisesCreatedByUser(MyUser user) {
-        List<Exercise> exercises = exerciseRepo.findByCreatedByUser(user);
-        List<ExerciseResponse> result = new ArrayList<>();
-        for(Exercise e : exercises){
-            ExerciseResponse exerciseResponse = generateExerciseResponse(e);
-            result.add(exerciseResponse);
-        }
-
-        return result;
-    }
-
-    @Override
-    public void createExercise(MyUser user, ExerciseForm exerciseForm) {
-        Exercise newExercise = new Exercise(exerciseForm.name(), exerciseForm.description(), exerciseForm.gif(), user);
-        for(Long pmgId : exerciseForm.primaryMuscleGroupIds()){
-            muscleGroupRepo.findById(pmgId).ifPresent(muscleGroup -> {
-                newExercise.addPrimaryMuscleGroup(muscleGroup);
-                muscleGroup.addPrimaryToExercises(newExercise);
-            });
-        }
-        for(Long smgId : exerciseForm.secondaryMuscleGroupIds()){
-            muscleGroupRepo.findById(smgId).ifPresent(muscleGroup -> {
-                newExercise.addSecondaryMuscleGroup(muscleGroup);
-                muscleGroup.addSecondaryToExercises(newExercise);
-            });
-        }
-        exerciseRepo.save(newExercise);
-    }
-
-    @Override
-    public void createMuscleGroup(MuscleGroupDTO muscleGroupDTO) {
-        MuscleGroup newMuscleGroup = new MuscleGroup(muscleGroupDTO);
-        muscleGroupRepo.save(newMuscleGroup);
-    }
-
-    @Override
-    public Set<MuscleGroupDTO> listAllMuscleGroups() {
-        List<MuscleGroup> muscleGroups = muscleGroupRepo.findAll();
-        Set<MuscleGroupDTO> result = new HashSet<>();
-        for(MuscleGroup muscleGroup : muscleGroups){
-            String imageUrl = getURLToFile(muscleGroup.getImage());
-            MuscleGroupDTO mgDto = new MuscleGroupDTO(muscleGroup.getName(), muscleGroup.getDescription(), imageUrl);
-            result.add(mgDto);
-        }
-        return result;
     }
 
 
@@ -254,9 +192,4 @@ public class WorkoutServiceJpa implements WorkoutPlanService {
         return wpr;
     }
 
-    private ExerciseResponse generateExerciseResponse(Exercise exercise){
-        String gif = getURLToFile(exercise.getGif());
-        return new ExerciseResponse(exercise.getId(), exercise.getName(),
-                    exercise.getDescription(), gif, exercise.getCreatedByUser().getId(), exercise.isApproved());
-    }
 }

@@ -120,48 +120,6 @@ public class WorkoutController {
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
-
-
-    // TODO: This should be endpoint for getting all exercises for admin
-    @GetMapping("all-exercises")
-    public ResponseEntity<?> getAllExercises(){
-        List<ExerciseResponse> exercises = workoutPlanService.listAllExercises();
-        return ResponseEntity.status(HttpStatus.OK).body(exercises);
-    }
-
-
-    @GetMapping("all-exercises/created-by-user")
-    public ResponseEntity<?> getAllExercisesCreatedByUser(@RequestHeader("Authorization") String token){
-        String email = jwtService.extractEmail(token.trim().substring(7));
-        MyUser user = (MyUser) myUserService.getMyUser(email);
-        List<ExerciseResponse> exercises = workoutPlanService.listAllExercisesCreatedByUser(user);
-        return ResponseEntity.status(HttpStatus.OK).body(exercises);
-    }
-
-    // TODO: Make endpoint for getting all public exercises
-
-    @PostMapping("create-exercise")
-    public ResponseEntity<?> createExercise(@RequestHeader("Authorization") String token,
-                                            @RequestBody ExerciseForm exerciseForm){
-
-        String email = jwtService.extractEmail(token.trim().substring(7));
-        MyUser user = (MyUser) myUserService.getMyUser(email);
-        workoutPlanService.createExercise(user, exerciseForm);
-        return ResponseEntity.status(HttpStatus.OK).body("Exercise successfully created.");
-    }
-
-    @PostMapping("create-muscle-group")
-    public ResponseEntity<?> createMuscleGroup(@RequestBody MuscleGroupDTO muscleGroupDTO) {
-        workoutPlanService.createMuscleGroup(muscleGroupDTO);
-        return ResponseEntity.status(HttpStatus.OK).body("Muscle Group successfully created.");
-    }
-
-    @GetMapping("all-muscle-groups")
-    public ResponseEntity<?> getAllMuscleGroups(){
-        Set<MuscleGroupDTO> muscleGroups = workoutPlanService.listAllMuscleGroups();
-        return ResponseEntity.status(HttpStatus.OK).body(muscleGroups);
-    }
-
     @PostMapping("upload-file")
     public ResponseEntity<?> uploadFile(@RequestParam("file") MultipartFile file){
         String fileName = workoutPlanService.uploadFile(file);

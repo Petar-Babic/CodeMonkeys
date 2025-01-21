@@ -2,6 +2,7 @@ package GymFitnessTrackerApplication.controller;
 
 import GymFitnessTrackerApplication.model.dto.response.ExerciseResponse;
 import GymFitnessTrackerApplication.model.dto.response.WorkoutPlanResponse;
+import GymFitnessTrackerApplication.service.ExerciseService;
 import GymFitnessTrackerApplication.service.WorkoutPlanService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -20,6 +21,8 @@ public class AdminController {
 
     @Autowired
     private WorkoutPlanService workoutPlanService;
+    @Autowired
+    private ExerciseService exerciseService;
 
     @GetMapping("/")
     public ResponseEntity<?> welcome() {
@@ -32,10 +35,10 @@ public class AdminController {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/exercises")
-    public ResponseEntity<?> allExercises() {
-        List<ExerciseResponse> response = workoutPlanService.listAllExercises();
-        return ResponseEntity.ok(response);
+    @GetMapping("/all-exercises")
+    public ResponseEntity<?> getAllExercises(){
+        List<ExerciseResponse> exercises = exerciseService.listAllExercises();
+        return ResponseEntity.status(HttpStatus.OK).body(exercises);
     }
 
     @PutMapping("/exercise")

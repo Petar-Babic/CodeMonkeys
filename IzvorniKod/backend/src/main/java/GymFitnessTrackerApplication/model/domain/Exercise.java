@@ -37,15 +37,6 @@ public class Exercise {
 
     public Exercise() {}
 
-    public Exercise(String name, String description, String gif, Set<MuscleGroup> primaryMuscleGroup, Set<MuscleGroup> secondaryMuscleGroup) {
-        this.name = name;
-        this.description = description;
-        this.gif = gif;
-        this.primaryMuscleGroup = primaryMuscleGroup;
-        this.secondaryMuscleGroup = secondaryMuscleGroup;
-        isApproved=false;
-    }
-
     public Exercise(String name, String description, String gif, MyUser user) {
         this.name = name;
         this.description = description;
@@ -61,13 +52,25 @@ public class Exercise {
     public String getName() {
         return name;
     }
+    public void setName(String name) {
+        this.name = name;
+    }
 
     public String getDescription() {
         return description;
     }
 
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
     public String getGif() {
         return gif;
+    }
+
+    public void setGif(String gif) {
+        this.gif = gif;
     }
 
     public MyUser getCreatedByUser() {return createdByUser;}
@@ -95,5 +98,13 @@ public class Exercise {
 
     public void addSecondaryMuscleGroup(MuscleGroup muscleGroup){
         secondaryMuscleGroup.add(muscleGroup);
+    }
+
+    public void setPrimaryMuscleGroup(Set<MuscleGroup> primaryMuscleGroup) {
+        this.primaryMuscleGroup = primaryMuscleGroup;
+    }
+
+    public void setSecondaryMuscleGroup(Set<MuscleGroup> secondaryMuscleGroup) {
+        this.secondaryMuscleGroup = secondaryMuscleGroup;
     }
 }

@@ -13,6 +13,7 @@ import java.util.Optional;
 public interface ExerciseRepo extends JpaRepository<Exercise, Long> {
     Optional<Exercise> findById(Long id);
     List<Exercise> findByIsApprovedFalse();
+    List<Exercise> findByIsApprovedTrue();
     List<Exercise> findByCreatedByUser(MyUser user);
 
 }

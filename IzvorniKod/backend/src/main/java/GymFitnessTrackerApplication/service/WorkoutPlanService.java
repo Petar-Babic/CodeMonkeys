@@ -19,14 +19,10 @@ public interface WorkoutPlanService {
     public Set<WorkoutPlanResponse> getUsersWorkoutPlans(String userEmail);
     public Set<WorkoutPlanResponse> getPublicWorkoutPlans();
     public String createNewWorkoutPlan(WorkoutPlanForm workoutPlanform);
+    public void updateWorkoutPlan(Long wpId, WorkoutPlanForm workoutPlanform);
+    public void deleteWorkoutPlan(Long workoutPlanId);
     public WorkoutPlanResponse getActiveWorkoutPlan(MyUser user);
     public WorkoutPlanResponse getWorkoutPlanById(Long workoutPlanId);
-    public List<ExerciseResponse> listAllExercises();
-    public List<ExerciseResponse> listAllNotApprovedExercises();
-    public List<ExerciseResponse> listAllExercisesCreatedByUser(MyUser user);
-    public void createExercise(MyUser user, ExerciseForm exerciseForm);
-    public void createMuscleGroup(MuscleGroupDTO muscleGroupDTO);
-    public Set<MuscleGroupDTO> listAllMuscleGroups();
     String uploadFile(final MultipartFile file) throws AmazonClientException;
     void deleteFile(final String fileName);
     String getURLToFile(final String fileName);
