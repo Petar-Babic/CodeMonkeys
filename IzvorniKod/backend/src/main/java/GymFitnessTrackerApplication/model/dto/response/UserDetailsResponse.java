@@ -1,8 +1,6 @@
 package GymFitnessTrackerApplication.model.dto.response;
 
-import org.apache.catalina.User;
-
-public class UserDetailsForm {
+public class UserDetailsResponse {
 
     private Long userId;
     private String name;
@@ -32,9 +30,9 @@ public class UserDetailsForm {
         this.image = image;
     }
 
-    public UserDetailsForm(){}
+    public UserDetailsResponse(){}
 
-    public UserDetailsForm(Long userId,String name,String image){
+    public UserDetailsResponse(Long userId, String name, String image){
         this.image=image;
         this.userId=userId;
         this.name=name;

@@ -29,4 +29,10 @@ public interface  MyUserService     {
     void uploadFile(final String userName, final MultipartFile file) throws AmazonClientException;
     void deleteFile(final String userName);
     String getURLToFile(final String userName);
+
+    void userToTrainer(MyUser user);
+
+    void userToAdmin(MyUser user,Long id);
+
+    List<MyUser> getTrainedBy(MyUser user);
 }

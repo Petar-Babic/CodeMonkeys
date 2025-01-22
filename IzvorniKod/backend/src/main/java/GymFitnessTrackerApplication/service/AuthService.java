@@ -2,11 +2,14 @@ package GymFitnessTrackerApplication.service;
 
 import GymFitnessTrackerApplication.model.domain.MyUser;
 import GymFitnessTrackerApplication.model.domain.RefreshToken;
+import GymFitnessTrackerApplication.model.domain.Role;
 import GymFitnessTrackerApplication.model.dto.forms.LoginForm;
 import GymFitnessTrackerApplication.model.dto.forms.OAuthForm;
 import GymFitnessTrackerApplication.model.dto.forms.SignupForm;
+import GymFitnessTrackerApplication.model.dto.forms.UserIDForm;
 import GymFitnessTrackerApplication.model.dto.response.EmailResponse;
 import GymFitnessTrackerApplication.model.dto.response.JwtResponse;
+import GymFitnessTrackerApplication.model.dto.response.JwtResponseTrainer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -14,6 +17,10 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.locks.ReentrantLock;
 
 
 @Service
@@ -46,7 +53,12 @@ public class AuthService {
         MyUser user = myUserService.getMyUser(loginForm.email());
         String token = jwtService.generateToken(myUserDetailsService.loadUserByUsername(loginForm.email()));
         // refresh token impl
-        return new JwtResponse(token,user.getId().toString(),user.getName(), user.getEmail());
+        if(user.getRole().equals(Role.USER) || user.getRole().equals(Role.ADMIN))
+            return new JwtResponse(token,user.getId().toString(),user.getName(), user.getEmail());
+
+        List<MyUser> trainedBy = myUserService.getTrainedBy(user);
+        return new JwtResponseTrainer(token,user.getId().toString(),user.getName(), user.getEmail(),trainedBy);
+
     }
 
     //treba biti jwtResponse da se vrati Jwt TOken

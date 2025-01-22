@@ -6,16 +6,20 @@ import GymFitnessTrackerApplication.model.domain.MyUser;
 import GymFitnessTrackerApplication.model.domain.NutrionPlan;
 import GymFitnessTrackerApplication.model.dto.forms.BodyGoalsForm;
 import GymFitnessTrackerApplication.model.dto.forms.BodyMeasurementForm;
+import GymFitnessTrackerApplication.model.dto.forms.UserIDForm;
 import GymFitnessTrackerApplication.model.dto.response.BodyMeasurementsResponse;
 import GymFitnessTrackerApplication.model.dto.response.UserInfoResponse;
 import GymFitnessTrackerApplication.service.*;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @RestController
@@ -32,6 +36,8 @@ public class UserDataController {
     private MyUserRepository myUserRepository;
     @Autowired
     private JwtService jwtService;
+    @Autowired
+    private AuthService authService;
 
     @PostMapping("/body-measurements/previous")
     public ResponseEntity<?> setBodyMeasurements(@RequestBody BodyMeasurementForm bodyMeasForm, @RequestHeader("Authorization") String auth){
@@ -173,6 +179,22 @@ public class UserDataController {
         }
     }*/
 
+    @PostMapping("/trainer")
+    public ResponseEntity<?> makeUserTrainer(@RequestHeader("Authorization") String token, HttpServletRequest req){
+        String email = jwtService.extractEmail(token.trim().substring(7));
+        MyUser user = (MyUser) myUserService.getMyUser(email);
+        //
+        myUserService.userToTrainer(user);
+        return ResponseEntity.status(200).body("USER -> TRAINER");
+    }
+
+    @PostMapping("/admin")
+    public ResponseEntity<?> makeUserTrainer(@RequestHeader("Authorization") String token, @RequestBody UserIDForm form){
+        String email = jwtService.extractEmail(token.trim().substring(7));
+        MyUser user = (MyUser) myUserService.getMyUser(email);
+        myUserService.userToAdmin(user,form.userId());
+        return ResponseEntity.status(200).body("USER -> admin");
+    }
 
     //AWS S3 sheme
     @PostMapping("/image")

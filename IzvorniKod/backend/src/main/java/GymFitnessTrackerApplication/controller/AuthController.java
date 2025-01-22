@@ -8,6 +8,7 @@ import GymFitnessTrackerApplication.model.dto.forms.OAuthForm;
 import GymFitnessTrackerApplication.model.dto.forms.SignupForm;
 import GymFitnessTrackerApplication.model.dto.response.EmailResponse;
 import GymFitnessTrackerApplication.model.dto.response.JwtResponse;
+import GymFitnessTrackerApplication.model.dto.response.JwtResponseTrainer;
 import GymFitnessTrackerApplication.service.*;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -43,6 +44,8 @@ public class AuthController {
         JwtResponse odg = authService.loginaj(loginForm);
         RefreshToken token = refreshTokenService.getToken(loginForm.email(),"mail");
         res.addCookie(new Cookie("Refresh",token.getToken()));
+        if(odg instanceof JwtResponseTrainer)
+            return ResponseEntity.ok((JwtResponseTrainer) odg);
         return  ResponseEntity.ok(odg);
     }
 

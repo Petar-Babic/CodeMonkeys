@@ -1,5 +1,7 @@
 package GymFitnessTrackerApplication.service.impl;
 
+import GymFitnessTrackerApplication.exception.AdminRestrictedException;
+import GymFitnessTrackerApplication.exception.NoExistingFoodException;
 import GymFitnessTrackerApplication.model.dao.MyUserRepository;
 import GymFitnessTrackerApplication.model.domain.*;
 import GymFitnessTrackerApplication.model.dto.forms.BodyGoalsForm;
@@ -143,5 +145,30 @@ public class MyUserServiceJpa implements MyUserService {
             return null;
         }
         return convertedFile;
+    }
+
+    @Override
+    public void userToTrainer(MyUser user){
+        user.setRole(Role.TRAINER);
+        user.setTrainer(null);
+        userRepository.save(user);
+    }
+
+
+    @Override
+    public void userToAdmin(MyUser user,Long id){
+        if(!user.getRole().equals(Role.ADMIN))
+            throw new AdminRestrictedException("USER ISNT ADMIN");
+        Optional<MyUser> u = userRepository.findById(id);
+        if(u.isEmpty()) throw new NoExistingFoodException("No such user exists");
+        MyUser usr = u.get();
+        usr.setRole(Role.ADMIN);
+        userRepository.save(usr);
+    }
+
+    public List<MyUser> getTrainedBy(MyUser user){
+        if(user.getRole().equals(Role.USER))
+            throw new AdminRestrictedException("USER isnt ADMIN/TRAINER");
+        return userRepository.findAllByTrainer(user);
     }
 }

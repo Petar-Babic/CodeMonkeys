@@ -3,6 +3,7 @@ package GymFitnessTrackerApplication.model.domain;
 import GymFitnessTrackerApplication.model.dto.forms.SignupForm;
 import jakarta.persistence.*;
 import net.minidev.json.annotate.JsonIgnore;
+import org.springframework.boot.context.properties.bind.DefaultValue;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import java.time.LocalDateTime;
@@ -27,6 +28,11 @@ public class MyUser{
     private String image;
     private ActivityLevel activityLevel;
     private Gender gender;
+
+    @ManyToOne
+    @JoinColumn(name = "trainer_id")
+    private MyUser trainer;
+
     @JsonIgnore
     @OneToMany(mappedBy = "owner")
     private Set<WorkoutPlan> usedWorkoutPlans = new HashSet<>();
@@ -49,10 +55,6 @@ public class MyUser{
     public void setNutrionPlans(List<NutrionPlan> nutrionPlans) {
         this.nutrionPlans = nutrionPlans;
     }
-    //@OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
-    //@JoinColumn(name = "trainer_id")
-    //private Trainer trainer;
-
 
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
@@ -144,6 +146,14 @@ public class MyUser{
         this.nutrionPlans = new ArrayList<>();
     }
 
+    public MyUser getTrainer() {
+        return trainer;
+    }
+
+    public void setTrainer(MyUser trainer) {
+        this.trainer = trainer;
+    }
+
     //konstruktor sa podatcima iz signup forme
     public MyUser(@RequestBody SignupForm signupForm){
         this.email=signupForm.getEmail();
@@ -154,6 +164,7 @@ public class MyUser{
         // for purposes of testing
         this.role = Role.USER;
         //this.activityLevel=ActivityLevel.SEDENTARY;
+        this.setTrainer(null);
         this.nutrionPlans = new ArrayList<>();
         this.workoutSessions = new HashSet<>();
     }
