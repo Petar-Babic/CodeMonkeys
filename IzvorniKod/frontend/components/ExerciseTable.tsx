@@ -27,7 +27,7 @@ export default function ExerciseTable() {
         row.gif && (
           <div className="relative w-10 h-10">
             <Image
-              src={row.gif}
+              src={`/api/upload/${row.gif}`}
               alt={row.name}
               fill
               className="object-cover rounded-md"
@@ -83,19 +83,17 @@ export default function ExerciseTable() {
           >
             <Trash2 className="h-4 w-4" />
           </Button>
-          <Link href={`/admin/exercises/${row.id}/edit`}>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <Pencil className="h-4 w-4" />
-            </Button>
+          <Link
+            href={`/admin/exercises/${row.id}/edit`}
+            className="hover:text-blue-500 w-8 h-8 flex items-center justify-center"
+          >
+            <Pencil className="h-4 w-4" />
           </Link>
-          <Link href={`/admin/exercises/${row.id}`}>
-            <Button variant="secondary" size="sm">
-              <Eye className="h-4 w-4" />
-            </Button>
+          <Link
+            href={`/admin/exercises/${row.id}`}
+            className="hover:text-blue-500 w-8 h-8 flex items-center justify-center"
+          >
+            <Eye className="h-4 w-4" />
           </Link>
         </div>
       ),
@@ -104,7 +102,7 @@ export default function ExerciseTable() {
 
   const handleDelete = async (id: number) => {
     try {
-      deleteExercise(id);
+      await deleteExercise(id);
       toast.success("Vježba je uspješno izbrisana");
     } catch (error) {
       console.error(error);

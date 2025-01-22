@@ -4,6 +4,7 @@ import GymFitnessTrackerApplication.model.domain.MyUser;
 import GymFitnessTrackerApplication.model.dto.forms.ExerciseForm;
 import GymFitnessTrackerApplication.model.dto.forms.WorkoutSessionForm;
 import GymFitnessTrackerApplication.model.dto.response.ExerciseResponse;
+import GymFitnessTrackerApplication.model.dto.response.MuscleGroupResponse;
 import GymFitnessTrackerApplication.model.dto.response.WorkoutSessionResponse;
 import GymFitnessTrackerApplication.model.dto.workoutDTOs.DateRangeDTO;
 import GymFitnessTrackerApplication.model.dto.workoutDTOs.MuscleGroupDTO;
@@ -63,12 +64,43 @@ public class WorkoutController {
         return ResponseEntity.status(HttpStatus.OK).body(publicWorkoutPlans);
     }
 
+
+    @GetMapping("/workout-plans/public/{id}")
+    public ResponseEntity<?> getPublicWorkoutPlanById(@PathVariable Long id){
+        WorkoutPlanResponse workoutPlan = workoutPlanService.getWorkoutPlanById(id);
+        return ResponseEntity.status(HttpStatus.OK).body(workoutPlan);
+    }
+
     // TODO: Add endpoint for getting all workout plans for admin
+    // @GetMapping("/workout-plans")
+    // MNatija, ovo je napravio Korda
+    // mjenjaj sta oces samo treba biti ova funkcionalnost
+    // stavi da ovo moze samo admin
+    @GetMapping("/workout-plans/all")
+    public ResponseEntity<?> getAllWorkoutPlans(){
+        Set<WorkoutPlanResponse> allWorkoutPlans = workoutPlanService.listAllWorkoutPlans();
+        return ResponseEntity.status(HttpStatus.OK).body(allWorkoutPlans);
+    }
+
+    // TODO: NEDOSTAJE UPDATE WORKOUT PLAN
+
+   
+
+    // TODO: Add endpoint for deleting workout plan for admin
+    // @DeleteMapping("/workout-plans/{id}")
+    // MNatija, ovo je napravio Korda
+    // mjenjaj sta oces samo treba biti ova funkcionalnost 
+    @DeleteMapping("/workout-plans/{id}")
+    public ResponseEntity<?> deleteWorkoutPlan(@PathVariable Long id){
+        workoutPlanService.deleteWorkoutPlan(id);
+        return ResponseEntity.status(HttpStatus.OK).body("Workout plan successfully deleted.");
+    }
+
 
     @PostMapping("/create-workout-plan")
     public ResponseEntity<?> createWorkoutPlan(@RequestBody WorkoutPlanForm workoutPlanForm ) {
-        workoutPlanService.createNewWorkoutPlan(workoutPlanForm);
-        return ResponseEntity.status(HttpStatus.OK).body("Workout plan successfully created.");
+        WorkoutPlanResponse workoutPlan = workoutPlanService.createNewWorkoutPlan(workoutPlanForm);
+        return ResponseEntity.status(HttpStatus.OK).body(workoutPlan);
     }
 
     @GetMapping("/user/current-workout-plan")
@@ -82,8 +114,11 @@ public class WorkoutController {
         return ResponseEntity.status(HttpStatus.OK).body(activeWorkoutPlan);
     }
 
+
+    // ovo je napravio Korda
+    // mjenjaj sta oces samo treba biti ova funkcionalnost 
     @GetMapping("/workout-plans/{id}")
-    public ResponseEntity<?> specificWorkout(@PathVariable Long id){
+    public ResponseEntity<?> getWorkoutPlanById(@PathVariable Long id){
         WorkoutPlanResponse workoutPlan = workoutPlanService.getWorkoutPlanById(id);
         return ResponseEntity.status(HttpStatus.OK).body(workoutPlan);
     }
@@ -118,6 +153,96 @@ public class WorkoutController {
         MyUser user = (MyUser) myUserService.getMyUser(email);
         Set<WorkoutSessionResponse> response = workoutSessionService.getWorkoutSessionsForUser(user);
         return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
+
+
+    // TODO: This should be endpoint for getting all exercises for admin
+    @GetMapping("all-exercises")
+    public ResponseEntity<?> getAllExercises(){
+        List<ExerciseResponse> exercises = workoutPlanService.listAllExercises();
+        return ResponseEntity.status(HttpStatus.OK).body(exercises);
+    }
+
+    // TODO: Make the endpoint for getting exercise by id
+    // @GetMapping("exercise/{id}")
+
+
+    @GetMapping("all-exercises/created-by-user")
+    public ResponseEntity<?> getAllExercisesCreatedByUser(@RequestHeader("Authorization") String token){
+        String email = jwtService.extractEmail(token.trim().substring(7));
+        MyUser user = (MyUser) myUserService.getMyUser(email);
+        List<ExerciseResponse> exercises = workoutPlanService.listAllExercisesCreatedByUser(user);
+        return ResponseEntity.status(HttpStatus.OK).body(exercises);
+    }
+
+    // TODO: Make endpoint for getting all public exercises
+
+    @PostMapping("create-exercise")
+    public ResponseEntity<?> createExercise(@RequestHeader("Authorization") String token,
+                                            @RequestBody ExerciseForm exerciseForm){
+
+        String email = jwtService.extractEmail(token.trim().substring(7));
+        MyUser user = (MyUser) myUserService.getMyUser(email);
+        ExerciseResponse exercise = workoutPlanService.createExercise(user, exerciseForm);
+        return ResponseEntity.status(HttpStatus.OK).body(exercise);
+    }
+
+    @PostMapping("create-muscle-group")
+    public ResponseEntity<?> createMuscleGroup(@RequestBody MuscleGroupDTO muscleGroupDTO) {
+        MuscleGroupResponse createdMuscleGroup = workoutPlanService.createMuscleGroup(muscleGroupDTO);
+        return ResponseEntity.status(HttpStatus.OK).body(createdMuscleGroup);
+    }
+
+    @GetMapping("all-muscle-groups")
+    public ResponseEntity<?> getAllMuscleGroups(){
+        Set<MuscleGroupResponse> muscleGroups = workoutPlanService.listAllMuscleGroups();
+        return ResponseEntity.status(HttpStatus.OK).body(muscleGroups);
+    }
+
+    @GetMapping("muscle-groups/{id}")
+    public ResponseEntity<?> getMuscleGroupById(@PathVariable Long id) {
+        MuscleGroupResponse muscleGroup = workoutPlanService.getMuscleGroupById(id);
+        return ResponseEntity.status(HttpStatus.OK).body(muscleGroup);
+    }
+
+    @GetMapping("exercises/{id}")
+    public ResponseEntity<?> getExerciseById(@PathVariable Long id) {
+        ExerciseResponse exercise = workoutPlanService.getExerciseById(id);
+        return ResponseEntity.status(HttpStatus.OK).body(exercise);
+    }
+
+    @PutMapping("exercises/{id}")
+    public ResponseEntity<?> updateExercise(@PathVariable Long id, @RequestBody ExerciseForm exerciseForm) {
+        ExerciseResponse exercise = workoutPlanService.updateExercise(id, exerciseForm);
+        if (exercise == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Exercise not found");
+        }
+        return ResponseEntity.status(HttpStatus.OK).body(exercise);
+    }
+
+    @PutMapping("muscle-groups/{id}")
+    public ResponseEntity<?> updateMuscleGroup(@PathVariable Long id, @RequestBody MuscleGroupDTO muscleGroupDTO) {
+        MuscleGroupResponse updatedMuscleGroup = workoutPlanService.updateMuscleGroup(id, muscleGroupDTO);
+        if (updatedMuscleGroup == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Muscle group not found");
+        }
+        return ResponseEntity.status(HttpStatus.OK).body(updatedMuscleGroup);
+    }
+
+    @DeleteMapping("exercises/{id}")
+    public ResponseEntity<?> deleteExercise(@PathVariable Long id) {
+        workoutPlanService.deleteExercise(id);
+        return ResponseEntity.status(HttpStatus.OK).body("Exercise successfully deleted");
+    }
+
+    @PutMapping("workout-plans/{id}")
+    public ResponseEntity<?> updateWorkoutPlan(@PathVariable Long id, @RequestBody WorkoutPlanForm workoutPlanForm) {
+        WorkoutPlanResponse updatedWorkoutPlan = workoutPlanService.updateWorkoutPlan(id, workoutPlanForm);
+        if (updatedWorkoutPlan == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Workout plan not found");
+        }
+        return ResponseEntity.status(HttpStatus.OK).body(updatedWorkoutPlan);
     }
 
     @PostMapping("upload-file")

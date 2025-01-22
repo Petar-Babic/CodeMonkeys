@@ -42,7 +42,7 @@ export function AdminFoodForm({ food }: { food: FoodBase | null }) {
       carbs: food?.carbs || 0,
       fat: food?.fat || 0,
       unit: food?.unit || "",
-      defaultNumber: food?.defaultNumber || 0,
+      defaultNumber: food?.defaultNumber || 1,
     },
   });
 
@@ -165,7 +165,6 @@ export function AdminFoodForm({ food }: { food: FoodBase | null }) {
             </FormItem>
           )}
         />
-
         <FormField
           control={form.control}
           name="defaultNumber"
@@ -173,7 +172,12 @@ export function AdminFoodForm({ food }: { food: FoodBase | null }) {
             <FormItem>
               <FormLabel>Default number</FormLabel>
               <FormControl>
-                <Input {...field} />
+                <Input
+                  type="number"
+                  placeholder="Unesite default number"
+                  {...field}
+                  onChange={(e) => field.onChange(Number(e.target.value))}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>

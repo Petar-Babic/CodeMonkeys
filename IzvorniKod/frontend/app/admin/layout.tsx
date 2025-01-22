@@ -1,5 +1,4 @@
 import { Suspense } from "react";
-import AppLayoutComponent from "@/components/AppLayoutComponent";
 import LoadingAppScreen from "@/components/LoadingAppScreen";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/lib/auth";

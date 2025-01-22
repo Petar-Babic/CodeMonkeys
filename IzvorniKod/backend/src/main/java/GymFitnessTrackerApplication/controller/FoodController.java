@@ -65,6 +65,15 @@ public class FoodController {
 
     // TODO: Add update food
 
+    @PutMapping("/api/food/{id}")
+    public ResponseEntity<?> updateFood(@RequestBody FoodForm form,@RequestHeader("Authorization") String auth,@PathVariable String id){
+        String email = jwtService.extractEmail(auth.trim().substring(7));
+        MyUser user = (MyUser) myUserService.getMyUser(email);
+        Food food = foodService.updateFood(id,form);
+        return ResponseEntity.status(200).body(new FoodResponse(food));
+
+    }
+
     @PostMapping("/api/meal")
     public ResponseEntity<?> createMeal(@RequestBody MealForm form,@RequestHeader("Authorization") String auth){
         String email = jwtService.extractEmail(auth.trim().substring(7));

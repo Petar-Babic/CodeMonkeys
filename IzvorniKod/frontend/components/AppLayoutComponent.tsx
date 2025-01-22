@@ -3,9 +3,7 @@ import Header from "@/components/Header";
 import Navigation from "@/components/Navigation";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { ExerciseBase } from "@/types/exercise";
-import { muscleGroups as predefinedMuscleGroups } from "@/data/muscleGroup";
 import { MuscleGroupBase } from "@/types/muscleGroup";
-import { userWorkoutPlans } from "@/data/userWorkoutPlan";
 import { NutritionPlanBase } from "@/types/nutritionPlan";
 import { WorkoutPlanWithWorkouts } from "@/types/workoutPlan";
 import { WorkoutPlanBase } from "@/types/workoutPlan";
@@ -59,6 +57,19 @@ const getInitialData = async (
     console.error("Error fetching nutrition plan:", error);
   }
 
+  let muscleGroups: MuscleGroupBase[] = [];
+  try {
+    const response = await fetch(`${backendUrl}/api/all-muscle-groups`, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+      credentials: "include",
+    });
+    muscleGroups = await response.json();
+  } catch (error) {
+    console.error("Error fetching muscle groups:", error);
+  }
+
   let publicWorkoutPlans: WorkoutPlanBase[] = [];
   try {
     const response = await fetch(`${backendUrl}/api/workout-plans/public`, {
@@ -73,7 +84,7 @@ const getInitialData = async (
     console.error("Error fetching workout plans:", error);
   }
 
-  let workoutPlansCreatedByUser: WorkoutPlanBase[] = [];
+  let workoutPlansCreatedByUser: WorkoutPlanWithWorkouts[] = [];
   try {
     const response = await fetch(`${backendUrl}/api/workout-plans/created-by`, {
       headers: {
@@ -85,6 +96,8 @@ const getInitialData = async (
   } catch (error) {
     console.error("Error fetching workout plans created by user:", error);
   }
+
+  console.log("workoutPlansCreatedByUser", workoutPlansCreatedByUser);
 
   let exercises: ExerciseBase[] = [];
   try {
@@ -112,14 +125,14 @@ const getInitialData = async (
     console.error("Error fetching foods:", error);
   }
 
-  const userWorkoutPlan =
-    userWorkoutPlans.find((plan) => plan.userId === userId) || null;
-
   return {
-    muscleGroups: predefinedMuscleGroups,
+    muscleGroups,
     exercises,
     nutritionPlan,
-    userWorkoutPlan,
+    userWorkoutPlan:
+      workoutPlansCreatedByUser.length > 0
+        ? workoutPlansCreatedByUser[0]
+        : null,
     workoutPlans: [...publicWorkoutPlans, ...workoutPlansCreatedByUser],
     accessToken,
     user,

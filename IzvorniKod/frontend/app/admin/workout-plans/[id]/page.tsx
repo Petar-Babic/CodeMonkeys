@@ -1,52 +1,38 @@
 import React from "react";
-import { workoutPlans } from "@/data/workoutPlan";
-import { workoutsWithExercises } from "@/data/workout";
 import { WorkoutPlanWithWorkouts } from "@/types/workoutPlan";
 import Image from "next/image";
 import WorkoutsFromPublicWorkoutPlan from "@/components/WorkoutsFromPublicWorkoutPlan";
+import { backendUrl } from "@/data/backendUrl";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/app/lib/auth";
 
 const getWorkoutPlanWithWorkoutsAPI = async (
   id: number
 ): Promise<WorkoutPlanWithWorkouts | undefined> => {
-  // Simulate API delay
-  await new Promise((resolve) => setTimeout(resolve, 1000));
+  let workoutPlan: WorkoutPlanWithWorkouts | undefined;
 
-  console.log("getWorkoutPlanWithWorkoutsAPI id", id);
+  const session = await getServerSession(authOptions);
 
-  console.log("workoutPlans", workoutPlans);
-
-  // Find the workout plan
-  const workoutPlan = workoutPlans.find((plan) => plan.id === id);
-
-  console.log("getWorkoutPlanWithWorkoutsAPI workoutPlan", workoutPlan);
-
-  // Find the workouts for the workout plan
-  const workoutPlanWorkouts = workoutsWithExercises.filter(
-    (workout) => workout.workoutPlanId === id
-  );
-
-  console.log("workoutPlanWorkouts", workoutPlanWorkouts);
-
-  if (!workoutPlan) {
-    return undefined;
+  try {
+    const res = await fetch(`${backendUrl}/api/workout-plans/${id}`, {
+      headers: {
+        Authorization: `Bearer ${session?.accessToken}`,
+      },
+    });
+    workoutPlan = await res.json();
+  } catch (error) {
+    console.error("Error fetching workout plan:", error);
   }
 
-  return {
-    ...workoutPlan,
-    workouts: workoutPlanWorkouts,
-  };
+  return workoutPlan;
 };
 
-export default async function WorkoutPlanPage({
-  params,
-}: {
-  params: { id: string };
+export default async function WorkoutPlanPage(props: {
+  params: Promise<{ id: number }>;
 }) {
-  const id = Number(params.id);
+  const { id } = await props.params;
 
   const workoutPlan = await getWorkoutPlanWithWorkoutsAPI(id);
-
-  console.log("workoutPlan", workoutPlan);
 
   if (!workoutPlan) {
     return <div>Workout plan not found</div>;
@@ -57,7 +43,7 @@ export default async function WorkoutPlanPage({
       {workoutPlan?.image && (
         <div className="w-full h-[25rem] xl:h-[30rem] relative bg-black  border   overflow-hidden block">
           <Image
-            src={workoutPlan.image}
+            src={`/api/upload/${workoutPlan.image}`}
             alt={workoutPlan.name}
             priority
             quality={85}

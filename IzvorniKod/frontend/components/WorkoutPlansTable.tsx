@@ -10,7 +10,8 @@ import { useAppContext } from "@/contexts/AppContext";
 import { workoutsWithExercises } from "@/data/workout";
 
 export default function WorkoutPlansTable() {
-  const { workoutPlans, setWorkoutPlans, createWorkoutPlan } = useAppContext();
+  const { workoutPlans, createWorkoutPlan, deleteWorkoutPlan } =
+    useAppContext();
 
   const columns = [
     {
@@ -68,19 +69,17 @@ export default function WorkoutPlansTable() {
           >
             <Trash2 className="h-4 w-4" />
           </Button>
-          <Link href={`/admin/workout-plans/${row.id}/edit`}>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <Pencil className="h-4 w-4" />
-            </Button>
+          <Link
+            href={`/admin/workout-plans/${row.id}/edit`}
+            className="hover:text-blue-500 w-8 h-8 flex items-center justify-center"
+          >
+            <Pencil className="h-4 w-4" />
           </Link>
-          <Link href={`/admin/workout-plans/${row.id}`}>
-            <Button variant="secondary" size="sm">
-              <Eye className="h-4 w-4" />
-            </Button>
+          <Link
+            href={`/admin/workout-plans/${row.id}`}
+            className="hover:text-blue-500 w-8 h-8 flex items-center justify-center"
+          >
+            <Eye className="h-4 w-4" />
           </Link>
           {row.userId && (
             <Button
@@ -99,7 +98,8 @@ export default function WorkoutPlansTable() {
 
   const handleDelete = async (id: number) => {
     try {
-      setWorkoutPlans(workoutPlans.filter((plan) => plan.id !== id));
+      await deleteWorkoutPlan(id);
+
       toast.success("Plan vježbanja je uspješno izbrisan");
     } catch (error) {
       console.error(error);

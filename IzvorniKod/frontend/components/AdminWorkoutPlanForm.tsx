@@ -88,7 +88,8 @@ export function AdminWorkoutPlanForm({
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const router = useRouter();
 
-  const { updateWorkoutPlan, createWorkoutPlan, exercises } = useAppContext();
+  const { updateWorkoutPlan, uploadFile, createWorkoutPlan, exercises } =
+    useAppContext();
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -111,7 +112,7 @@ export function AdminWorkoutPlanForm({
     });
 
     if (workoutPlan?.image) {
-      setPreviewUrl(workoutPlan.image);
+      setPreviewUrl(`/api/upload/${workoutPlan.image}`);
     }
   }, [workoutPlan, form]);
 
@@ -124,6 +125,8 @@ export function AdminWorkoutPlanForm({
     setIsSubmitting(true);
     try {
       let imageUrl = values.image;
+
+      console.log("imageUrl", imageUrl);
 
       if (selectedImage) {
         imageUrl = await handleUploadImage(selectedImage);
@@ -163,6 +166,7 @@ export function AdminWorkoutPlanForm({
             })),
           })),
         };
+        console.log("data in create workout plan", data);
 
         await createWorkoutPlan(data);
       } else {
@@ -221,24 +225,14 @@ export function AdminWorkoutPlanForm({
     setEditingWorkout(null);
   };
 
-  const handleUploadImage = async (file: File) => {
+  const handleUploadImage = async (file: File): Promise<string> => {
     try {
-      const formData = new FormData();
-      formData.append("file", file);
-      const response = await fetch("/api/upload", {
-        method: "POST",
-        body: formData,
-      });
-      const data = await response.json();
+      const uploadData = await uploadFile(file);
 
-      if (data.error) {
-        throw new Error(data.error);
-      }
-
-      return data.url;
+      return uploadData;
     } catch (error) {
-      console.error("Error uploading image:", error);
-      return "/main-image-gym.webp";
+      console.error("Greška pri uploadu slike:", error);
+      return "main-image-gym.webp";
     }
   };
 
@@ -246,6 +240,7 @@ export function AdminWorkoutPlanForm({
     const file = event.target.files?.[0];
     if (file) {
       setSelectedImage(file);
+      // Prikazujemo lokalnu preview sliku
       const objectUrl = URL.createObjectURL(file);
       setPreviewUrl(objectUrl);
     }
@@ -395,6 +390,8 @@ export function AdminWorkoutPlanForm({
                         src={previewUrl}
                         alt="Preview"
                         className="max-w-[200px] h-auto rounded-lg"
+                        width={200}
+                        height={200}
                       />
                     </div>
                   )}
