@@ -96,4 +96,16 @@ public class Exercise {
     public void addSecondaryMuscleGroup(MuscleGroup muscleGroup){
         secondaryMuscleGroup.add(muscleGroup);
     }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public void setGif(String gif) {
+        this.gif = gif;
+    }
 }

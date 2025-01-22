@@ -1,23 +1,37 @@
 import React from "react";
-import { muscleGroups } from "@/data/muscleGroup";
 import { MuscleGroupBase } from "@/types/muscleGroup";
 import Image from "next/image";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/app/lib/auth";
+import { backendUrl } from "@/data/backendUrl";
 
 const getMuscleGroupAPI = async (
   id: number
 ): Promise<MuscleGroupBase | undefined> => {
-  // Simulate API delay
-  await new Promise((resolve) => setTimeout(resolve, 1000));
+  let muscleGroup: MuscleGroupBase | undefined;
 
-  return muscleGroups.find((group) => group.id === id);
+  const session = await getServerSession(authOptions);
+
+  try {
+    const res = await fetch(`${backendUrl}/api/muscle-groups/${id}`, {
+      headers: {
+        Authorization: `Bearer ${session?.accessToken}`,
+      },
+    });
+    muscleGroup = await res.json();
+  } catch (error) {
+    console.error("Error fetching muscle group:", error);
+  }
+
+  return muscleGroup;
 };
 
-export default async function MuscleGroupPage({
-  params,
-}: {
-  params: { id: string };
+export default async function MuscleGroupPage(props: {
+  params: Promise<{ id: number }>;
 }) {
-  const id = Number(params.id);
+  const { id } = await props.params;
+
+  console.log("id", id);
   const muscleGroup = await getMuscleGroupAPI(id);
 
   if (!muscleGroup) {
@@ -31,7 +45,7 @@ export default async function MuscleGroupPage({
           <div className="relative w-full h-48">
             {muscleGroup.image && (
               <Image
-                src={muscleGroup.image}
+                src={`/api/upload/${muscleGroup.image}`}
                 alt={muscleGroup.name}
                 fill
                 className="object-cover rounded-lg"

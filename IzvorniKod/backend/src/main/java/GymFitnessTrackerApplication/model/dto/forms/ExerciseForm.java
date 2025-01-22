@@ -1,6 +1,6 @@
 package GymFitnessTrackerApplication.model.dto.forms;
 
-import java.util.Set;
+import java.util.List;
 
 public record ExerciseForm (String name, String description, String gif,
-                            Set<Long> primaryMuscleGroupIds, Set<Long> secondaryMuscleGroupIds) {}
+                            List<Long> primaryMuscleGroupsIds, List<Long> secondaryMuscleGroupsIds) {}

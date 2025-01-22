@@ -5,6 +5,7 @@ import {
   UpdateMuscleGroupInput,
 } from "@/types/muscleGroup";
 import { muscleGroups as predefinedMuscleGroups } from "@/data/muscleGroup";
+import { backendUrl } from "@/data/backendUrl";
 // Predefined muscle groups
 
 export const useMuscleGroup = () => {
@@ -13,43 +14,79 @@ export const useMuscleGroup = () => {
   );
 
   const createMuscleGroup = useCallback(
-    (muscleGroupInput: CreateMuscleGroupInput) => {
-      const newMuscleGroup: MuscleGroupBase = {
-        ...muscleGroupInput,
-        id: Math.random(), // Generate a unique ID (in a real app, this would be handled by the backend)
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      };
+    async (muscleGroupInput: CreateMuscleGroupInput) => {
+      const token = localStorage.getItem("accessToken");
+      const res = await fetch(`${backendUrl}/api/create-muscle-group`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(muscleGroupInput),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.message || "Error creating muscle group");
+      }
+      console.log("data", data);
 
-      setMuscleGroups((prevMuscleGroups) => [
-        ...prevMuscleGroups,
-        newMuscleGroup,
-      ]);
-      return newMuscleGroup;
+      setMuscleGroups((prevMuscleGroups) => [...prevMuscleGroups, data]);
+      return data;
     },
     []
   );
 
-  const getMuscleGroupById = useCallback(
-    (id: number) => {
-      return muscleGroups.find((muscleGroup) => muscleGroup.id === id);
-    },
-    [muscleGroups]
-  );
+  const getMuscleGroupById = useCallback(async (id: number) => {
+    const token = localStorage.getItem("accessToken");
+    const res = await fetch(`${backendUrl}/api/muscle-groups/${id}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    const data = await res.json();
+    if (!res.ok) {
+      throw new Error(data.message || "Error getting muscle group");
+    }
+    return data;
+  }, []);
 
   const getAllMuscleGroups = useCallback(async () => {
-    const muscleGroups = predefinedMuscleGroups;
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    setMuscleGroups(muscleGroups);
-    return muscleGroups;
+    const token = localStorage.getItem("accessToken");
+    const res = await fetch(`${backendUrl}/api/all-muscle-groups`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    const data = await res.json();
+    if (!res.ok) {
+      throw new Error(data.message || "Error getting muscle groups");
+    }
+    return data;
   }, []);
 
   const updateMuscleGroup = useCallback(
-    (updateData: UpdateMuscleGroupInput) => {
+    async (updateData: UpdateMuscleGroupInput) => {
+      const token = localStorage.getItem("accessToken");
+      const res = await fetch(
+        `${backendUrl}/api/muscle-groups/${updateData.id}`,
+        {
+          method: "PUT",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(updateData),
+        }
+      );
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.message || "Error updating muscle group");
+      }
+      console.log("data", data);
       setMuscleGroups((prevMuscleGroups) =>
         prevMuscleGroups.map((muscleGroup) =>
           muscleGroup.id === updateData.id
-            ? { ...muscleGroup, ...updateData, updatedAt: new Date() }
+            ? { ...muscleGroup, ...data }
             : muscleGroup
         )
       );
@@ -57,7 +94,7 @@ export const useMuscleGroup = () => {
     []
   );
 
-  const deleteMuscleGroup = useCallback((id: number) => {
+  const deleteMuscleGroup = useCallback(async (id: number) => {
     setMuscleGroups((prevMuscleGroups) =>
       prevMuscleGroups.filter((muscleGroup) => muscleGroup.id !== id)
     );
@@ -79,9 +116,9 @@ export type UseMuscleGroupContextType = {
   setMuscleGroups: (muscleGroups: MuscleGroupBase[]) => void;
   createMuscleGroup: (
     muscleGroupInput: CreateMuscleGroupInput
-  ) => MuscleGroupBase;
-  getMuscleGroupById: (id: number) => MuscleGroupBase | undefined;
+  ) => Promise<MuscleGroupBase>;
+  getMuscleGroupById: (id: number) => Promise<MuscleGroupBase>;
   getAllMuscleGroups: () => Promise<MuscleGroupBase[]>;
-  updateMuscleGroup: (updateData: UpdateMuscleGroupInput) => void;
-  deleteMuscleGroup: (id: number) => void;
+  updateMuscleGroup: (updateData: UpdateMuscleGroupInput) => Promise<void>;
+  deleteMuscleGroup: (id: number) => Promise<void>;
 };

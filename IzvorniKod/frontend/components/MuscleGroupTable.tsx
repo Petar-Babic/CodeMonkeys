@@ -26,7 +26,7 @@ export default function MuscleGroupTable() {
       renderCell: (row: MuscleGroupBase) => (
         <div className="relative w-10 h-10">
           <Image
-            src={row.image || ""}
+            src={`/api/upload/${row.image}`}
             alt={row.name}
             fill
             className="object-cover rounded-md"
@@ -65,19 +65,17 @@ export default function MuscleGroupTable() {
           >
             <Trash2 className="h-4 w-4" />
           </Button>
-          <Link href={`/admin/muscle-groups/${row.id}/edit`}>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <Pencil className="h-4 w-4" />
-            </Button>
+          <Link
+            href={`/admin/muscle-groups/${row.id}/edit`}
+            className="hover:text-blue-500 w-8 h-8 flex items-center justify-center"
+          >
+            <Pencil className="h-4 w-4" />
           </Link>
-          <Link href={`/admin/muscle-groups/${row.id}`}>
-            <Button variant="secondary" size="sm">
-              <Eye className="h-4 w-4" />
-            </Button>
+          <Link
+            href={`/admin/muscle-groups/${row.id}`}
+            className="hover:text-blue-500 w-8 h-8 flex items-center justify-center"
+          >
+            <Eye className="h-4 w-4" />
           </Link>
         </div>
       ),

@@ -1,5 +1,4 @@
 "use client";
-
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -20,13 +19,7 @@ import { ExerciseBase } from "@/types/exercise";
 import { useState } from "react";
 import Image from "next/image";
 import { Checkbox } from "@/components/ui/checkbox";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import Select from "react-select";
 
 const formSchema = z.object({
   name: z.string().min(1, "Naziv je obavezan"),
@@ -47,11 +40,16 @@ export function AdminExerciseForm({
   exercise: ExerciseBase | null;
 }) {
   const router = useRouter();
-  const { createExercise, updateExercise, muscleGroups } = useAppContext();
+  const { createExercise, updateExercise, muscleGroups, uploadFile } =
+    useAppContext();
   const [selectedGif, setSelectedGif] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(
-    exercise?.gif || null
+    exercise?.gif ? `/api/upload/${exercise.gif}` : null
   );
+
+  // console.log("muscleGroups in form", muscleGroups);
+
+  // console.log("exercise in form", exercise);
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -78,23 +76,27 @@ export function AdminExerciseForm({
   const handleSubmit = async (values: FormValues) => {
     try {
       let gifUrl = values.gif;
+      console.log("selectedGif", selectedGif);
 
       if (selectedGif) {
-        // Ovdje bi trebao biti stvarni upload GIF-a na server
-        // Za sada samo simuliramo
-        gifUrl = previewUrl || "";
+        console.log("uploading file");
+        gifUrl = await uploadFile(selectedGif);
+        console.log("gifUrl", gifUrl);
       }
 
+      console.log("gifUrl", gifUrl);
+
+      const exerciseData = {
+        ...values,
+        gif: gifUrl,
+      };
+
+      console.log("Sending exercise data:", exerciseData);
+
       if (!exercise) {
-        await createExercise({
-          ...values,
-          gif: gifUrl,
-        });
+        await createExercise(exerciseData);
       } else {
-        await updateExercise(exercise.id, {
-          ...values,
-          gif: gifUrl,
-        });
+        await updateExercise(exercise.id, exerciseData);
       }
       router.push("/admin/exercises");
     } catch (error) {
@@ -191,22 +193,24 @@ export function AdminExerciseForm({
               <FormLabel>Primarne mišićne grupe</FormLabel>
               <FormControl>
                 <Select
-                  value={field.value.join(",")}
-                  onValueChange={(value) => {
-                    field.onChange(value.split(",").map(Number));
+                  isMulti
+                  value={muscleGroups
+                    .filter((group) => field.value.includes(group.id))
+                    .map((group) => ({
+                      value: group.id,
+                      label: group.name,
+                    }))}
+                  onChange={(newValue) => {
+                    field.onChange(newValue.map((item) => item.value));
                   }}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Odaberite primarne mišićne grupe" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {muscleGroups.map((group) => (
-                      <SelectItem key={group.id} value={group.id.toString()}>
-                        {group.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                  options={muscleGroups.map((group) => ({
+                    value: group.id,
+                    label: group.name,
+                  }))}
+                  className="basic-multi-select"
+                  classNamePrefix="select"
+                  placeholder="Odaberite primarne mišićne grupe"
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -221,22 +225,24 @@ export function AdminExerciseForm({
               <FormLabel>Sekundarne mišićne grupe</FormLabel>
               <FormControl>
                 <Select
-                  value={field.value.join(",")}
-                  onValueChange={(value) => {
-                    field.onChange(value.split(",").map(Number));
+                  isMulti
+                  value={muscleGroups
+                    .filter((group) => field.value.includes(group.id))
+                    .map((group) => ({
+                      value: group.id,
+                      label: group.name,
+                    }))}
+                  onChange={(newValue) => {
+                    field.onChange(newValue.map((item) => item.value));
                   }}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Odaberite sekundarne mišićne grupe" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {muscleGroups.map((group) => (
-                      <SelectItem key={group.id} value={group.id.toString()}>
-                        {group.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                  options={muscleGroups.map((group) => ({
+                    value: group.id,
+                    label: group.name,
+                  }))}
+                  className="basic-multi-select"
+                  classNamePrefix="select"
+                  placeholder="Odaberite sekundarne mišićne grupe"
+                />
               </FormControl>
               <FormMessage />
             </FormItem>

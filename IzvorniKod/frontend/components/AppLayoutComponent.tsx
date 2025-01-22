@@ -3,9 +3,7 @@ import Header from "@/components/Header";
 import Navigation from "@/components/Navigation";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { ExerciseBase } from "@/types/exercise";
-import { muscleGroups as predefinedMuscleGroups } from "@/data/muscleGroup";
 import { MuscleGroupBase } from "@/types/muscleGroup";
-import { userWorkoutPlans } from "@/data/userWorkoutPlan";
 import { NutritionPlanBase } from "@/types/nutritionPlan";
 import { WorkoutPlanWithWorkouts } from "@/types/workoutPlan";
 import { WorkoutPlanBase } from "@/types/workoutPlan";
@@ -57,6 +55,19 @@ const getInitialData = async (
     });
   } catch (error) {
     console.error("Error fetching nutrition plan:", error);
+  }
+
+  let muscleGroups: MuscleGroupBase[] = [];
+  try {
+    const response = await fetch(`${backendUrl}/api/all-muscle-groups`, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+      credentials: "include",
+    });
+    muscleGroups = await response.json();
+  } catch (error) {
+    console.error("Error fetching muscle groups:", error);
   }
 
   let publicWorkoutPlans: WorkoutPlanBase[] = [];
@@ -115,7 +126,7 @@ const getInitialData = async (
   }
 
   return {
-    muscleGroups: predefinedMuscleGroups,
+    muscleGroups,
     exercises,
     nutritionPlan,
     userWorkoutPlan:

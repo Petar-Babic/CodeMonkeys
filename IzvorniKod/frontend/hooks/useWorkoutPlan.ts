@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import {
   WorkoutPlanBase,
   CreateWorkoutPlanInput,
@@ -6,13 +6,19 @@ import {
 } from "@/types/workoutPlan";
 import { useAuthContext } from "@/contexts/AuthContext";
 import { backendUrl } from "@/data/backendUrl";
+import { useFile } from "@/hooks/useFile";
 
 export const useWorkoutPlan = () => {
   const [workoutPlans, setWorkoutPlans] = useState<WorkoutPlanBase[]>([]);
 
   const { user } = useAuthContext();
+  const { deleteFile } = useFile();
 
   const userId = user?.id;
+
+  useEffect(() => {
+    console.log("workoutPlans", workoutPlans);
+  }, [workoutPlans]);
 
   const createWorkoutPlan = useCallback(
     async (input: CreateWorkoutPlanInput): Promise<WorkoutPlanBase> => {
@@ -42,6 +48,8 @@ export const useWorkoutPlan = () => {
         console.log("res", res);
 
         const newWorkoutPlan = await res.json();
+
+        console.log("newWorkoutPlan", newWorkoutPlan);
 
         setWorkoutPlans((prevPlans) => [...prevPlans, newWorkoutPlan]);
         return newWorkoutPlan;
@@ -82,9 +90,28 @@ export const useWorkoutPlan = () => {
     []
   );
 
-  const deleteWorkoutPlan = useCallback((id: number): void => {
-    setWorkoutPlans((prevPlans) => prevPlans.filter((plan) => plan.id !== id));
-  }, []);
+  const deleteWorkoutPlan = useCallback(
+    async (id: number): Promise<void> => {
+      setWorkoutPlans(workoutPlans.filter((plan) => plan.id !== id));
+
+      const workoutPlan = workoutPlans.find((plan) => plan.id === id);
+      if (workoutPlan && workoutPlan.image) {
+        await deleteFile(workoutPlan.image);
+      }
+
+      const accessToken = localStorage.getItem("accessToken");
+      if (!accessToken) {
+        throw new Error("Access token is not set");
+      }
+      await fetch(`${backendUrl}/api/workout-plans/${id}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+    },
+    [deleteFile, workoutPlans]
+  );
 
   return {
     workoutPlans,
@@ -106,6 +133,6 @@ export type UseWorkoutPlanContextType = {
   updateWorkoutPlan: (
     input: UpdateWorkoutPlanInput
   ) => WorkoutPlanBase | undefined;
-  deleteWorkoutPlan: (id: number) => void;
+  deleteWorkoutPlan: (id: number) => Promise<void>;
   workoutPlansLoading: boolean;
 };

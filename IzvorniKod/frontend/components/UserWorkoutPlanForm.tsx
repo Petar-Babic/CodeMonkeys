@@ -40,7 +40,6 @@ import {
 import {
   UpdateWorkoutPlanInput,
   CreateWorkoutPlanInput,
-  WorkoutPlanWithWorkouts,
 } from "@/types/workoutPlan";
 import { useAppContext } from "@/contexts/AppContext";
 import { Loader2 } from "lucide-react";
@@ -90,6 +89,8 @@ export function UserWorkoutPlanForm() {
     exercises,
   } = useAppContext();
 
+  console.log("workoutPlan UserWorkoutPlanForm", workoutPlan);
+
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -109,7 +110,7 @@ export function UserWorkoutPlanForm() {
     });
 
     if (workoutPlan?.image) {
-      setPreviewUrl(workoutPlan.image);
+      setPreviewUrl(`/api/upload/${workoutPlan.image}`);
     }
   }, [workoutPlan, form]);
 
@@ -378,6 +379,8 @@ export function UserWorkoutPlanForm() {
                         src={previewUrl}
                         alt="Preview"
                         className="max-w-[200px] h-auto rounded-lg"
+                        width={200}
+                        height={200}
                       />
                     </div>
                   )}

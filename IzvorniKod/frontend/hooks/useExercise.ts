@@ -1,118 +1,90 @@
-import { useState, useCallback, useMemo } from "react";
+import { useState, useCallback } from "react";
 import { ExerciseBase, CreateExerciseInput } from "@/types/exercise";
-import { exercises as predefinedExercises } from "@/data/exercise";
-import { useUser } from "./useUser";
-
-// Simulated API call for creating a new exercise
-const createExerciseAPI = async (
-  data: CreateExerciseInput
-): Promise<ExerciseBase> => {
-  // Simulate API delay
-  await new Promise((resolve) => setTimeout(resolve, 1000));
-
-  // Simulated logic (replace with actual API call)
-  const newExercise: ExerciseBase = {
-    id: Math.random(),
-    ...data,
-    createdById: 1,
-    isApproved: false,
-  };
-
-  // Update local storage
-  const exercises = JSON.parse(localStorage.getItem("exercises") || "[]");
-  exercises.push(newExercise);
-  localStorage.setItem("exercises", JSON.stringify(exercises));
-
-  return newExercise;
-};
-
-// Simulated API call for updating an exercise
-const updateExerciseAPI = async (
-  id: number,
-  data: Partial<ExerciseBase>
-): Promise<ExerciseBase> => {
-  // Simulate API delay
-  await new Promise((resolve) => setTimeout(resolve, 1000));
-
-  // Simulated logic (replace with actual API call)
-  const exercises = JSON.parse(localStorage.getItem("exercises") || "[]");
-  const updatedExercise = exercises.find(
-    (exercise: ExerciseBase) => exercise.id === id
-  );
-
-  if (!updatedExercise) {
-    throw new Error("Exercise not found");
-  }
-
-  Object.assign(updatedExercise, data);
-  updatedExercise.updatedAt = new Date();
-
-  // Update local storage
-  localStorage.setItem("exercises", JSON.stringify(exercises));
-
-  return updatedExercise;
-};
-
-// Simulated API call for getting all exercises that are approved or this user created
-const getExercisesAPI = async (
-  userId: number | null
-): Promise<ExerciseBase[]> => {
-  // Simulate API delay
-  await new Promise((resolve) => setTimeout(resolve, 1000));
-
-  // Simulated logic (replace with actual API call)
-  return predefinedExercises.filter(
-    (exercise: ExerciseBase) =>
-      exercise.isApproved || exercise.createdById === userId
-  );
-};
+import { backendUrl } from "@/data/backendUrl";
 
 export const useExercise = () => {
   const [exercises, setExercises] = useState<ExerciseBase[]>([]);
-  const { user } = useUser();
-
-  const userId = useMemo(() => user?.id ?? null, [user?.id]);
-
-  const getAllExercises = useCallback(async () => {
-    const fetchedExercises = await getExercisesAPI(userId);
-    setExercises(fetchedExercises);
-    return fetchedExercises;
-  }, [userId]);
 
   const createExercise = useCallback(
     async (exerciseInput: CreateExerciseInput) => {
-      const res = await createExerciseAPI(exerciseInput);
-      const newExercise = {
-        ...res,
-        createdById: userId ?? 0,
-      };
-      setExercises((prevExercises) => [...prevExercises, newExercise]);
-      return newExercise;
+      const token = localStorage.getItem("accessToken");
+
+      console.log("exerciseInput", exerciseInput);
+
+      const res = await fetch(`${backendUrl}/api/create-exercise`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(exerciseInput),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.message || "Error creating exercise");
+      }
+      console.log("data", data);
+      setExercises((prevExercises) => [...prevExercises, data]);
+      return data;
     },
-    [userId]
+    []
   );
 
-  const getExerciseById = useCallback(
-    (id: number) => exercises.find((exercise) => exercise.id === id),
-    [exercises]
-  );
+  const getExerciseById = useCallback(async (id: number) => {
+    const token = localStorage.getItem("accessToken");
+    const res = await fetch(`${backendUrl}/api/exercises/${id}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    const data = await res.json();
+    return data;
+  }, []);
 
   const updateExercise = useCallback(
     async (id: number, updateData: Partial<ExerciseBase>) => {
-      const res = await updateExerciseAPI(id, updateData);
+      const token = localStorage.getItem("accessToken");
+
+      console.log("updateData", updateData);
+
+      const res = await fetch(`${backendUrl}/api/exercises/${id}`, {
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(updateData),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.message || "Error updating exercise");
+      }
+      console.log("data", data);
       setExercises((prevExercises) =>
         prevExercises.map((exercise) =>
-          exercise.id === id ? { ...exercise, ...res } : exercise
+          exercise.id === id ? { ...exercise, ...data } : exercise
         )
       );
     },
     []
   );
 
-  const deleteExercise = useCallback((id: number) => {
-    setExercises((prevExercises) =>
-      prevExercises.filter((exercise) => exercise.id !== id)
-    );
+  const deleteExercise = useCallback(async (id: number) => {
+    const token = localStorage.getItem("accessToken");
+    try {
+      await fetch(`${backendUrl}/api/exercises/${id}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      setExercises((prevExercises) =>
+        prevExercises.filter((exercise) => exercise.id !== id)
+      );
+    } catch (error) {
+      console.error("Error deleting exercise:", error);
+    }
   }, []);
 
   return {
@@ -120,7 +92,6 @@ export const useExercise = () => {
     setExercises,
     createExercise,
     getExerciseById,
-    getAllExercises,
     updateExercise,
     deleteExercise,
   } as UseExerciseContextType;
@@ -130,11 +101,10 @@ export type UseExerciseContextType = {
   exercises: ExerciseBase[];
   setExercises: (exercises: ExerciseBase[]) => void;
   createExercise: (exerciseInput: CreateExerciseInput) => Promise<ExerciseBase>;
-  getExerciseById: (id: number) => ExerciseBase | undefined;
-  getAllExercises: () => Promise<ExerciseBase[]>;
+  getExerciseById: (id: number) => Promise<ExerciseBase>;
   updateExercise: (
     id: number,
     updateData: Partial<ExerciseBase>
   ) => Promise<void>;
-  deleteExercise: (id: number) => void;
+  deleteExercise: (id: number) => Promise<void>;
 };

@@ -18,7 +18,7 @@ const getExerciseAPI = async (
   console.log(token);
 
   try {
-    const response = await fetch(`${backendUrl}/exercise/${id}`, {
+    const response = await fetch(`${backendUrl}/api/exercises/${id}`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -31,12 +31,10 @@ const getExerciseAPI = async (
   }
 };
 
-export default async function ExercisePage({
-  params,
-}: {
-  params: { id: string };
+export default async function ExercisePage(props: {
+  params: Promise<{ id: number }>;
 }) {
-  const id = Number(params.id);
+  const { id } = await props.params;
   let exercise: ExerciseBase | undefined;
   try {
     exercise = await getExerciseAPI(id);
@@ -54,11 +52,12 @@ export default async function ExercisePage({
       <div className="w-full flex px-4 xl:px-6 2xl:px-8 py-2 xl:py-3 2xl:py-4">
         <div className="p-4 flex-col rounded-md shadow-lg max-w-[30rem] flex-grow flex space-y-4 xl:p-6 2xl:p-8">
           {exercise.gif && (
-            <div className="relative w-full h-48">
+            <div className="relative w-full">
               <Image
-                src={exercise.gif}
+                src={`/api/upload/${exercise.gif}`}
                 alt={exercise.name}
-                fill
+                width={300}
+                height={300}
                 className="object-cover rounded-lg"
               />
             </div>
@@ -80,31 +79,34 @@ export default async function ExercisePage({
             <div className="space-y-2">
               <h3 className="font-semibold">Primarne mišićne grupe:</h3>
               <div className="flex flex-wrap gap-2">
-                {exercise.primaryMuscleGroupsIds.map((id) => (
-                  <span
-                    key={id}
-                    className="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-sm"
-                  >
-                    {id}
-                  </span>
-                ))}
-              </div>
-            </div>
-            {exercise.secondaryMuscleGroupsIds.length > 0 && (
-              <div className="space-y-2">
-                <h3 className="font-semibold">Sekundarne mišićne grupe:</h3>
-                <div className="flex flex-wrap gap-2">
-                  {exercise.secondaryMuscleGroupsIds.map((id) => (
+                {exercise.primaryMuscleGroupsIds &&
+                  exercise.primaryMuscleGroupsIds.map((id) => (
                     <span
                       key={id}
-                      className="px-2 py-1 bg-gray-100 text-gray-800 rounded-full text-sm"
+                      className="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-sm"
                     >
                       {id}
                     </span>
                   ))}
-                </div>
               </div>
-            )}
+            </div>
+            {exercise.secondaryMuscleGroupsIds &&
+              exercise.secondaryMuscleGroupsIds.length > 0 && (
+                <div className="space-y-2">
+                  <h3 className="font-semibold">Sekundarne mišićne grupe:</h3>
+                  <div className="flex flex-wrap gap-2">
+                    {exercise.secondaryMuscleGroupsIds &&
+                      exercise.secondaryMuscleGroupsIds?.map((id) => (
+                        <span
+                          key={id}
+                          className="px-2 py-1 bg-gray-100 text-gray-800 rounded-full text-sm"
+                        >
+                          {id}
+                        </span>
+                      ))}
+                  </div>
+                </div>
+              )}
           </div>
         </div>
       </div>

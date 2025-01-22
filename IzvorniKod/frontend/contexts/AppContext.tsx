@@ -38,8 +38,9 @@ import {
 } from "@/hooks/useWorkoutSession";
 import { useFood, UseFoodContextType } from "@/hooks/useFood";
 import { FoodBase } from "@/types/food";
-
+import { useFile, UseFileContextType } from "@/hooks/useFile";
 type AppContextType = UseUserContextType &
+  UseFileContextType &
   UseNutritionPlanContextType &
   UseExerciseContextType &
   UseWorkoutPlanContextType &
@@ -79,6 +80,7 @@ export function AppProvider({
   const userWorkoutPlanContext = useUserWorkoutPlan();
   const workoutSessionContext = useWorkoutSession();
   const foodContext = useFood();
+  const fileContext = useFile();
   const [isLoading, setIsLoading] = useState(true);
   const [role, setRole] = useState<"ADMIN" | "USER" | "TRAINER">("USER");
   useEffect(() => {
@@ -92,6 +94,7 @@ export function AppProvider({
   const { setNutritionPlan } = nutritionPlanContext;
   const { setUserData } = userContext;
   const { setFoods } = foodContext;
+
   useEffect(() => {
     setExercises(initialData.exercises);
     setMuscleGroups(initialData.muscleGroups);
@@ -116,6 +119,7 @@ export function AppProvider({
 
   const appContextValue = useMemo<AppContextType>(
     () => ({
+      ...fileContext,
       ...userContext,
       ...exerciseContext,
       ...muscleGroupContext,
@@ -140,6 +144,7 @@ export function AppProvider({
       initialData.accessToken,
       role,
       foodContext,
+      fileContext,
     ]
   );
 

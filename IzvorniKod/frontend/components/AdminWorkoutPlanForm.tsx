@@ -46,7 +46,6 @@ import { useAppContext } from "@/contexts/AppContext";
 import { Loader2 } from "lucide-react";
 import { EditUserWorkoutForm } from "./EditUserWorkoutForm";
 import Image from "next/image";
-import { backendUrl } from "@/data/backendUrl";
 
 const formSchema = z.object({
   name: z.string().min(1, "Name is required"),
@@ -89,7 +88,8 @@ export function AdminWorkoutPlanForm({
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const router = useRouter();
 
-  const { updateWorkoutPlan, createWorkoutPlan, exercises } = useAppContext();
+  const { updateWorkoutPlan, uploadFile, createWorkoutPlan, exercises } =
+    useAppContext();
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -112,7 +112,7 @@ export function AdminWorkoutPlanForm({
     });
 
     if (workoutPlan?.image) {
-      setPreviewUrl(workoutPlan.image);
+      setPreviewUrl(`/api/upload/${workoutPlan.image}`);
     }
   }, [workoutPlan, form]);
 
@@ -225,24 +225,11 @@ export function AdminWorkoutPlanForm({
     setEditingWorkout(null);
   };
 
-  const handleUploadImage = async (file: File) => {
+  const handleUploadImage = async (file: File): Promise<string> => {
     try {
-      const formData = new FormData();
-      formData.append("file", file);
+      const uploadData = await uploadFile(file);
 
-      // Upload slike
-      const uploadResponse = await fetch("/api/upload", {
-        method: "POST",
-        body: formData,
-      });
-      const uploadData = await uploadResponse.json();
-
-      if (!uploadData.success) {
-        throw new Error("Greška pri uploadu slike");
-      }
-
-      // Vraćamo samo fileName koji će se spremiti u bazi
-      return uploadData.fileName;
+      return uploadData;
     } catch (error) {
       console.error("Greška pri uploadu slike:", error);
       return "main-image-gym.webp";

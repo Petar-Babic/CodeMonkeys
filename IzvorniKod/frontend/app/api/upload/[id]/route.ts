@@ -1,4 +1,8 @@
-import { S3Client, GetObjectCommand } from "@aws-sdk/client-s3";
+import {
+  S3Client,
+  GetObjectCommand,
+  DeleteObjectCommand,
+} from "@aws-sdk/client-s3";
 import { NextResponse } from "next/server";
 import { Readable } from "stream";
 
@@ -48,4 +52,21 @@ export async function GET(
       { status: 500 }
     );
   }
+}
+
+export async function DELETE(
+  _request: Request,
+  { params }: { params: { id: string } }
+) {
+  const { id } = params;
+
+  const s3Params = {
+    Bucket: process.env.AWS_BUCKET_NAME!,
+    Key: id,
+  };
+
+  const command = new DeleteObjectCommand(s3Params);
+  await s3Client.send(command);
+
+  return NextResponse.json({ message: "File deleted" });
 }

@@ -1,41 +1,37 @@
 import React from "react";
-import { workoutPlans } from "@/data/workoutPlan";
 import { WorkoutPlanWithWorkouts } from "@/types/workoutPlan";
 import { AdminWorkoutPlanForm } from "@/components/AdminWorkoutPlanForm";
-import { workoutsWithExercises } from "@/data/workout";
+import { backendUrl } from "@/data/backendUrl";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/app/lib/auth";
+
 const getWorkoutPlanWithWorkoutsAPI = async (
   id: number
 ): Promise<WorkoutPlanWithWorkouts | undefined> => {
-  // Simulate API delay
-  await new Promise((resolve) => setTimeout(resolve, 1000));
+  let workoutPlan: WorkoutPlanWithWorkouts | undefined;
 
-  console.log("getWorkoutPlanWithWorkoutsAPI id", id);
+  const session = await getServerSession(authOptions);
 
-  console.log("workoutPlans", workoutPlans);
+  console.log("session", session);
 
-  // Find the workout plan
-  const workoutPlan = workoutPlans.find((plan) => plan.id === id);
-
-  if (!workoutPlan) {
-    return undefined;
+  try {
+    const res = await fetch(`${backendUrl}/api/workout-plans/${id}`, {
+      headers: {
+        Authorization: `Bearer ${session?.accessToken}`,
+      },
+    });
+    workoutPlan = await res.json();
+  } catch (error) {
+    console.error("Error fetching workout plan:", error);
   }
 
-  const workoutPlanWorkouts = workoutsWithExercises.filter(
-    (workout) => workout.workoutPlanId === id
-  );
-
-  return {
-    ...workoutPlan,
-    workouts: workoutPlanWorkouts,
-  };
+  return workoutPlan;
 };
 
-export default async function AdminEditWorkoutPlanPage({
-  params,
-}: {
-  params: { id: string };
+export default async function AdminEditWorkoutPlanPage(props: {
+  params: Promise<{ id: number }>;
 }) {
-  const id = Number(params.id);
+  const { id } = await props.params;
 
   const workoutPlan = await getWorkoutPlanWithWorkoutsAPI(id);
 

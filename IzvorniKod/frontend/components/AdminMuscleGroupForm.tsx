@@ -34,10 +34,10 @@ export function AdminMuscleGroupForm({
   muscleGroup: MuscleGroupBase | null;
 }) {
   const router = useRouter();
-  const { createMuscleGroup, updateMuscleGroup } = useAppContext();
+  const { createMuscleGroup, updateMuscleGroup, uploadFile } = useAppContext();
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(
-    muscleGroup?.image || null
+    muscleGroup?.image ? `/api/upload/${muscleGroup.image}` : null
   );
 
   const form = useForm<FormValues>({
@@ -66,7 +66,7 @@ export function AdminMuscleGroupForm({
       if (selectedImage) {
         // Ovdje bi trebao biti stvarni upload slike na server
         // Za sada samo simuliramo
-        imageUrl = previewUrl || "";
+        imageUrl = await uploadFile(selectedImage);
       }
 
       if (!muscleGroup) {
