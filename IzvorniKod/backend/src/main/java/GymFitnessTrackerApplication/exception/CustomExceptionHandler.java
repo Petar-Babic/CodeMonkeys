@@ -44,7 +44,7 @@ public class CustomExceptionHandler {
 
     @ExceptionHandler(UsernameNotFoundException.class)
     public  ResponseEntity<String> handleUsernameNotFound(UsernameNotFoundException ex ){
-        return new ResponseEntity<>("User not found with email",HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(ex.getMessage(),HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)

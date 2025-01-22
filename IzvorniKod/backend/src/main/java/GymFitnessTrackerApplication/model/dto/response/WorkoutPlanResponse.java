@@ -4,21 +4,21 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class WorkoutPlanResponse {
-    private Long id;
-    private String name;
-    private String description;
-    private String image;
-    private String creatorName;
-    private String ownerName;
-    private Set<WorkoutResponse> workouts;
+    private final Long id;
+    private final String name;
+    private final String description;
+    private final String image;
+    private final Long createdById;
+    private final Long userId;
+    private final Set<WorkoutResponse> workouts;
 
-    public WorkoutPlanResponse(Long id, String name, String description, String image, String creatorName, String ownerName) {
+    public WorkoutPlanResponse(Long id, String name, String description, String image, Long createdById, Long userId) {
         this.id = id;
         this.name = name;
         this.description = description;
         this.image = image;
-        this.creatorName = creatorName;
-        this.ownerName = ownerName;
+        this.createdById = createdById;
+        this.userId = userId;
         workouts = new HashSet<>();
     }
 
@@ -42,12 +42,12 @@ public class WorkoutPlanResponse {
         return image;
     }
 
-    public String getCreatorName() {
-        return creatorName;
+    public Long getCreatedById() {
+        return createdById;
     }
 
-    public String getOwnerName() {
-        return ownerName;
+    public Long getUserId() {
+        return userId;
     }
 
     public Set<WorkoutResponse> getWorkouts() {

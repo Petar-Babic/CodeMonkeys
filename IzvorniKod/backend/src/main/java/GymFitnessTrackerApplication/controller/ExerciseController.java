@@ -3,8 +3,6 @@ package GymFitnessTrackerApplication.controller;
 import GymFitnessTrackerApplication.model.domain.MyUser;
 import GymFitnessTrackerApplication.model.dto.forms.ExerciseForm;
 import GymFitnessTrackerApplication.model.dto.response.ExerciseResponse;
-import GymFitnessTrackerApplication.model.dto.response.MuscleGroupResponse;
-import GymFitnessTrackerApplication.model.dto.workoutDTOs.MuscleGroupDTO;
 import GymFitnessTrackerApplication.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -13,7 +11,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Set;
 
 @Controller
 @RequestMapping("/api")
@@ -67,4 +64,6 @@ public class ExerciseController {
         return ResponseEntity.status(HttpStatus.OK).body(publicExercises);
     }
 
+    //GET /exercises/history/{id}
+    //vratiti kada je sve osoba obavila vjezbu
 }

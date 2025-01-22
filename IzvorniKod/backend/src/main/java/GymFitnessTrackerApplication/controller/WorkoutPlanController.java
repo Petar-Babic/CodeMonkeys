@@ -21,7 +21,7 @@ import java.text.SimpleDateFormat;
 
 @RestController
 @RequestMapping("/api")
-public class WorkoutController {
+public class WorkoutPlanController {
 
     @Autowired
     private JwtService jwtService;
@@ -29,8 +29,6 @@ public class WorkoutController {
     private MyUserService myUserService;
     @Autowired
     private WorkoutPlanService workoutPlanService;
-    @Autowired
-    private WorkoutSessionService workoutSessionService;
 
     @GetMapping("/workout-plans")
     public ResponseEntity<?> getAllWorkoutPlansForUser(@RequestHeader("Authorization") String token) {
@@ -60,7 +58,7 @@ public class WorkoutController {
         return ResponseEntity.status(HttpStatus.OK).body(workoutPlan);
     }
 
-    // TODO: Add endpoint for getting all workout plans for admin
+    // TODO: Add endpoint for getting all workout plans for admin -> postoji
     // @GetMapping("/workout-plans")
     // MNatija, ovo je napravio Korda
     // mjenjaj sta oces samo treba biti ova funkcionalnost
@@ -71,26 +69,28 @@ public class WorkoutController {
         return ResponseEntity.status(HttpStatus.OK).body(allWorkoutPlans);
     }
 
-    // TODO: NEDOSTAJE UPDATE WORKOUT PLAN
+    @PostMapping("/create-workout-plan")
+    public ResponseEntity<?> createWorkoutPlan(@RequestBody WorkoutPlanForm workoutPlanForm ) {
+        WorkoutPlanResponse workoutPlan = workoutPlanService.createNewWorkoutPlan(workoutPlanForm);
+        return ResponseEntity.status(HttpStatus.OK).body(workoutPlan);
+    }
 
-   
+    @PutMapping("workout-plans/{id}")
+    public ResponseEntity<?> updateWorkoutPlan(@PathVariable Long id, @RequestBody WorkoutPlanForm workoutPlanForm) {
+        WorkoutPlanResponse updatedWorkoutPlan = workoutPlanService.updateWorkoutPlan(id, workoutPlanForm);
+        return ResponseEntity.status(HttpStatus.OK).body(updatedWorkoutPlan);
+    }
 
     // TODO: Add endpoint for deleting workout plan for admin
     // @DeleteMapping("/workout-plans/{id}")
     // MNatija, ovo je napravio Korda
-    // mjenjaj sta oces samo treba biti ova funkcionalnost 
+    // mjenjaj sta oces samo treba biti ova funkcionalnost
     @DeleteMapping("/workout-plans/{id}")
     public ResponseEntity<?> deleteWorkoutPlan(@PathVariable Long id){
         workoutPlanService.deleteWorkoutPlan(id);
         return ResponseEntity.status(HttpStatus.OK).body("Workout plan successfully deleted.");
     }
 
-
-    @PostMapping("/create-workout-plan")
-    public ResponseEntity<?> createWorkoutPlan(@RequestBody WorkoutPlanForm workoutPlanForm ) {
-        WorkoutPlanResponse workoutPlan = workoutPlanService.createNewWorkoutPlan(workoutPlanForm);
-        return ResponseEntity.status(HttpStatus.OK).body(workoutPlan);
-    }
 
     @GetMapping("/user/current-workout-plan")
     public ResponseEntity<?> getCurrentUserWorkoutPlan(@RequestHeader("Authorization") String token){
@@ -110,47 +110,6 @@ public class WorkoutController {
     public ResponseEntity<?> getWorkoutPlanById(@PathVariable Long id){
         WorkoutPlanResponse workoutPlan = workoutPlanService.getWorkoutPlanById(id);
         return ResponseEntity.status(HttpStatus.OK).body(workoutPlan);
-    }
-
-    @PostMapping("/create-workout-session")
-    public ResponseEntity<?> createWorkoutSession(@RequestHeader("Authorization") String token,
-                                                  @RequestBody WorkoutSessionForm workoutSessionForm) {
-        String email = jwtService.extractEmail(token.trim().substring(7));
-        MyUser user = (MyUser) myUserService.getMyUser(email);
-        workoutSessionService.createWorkoutSession(workoutSessionForm, user);
-        return ResponseEntity.status(HttpStatus.OK).body("Workout session successfully created..");
-    }
-
-    @GetMapping("workout-session")
-    public ResponseEntity<?> getWorkoutSession(@RequestHeader("Authorization") String token,
-                                               @RequestParam("startDate") String startDate,
-                                               @RequestParam("endDate") String endDate) throws Exception {
-        String email = jwtService.extractEmail(token.trim().substring(7));
-        MyUser user = (MyUser) myUserService.getMyUser(email);
-        
-        SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy.");
-        Date start = dateFormat.parse(startDate);
-        Date end = dateFormat.parse(endDate);
-        
-        Set<WorkoutSessionResponse> wsr = workoutSessionService.getWorkoutSessionsBetweenDates(user, start, end);
-        return ResponseEntity.status(HttpStatus.OK).body(wsr);
-    }
-
-    @GetMapping("workout-sessions-user")
-    public ResponseEntity<?> getUserWorkoutSessions(@RequestHeader("Authorization") String token){
-        String email = jwtService.extractEmail(token.trim().substring(7));
-        MyUser user = (MyUser) myUserService.getMyUser(email);
-        Set<WorkoutSessionResponse> response = workoutSessionService.getWorkoutSessionsForUser(user);
-        return ResponseEntity.status(HttpStatus.OK).body(response);
-    }
-
-    @PutMapping("workout-plans/{id}")
-    public ResponseEntity<?> updateWorkoutPlan(@PathVariable Long id, @RequestBody WorkoutPlanForm workoutPlanForm) {
-        WorkoutPlanResponse updatedWorkoutPlan = workoutPlanService.updateWorkoutPlan(id, workoutPlanForm);
-        if (updatedWorkoutPlan == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Workout plan not found");
-        }
-        return ResponseEntity.status(HttpStatus.OK).body(updatedWorkoutPlan);
     }
 
     @PostMapping("upload-file")

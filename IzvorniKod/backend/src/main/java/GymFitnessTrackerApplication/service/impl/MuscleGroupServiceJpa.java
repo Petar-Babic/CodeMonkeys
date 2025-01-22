@@ -1,15 +1,13 @@
 package GymFitnessTrackerApplication.service.impl;
 
-import GymFitnessTrackerApplication.exception.NonExistantExercise;
+import GymFitnessTrackerApplication.exception.NonExistantEntityException;
 import GymFitnessTrackerApplication.model.dao.ExerciseRepo;
 import GymFitnessTrackerApplication.model.dao.MuscleGroupRepo;
-import GymFitnessTrackerApplication.model.domain.Exercise;
 import GymFitnessTrackerApplication.model.domain.MuscleGroup;
 import GymFitnessTrackerApplication.model.dto.response.MuscleGroupResponse;
 import GymFitnessTrackerApplication.model.dto.workoutDTOs.MuscleGroupDTO;
 import GymFitnessTrackerApplication.service.MuscleGroupService;
 import com.amazonaws.services.s3.AmazonS3;
-import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -42,7 +40,7 @@ public class MuscleGroupServiceJpa implements MuscleGroupService {
     @Override
     public MuscleGroupResponse updateMuscleGroup(Long id, MuscleGroupDTO muscleGroupDTO) {
         MuscleGroup muscleGroup = muscleGroupRepo.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Muscle group with id " + id + " not found"));
+                .orElseThrow(() -> new NonExistantEntityException("Muscle group with id " + id + " not found"));
 
         muscleGroup.setName(muscleGroupDTO.name());
         muscleGroup.setDescription(muscleGroupDTO.description());
@@ -57,7 +55,7 @@ public class MuscleGroupServiceJpa implements MuscleGroupService {
     @Override
     public void deleteMuscleGroup(Long id){
         MuscleGroup muscleGroup = muscleGroupRepo.findById(id).
-                orElseThrow(() -> new NonExistantExercise("Muscle group with "+id+"not found"));
+                orElseThrow(() -> new NonExistantEntityException("Muscle group with "+id+"not found"));
 
         //treba li paziti na vezu???
         muscleGroupRepo.delete(muscleGroup);

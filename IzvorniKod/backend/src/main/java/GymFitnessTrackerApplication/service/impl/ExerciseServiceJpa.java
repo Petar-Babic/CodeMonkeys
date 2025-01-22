@@ -1,24 +1,19 @@
 package GymFitnessTrackerApplication.service.impl;
 
-import GymFitnessTrackerApplication.exception.NonExistantExercise;
 import GymFitnessTrackerApplication.model.dao.ExerciseRepo;
 import GymFitnessTrackerApplication.model.dao.MuscleGroupRepo;
 import GymFitnessTrackerApplication.model.domain.*;
 import GymFitnessTrackerApplication.model.dto.forms.ExerciseForm;
-import GymFitnessTrackerApplication.model.dto.forms.WorkoutPlanForm;
 import GymFitnessTrackerApplication.model.dto.response.*;
-import GymFitnessTrackerApplication.model.dto.workoutDTOs.MuscleGroupDTO;
-import GymFitnessTrackerApplication.model.dto.workoutDTOs.PlannedExerciseDTO;
-import GymFitnessTrackerApplication.model.dto.workoutDTOs.WorkoutDTO;
 import GymFitnessTrackerApplication.service.ExerciseService;
 import com.amazonaws.AmazonClientException;
+import GymFitnessTrackerApplication.exception.NonExistantEntityException;
+
 import com.amazonaws.HttpMethod;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.PutObjectRequest;
-import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -81,7 +76,7 @@ public class ExerciseServiceJpa implements ExerciseService {
         if (exerciseForm.primaryMuscleGroupsIds() != null) {
             exerciseForm.primaryMuscleGroupsIds().forEach(muscleGroupId -> {
                 MuscleGroup muscleGroup = muscleGroupRepo.findById(muscleGroupId)
-                        .orElseThrow(() -> new EntityNotFoundException("MuscleGroup with id "+ muscleGroupId + " not found."));
+                        .orElseThrow(() -> new NonExistantEntityException("MuscleGroup with id "+ muscleGroupId + " not found."));
                 newExercise.addPrimaryMuscleGroup(muscleGroup);
                 muscleGroup.addPrimaryToExercises(newExercise);
             });
@@ -90,7 +85,7 @@ public class ExerciseServiceJpa implements ExerciseService {
         if (exerciseForm.secondaryMuscleGroupsIds() != null) {
             exerciseForm.secondaryMuscleGroupsIds().forEach(muscleGroupId -> {
                 MuscleGroup muscleGroup = muscleGroupRepo.findById(muscleGroupId)
-                        .orElseThrow(() -> new EntityNotFoundException("MuscleGroup with id "+ muscleGroupId + " not found."));
+                        .orElseThrow(() -> new NonExistantEntityException("MuscleGroup with id "+ muscleGroupId + " not found."));
                 newExercise.addSecondaryMuscleGroup(muscleGroup);
                 muscleGroup.addSecondaryToExercises(newExercise);
             });
@@ -103,7 +98,7 @@ public class ExerciseServiceJpa implements ExerciseService {
     @Override
     public ExerciseResponse updateExercise(Long id, ExerciseForm exerciseForm) {
         Exercise exercise = exerciseRepo.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("EExercise with "+ id +" not found."));
+                .orElseThrow(() -> new NonExistantEntityException("EExercise with "+ id +" not found."));
 
         exercise.setName(exerciseForm.name());
         exercise.setDescription(exerciseForm.description());
@@ -115,7 +110,7 @@ public class ExerciseServiceJpa implements ExerciseService {
         if (exerciseForm.primaryMuscleGroupsIds() != null) {
             exerciseForm.primaryMuscleGroupsIds().forEach(muscleGroupId -> {
                 MuscleGroup muscleGroup = muscleGroupRepo.findById(muscleGroupId)
-                        .orElseThrow(() -> new EntityNotFoundException("MuscleGroup with id "+ muscleGroupId + " not found."));
+                        .orElseThrow(() -> new NonExistantEntityException("MuscleGroup with id "+ muscleGroupId + " not found."));
                 exercise.addPrimaryMuscleGroup(muscleGroup);
                 muscleGroup.addPrimaryToExercises(exercise);
             });
@@ -124,7 +119,7 @@ public class ExerciseServiceJpa implements ExerciseService {
         if (exerciseForm.secondaryMuscleGroupsIds() != null) {
             exerciseForm.secondaryMuscleGroupsIds().forEach(muscleGroupId -> {
                 MuscleGroup muscleGroup = muscleGroupRepo.findById(muscleGroupId)
-                        .orElseThrow(() -> new EntityNotFoundException("MuscleGroup with id "+ muscleGroupId + " not found."));
+                        .orElseThrow(() -> new NonExistantEntityException("MuscleGroup with id "+ muscleGroupId + " not found."));
                 exercise.addSecondaryMuscleGroup(muscleGroup);
                 muscleGroup.addSecondaryToExercises(exercise);
             });
@@ -137,7 +132,7 @@ public class ExerciseServiceJpa implements ExerciseService {
     @Override
     public void deleteExercise(Long exerciseId) {
         Exercise exercise = exerciseRepo.findById(exerciseId).
-                orElseThrow(() -> new NonExistantExercise("Exercise with "+exerciseId+"not found"));
+                orElseThrow(() -> new NonExistantEntityException("Exercise with "+exerciseId+" not found"));
         //String fileName = exercise.getGif();
         //deleteFile(fileName);
         exerciseRepo.delete(exercise);
@@ -145,8 +140,8 @@ public class ExerciseServiceJpa implements ExerciseService {
     //prepravi s excpetion-om
     @Override
     public ExerciseResponse getExerciseById(Long id) {
-        Exercise exercise = exerciseRepo.findById(id).orElse(null);
-        if (exercise == null) return null;
+        Exercise exercise = exerciseRepo.findById(id)
+                .orElseThrow(()-> new NonExistantEntityException("Exercise with id "+ id + " not found."));
         return generateExerciseResponse(exercise);
     }
 
@@ -166,6 +161,9 @@ public class ExerciseServiceJpa implements ExerciseService {
         return getURLToFile(fileName);
     }
 
+
+
+    //vjv obrisi
     public void deleteFile(String fileName) {
         s3Client.deleteObject(bucketName, fileName);
     }
@@ -175,7 +173,7 @@ public class ExerciseServiceJpa implements ExerciseService {
         return s3Client.generatePresignedUrl(bucketName,fileName,expiration, HttpMethod.GET).toString();
     }
     private File convertMultipartFileToFile(MultipartFile mpFile){
-        File convertedFile = new File(mpFile.getOriginalFilename());
+        File convertedFile = new File(Objects.requireNonNull(mpFile.getOriginalFilename()));
         try (FileOutputStream fos = new FileOutputStream(convertedFile)){
             fos.write(mpFile.getBytes());
         }catch(IOException e){
