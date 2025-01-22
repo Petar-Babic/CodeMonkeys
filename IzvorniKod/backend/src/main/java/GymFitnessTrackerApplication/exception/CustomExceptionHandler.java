@@ -3,6 +3,7 @@ package GymFitnessTrackerApplication.exception;
 
 import GymFitnessTrackerApplication.service.AuthService;
 import io.jsonwebtoken.ExpiredJwtException;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.hibernate.exception.ConstraintViolationException;
@@ -119,6 +120,11 @@ public class CustomExceptionHandler {
 
     @ExceptionHandler(NoExistingFoodException.class)
     public ResponseEntity<String> handleNonExistingFood(NoExistingFoodException ex){
+        return new ResponseEntity<>(ex.getMessage(),HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(EntityNotFoundException.class)
+    public ResponseEntity<String> handleEntityNotFound(EntityNotFoundException ex){
         return new ResponseEntity<>(ex.getMessage(),HttpStatus.NOT_FOUND);
     }
 

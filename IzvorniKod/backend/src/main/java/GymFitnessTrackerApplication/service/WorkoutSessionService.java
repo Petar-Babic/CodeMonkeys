@@ -11,7 +11,6 @@ public interface WorkoutSessionService {
     public void createWorkoutSession(WorkoutSessionForm workoutSessionForm, MyUser user);
     public void updateWorkoutSession(WorkoutSessionForm workoutSessionForm, MyUser user);
     public void deleteWorkoutSession(Long workoutSessionId, MyUser user);
-    public Set<WorkoutSessionResponse> getAllWorkoutSessions(MyUser user);
     public Set<WorkoutSessionResponse> getWorkoutSessionsBetweenDates(MyUser user, Date starDate, Date endDate);
     public Set<WorkoutSessionResponse> getWorkoutSessionsForUser(MyUser user);
 }

@@ -1,5 +1,6 @@
 package GymFitnessTrackerApplication.service.impl;
 
+import GymFitnessTrackerApplication.exception.InvalidInputException;
 import GymFitnessTrackerApplication.model.dao.PlannedExerciseRepo;
 import GymFitnessTrackerApplication.model.dao.WorkoutRepo;
 import GymFitnessTrackerApplication.model.dao.WorkoutSessionRepo;
@@ -33,37 +34,23 @@ public class WorkoutSessionServiceJpa implements WorkoutSessionService {
         Date date = workoutSessionForm.date();
         ReviewDTO reviewDTO = workoutSessionForm.userReview();
         Set<PerformedExerciseDTO> performedExercises = workoutSessionForm.performedExercises();
-//        if(workout==null){
-//            System.out.println("workout: ");
-//        }
-//        if(date==null){
-//            System.out.println("datum: ");
-//        }
-//        if(reviewDTO==null){
-//            System.out.println("ocjenaaaa: ");
-//        }
-//        if(performedExercises==null){
-//            System.out.println("peeeeee: ");
-//        }
+
         if(workout==null || date==null || reviewDTO==null || performedExercises==null) {
-            throw new IllegalArgumentException("Invalid workout");  //npr
+            throw new InvalidInputException("Invalid input for workout.");
         }
 
         Review userReview = new Review(reviewDTO);
-        System.out.println("krecem radit");
         WorkoutSession newWorkoutSession = new WorkoutSession(date, user, userReview, workout);
         for(PerformedExerciseDTO performedExerciseDTO : performedExercises) {
             PlannedExercise plannedExerciseId = plannedExerciseRepo.findById(performedExerciseDTO.getPlannedExerciseId()).orElse(null);
             Set<PerformedSetDTO> performedSetsDTO = performedExerciseDTO.getPerformedSets();
-            if(plannedExerciseId==null || performedSetsDTO==null) { throw new IllegalArgumentException("Invalid planned exercise"); }
-            System.out.println("prvi loop");
+            if(plannedExerciseId==null || performedSetsDTO==null) { throw new InvalidInputException("Invalid input for planned exercise."); }
             PerformedExercises newPerformedExercise = new PerformedExercises(newWorkoutSession, plannedExerciseId);
             for(PerformedSetDTO performedSetDTO : performedSetsDTO) {
                 Integer reps = performedSetDTO.reps();
                 Float weight = performedSetDTO.weight();
                 Integer rpe = performedSetDTO.rpe();
-                System.out.println("drugi loop");
-                if(reps==null || weight==null || rpe==null) { throw new IllegalArgumentException("Invalid reps"); }
+                if(reps==null || weight==null || rpe==null) { throw new InvalidInputException("Invalid input for a performed set."); }
                 PerformedSet newPerformedSet = new PerformedSet(newPerformedExercise, reps,rpe,weight);
                 newPerformedExercise.addPerformedSet(newPerformedSet);
             }
@@ -83,11 +70,6 @@ public class WorkoutSessionServiceJpa implements WorkoutSessionService {
     }
 
     @Override
-    public Set<WorkoutSessionResponse> getAllWorkoutSessions(MyUser user) {
-        return Set.of();
-    }
-
-    @Override
     public Set<WorkoutSessionResponse> getWorkoutSessionsBetweenDates(MyUser user, Date starDate, Date endDate) {
         Set<WorkoutSession> workoutSessions = workoutSessionRepo.findByUserAndDateInterval(user, starDate, endDate);
         return generateSetWorkoutSessionResponse(workoutSessions);
@@ -98,6 +80,7 @@ public class WorkoutSessionServiceJpa implements WorkoutSessionService {
         Set<WorkoutSession> workoutSessions = workoutSessionRepo.findByUser(user);
         return generateSetWorkoutSessionResponse(workoutSessions);
     }
+
 
     private WorkoutSessionResponse generateWorkoutSessionResponse(WorkoutSession workoutSession){
         ReviewDTO userReview = new ReviewDTO(workoutSession.getUserReview().getRating(),workoutSession.getUserReview().getComment());

@@ -1,24 +1,14 @@
 package GymFitnessTrackerApplication.controller;
 
 import GymFitnessTrackerApplication.model.domain.MyUser;
-import GymFitnessTrackerApplication.model.dto.forms.ExerciseForm;
 import GymFitnessTrackerApplication.model.dto.forms.WorkoutSessionForm;
-import GymFitnessTrackerApplication.model.dto.response.ExerciseResponse;
-import GymFitnessTrackerApplication.model.dto.response.MuscleGroupResponse;
 import GymFitnessTrackerApplication.model.dto.response.WorkoutSessionResponse;
-import GymFitnessTrackerApplication.model.dto.workoutDTOs.DateRangeDTO;
-import GymFitnessTrackerApplication.model.dto.workoutDTOs.MuscleGroupDTO;
-import GymFitnessTrackerApplication.model.dto.workoutDTOs.WorkoutDTO;
 import GymFitnessTrackerApplication.model.dto.forms.WorkoutPlanForm;
 import GymFitnessTrackerApplication.model.dto.response.WorkoutPlanResponse;
 import GymFitnessTrackerApplication.service.JwtService;
 import GymFitnessTrackerApplication.service.MyUserService;
 import GymFitnessTrackerApplication.service.WorkoutPlanService;
 import GymFitnessTrackerApplication.service.WorkoutSessionService;
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,7 +16,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Date;
-import java.util.List;
 import java.util.Set;
 import java.text.SimpleDateFormat;
 
@@ -153,87 +142,6 @@ public class WorkoutController {
         MyUser user = (MyUser) myUserService.getMyUser(email);
         Set<WorkoutSessionResponse> response = workoutSessionService.getWorkoutSessionsForUser(user);
         return ResponseEntity.status(HttpStatus.OK).body(response);
-    }
-
-
-
-    // TODO: This should be endpoint for getting all exercises for admin
-    @GetMapping("all-exercises")
-    public ResponseEntity<?> getAllExercises(){
-        List<ExerciseResponse> exercises = workoutPlanService.listAllExercises();
-        return ResponseEntity.status(HttpStatus.OK).body(exercises);
-    }
-
-    // TODO: Make the endpoint for getting exercise by id
-    // @GetMapping("exercise/{id}")
-
-
-    @GetMapping("all-exercises/created-by-user")
-    public ResponseEntity<?> getAllExercisesCreatedByUser(@RequestHeader("Authorization") String token){
-        String email = jwtService.extractEmail(token.trim().substring(7));
-        MyUser user = (MyUser) myUserService.getMyUser(email);
-        List<ExerciseResponse> exercises = workoutPlanService.listAllExercisesCreatedByUser(user);
-        return ResponseEntity.status(HttpStatus.OK).body(exercises);
-    }
-
-    // TODO: Make endpoint for getting all public exercises
-
-    @PostMapping("create-exercise")
-    public ResponseEntity<?> createExercise(@RequestHeader("Authorization") String token,
-                                            @RequestBody ExerciseForm exerciseForm){
-
-        String email = jwtService.extractEmail(token.trim().substring(7));
-        MyUser user = (MyUser) myUserService.getMyUser(email);
-        ExerciseResponse exercise = workoutPlanService.createExercise(user, exerciseForm);
-        return ResponseEntity.status(HttpStatus.OK).body(exercise);
-    }
-
-    @PostMapping("create-muscle-group")
-    public ResponseEntity<?> createMuscleGroup(@RequestBody MuscleGroupDTO muscleGroupDTO) {
-        MuscleGroupResponse createdMuscleGroup = workoutPlanService.createMuscleGroup(muscleGroupDTO);
-        return ResponseEntity.status(HttpStatus.OK).body(createdMuscleGroup);
-    }
-
-    @GetMapping("all-muscle-groups")
-    public ResponseEntity<?> getAllMuscleGroups(){
-        Set<MuscleGroupResponse> muscleGroups = workoutPlanService.listAllMuscleGroups();
-        return ResponseEntity.status(HttpStatus.OK).body(muscleGroups);
-    }
-
-    @GetMapping("muscle-groups/{id}")
-    public ResponseEntity<?> getMuscleGroupById(@PathVariable Long id) {
-        MuscleGroupResponse muscleGroup = workoutPlanService.getMuscleGroupById(id);
-        return ResponseEntity.status(HttpStatus.OK).body(muscleGroup);
-    }
-
-    @GetMapping("exercises/{id}")
-    public ResponseEntity<?> getExerciseById(@PathVariable Long id) {
-        ExerciseResponse exercise = workoutPlanService.getExerciseById(id);
-        return ResponseEntity.status(HttpStatus.OK).body(exercise);
-    }
-
-    @PutMapping("exercises/{id}")
-    public ResponseEntity<?> updateExercise(@PathVariable Long id, @RequestBody ExerciseForm exerciseForm) {
-        ExerciseResponse exercise = workoutPlanService.updateExercise(id, exerciseForm);
-        if (exercise == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Exercise not found");
-        }
-        return ResponseEntity.status(HttpStatus.OK).body(exercise);
-    }
-
-    @PutMapping("muscle-groups/{id}")
-    public ResponseEntity<?> updateMuscleGroup(@PathVariable Long id, @RequestBody MuscleGroupDTO muscleGroupDTO) {
-        MuscleGroupResponse updatedMuscleGroup = workoutPlanService.updateMuscleGroup(id, muscleGroupDTO);
-        if (updatedMuscleGroup == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Muscle group not found");
-        }
-        return ResponseEntity.status(HttpStatus.OK).body(updatedMuscleGroup);
-    }
-
-    @DeleteMapping("exercises/{id}")
-    public ResponseEntity<?> deleteExercise(@PathVariable Long id) {
-        workoutPlanService.deleteExercise(id);
-        return ResponseEntity.status(HttpStatus.OK).body("Exercise successfully deleted");
     }
 
     @PutMapping("workout-plans/{id}")

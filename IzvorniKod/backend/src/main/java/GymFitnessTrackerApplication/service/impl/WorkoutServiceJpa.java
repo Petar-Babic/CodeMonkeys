@@ -128,22 +128,11 @@ public class WorkoutServiceJpa implements WorkoutPlanService {
     }
 
     @Override
-    public void updateWorkoutPlan(Long wpId, WorkoutPlanForm workoutPlanform) {
-
-    }
-
-    @Override
-    public void deleteWorkoutPlan(Long workoutPlanId) {
-
-    }
-
-
-    @Override
     public String uploadFile(MultipartFile file) throws AmazonClientException {
-        String fileName = String.valueOf(System.currentTimeMillis());
+        String fileName = "img_" + System.currentTimeMillis();
         File fFile = convertMultipartFileToFile(file);
         s3Client.putObject(new PutObjectRequest(bucketName, fileName, fFile));
-        return fileName;
+        return getURLToFile(fileName);
     }
 
     @Override
