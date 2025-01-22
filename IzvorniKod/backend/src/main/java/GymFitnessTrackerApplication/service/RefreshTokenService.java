@@ -72,7 +72,6 @@ public class RefreshTokenService {
     }
 
     // tip ili preko username ili preko tokena
-    @Transactional
     public RefreshToken getToken(String value,String tip){
         RefreshToken tok;
         if(tip.equals("mail")){
@@ -83,7 +82,8 @@ public class RefreshTokenService {
                     tok = new RefreshToken(generirajToken(),Instant.now().plus(expiryTime,ChronoUnit.DAYS),user);
                     return refreshTokenRepo.save(tok);
                 }
-                refreshTokenRepo.deleteByMyUser(token.get().getMyUser());
+               // refreshTokenRepo.deleteByMyUser(token.get().getMyUser());
+                deleteToken(token.get().getId());
                 tok = new RefreshToken(generirajToken(),Instant.now().plus(expiryTime,ChronoUnit.DAYS),user);
                 return refreshTokenRepo.save(tok);
             }
@@ -99,6 +99,11 @@ public class RefreshTokenService {
         return null;
     }
 
+
+    public void deleteToken(Long id){
+        refreshTokenRepo.deleteById(id);
+        refreshTokenRepo.flush();
+    }
 
 
     public boolean isValid(String token){
