@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -106,11 +107,11 @@ public class FoodController {
         return ResponseEntity.status(200).body(res);
     }
 
-    @GetMapping("/api/meal/between-dates")
-    public ResponseEntity<?> mealsBetweenDates(@RequestBody DatesForm form,@RequestHeader("Authorization") String auth){
+    @GetMapping(value = "/api/meal/between-dates" , params = {"startTime","endTime"} )
+    public ResponseEntity<?> mealsBetweenDates(@RequestParam LocalDate startTime,@RequestParam LocalDate endTime, @RequestHeader("Authorization") String auth){
         String email = jwtService.extractEmail(auth.trim().substring(7));
         MyUser user = (MyUser) myUserService.getMyUser(email);
-        List<Meal> meals = mealService.getMealsBetweenDates(user,form.startTime(),form.endTime());
+        List<Meal> meals = mealService.getMealsBetweenDates(user,startTime,endTime);
         List<MealResponse> res = new ArrayList<>();
         meals.forEach(
                 meal ->  res.add(new MealResponse(meal))
