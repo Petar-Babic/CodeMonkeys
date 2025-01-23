@@ -102,8 +102,8 @@ public class WorkoutSessionServiceJpa implements WorkoutSessionService {
                 }
                 if(!setIds.isEmpty()) {
                     for(Long id : setIds) {
-                        performedSetRepo.deleteById(id);
-                        //valjda usput ukloni i vezu s performed exercise
+                        PerformedSet performedSet = performedSetRepo.findById(id).orElseThrow(()-> new NonExistantEntityException("Performed set with id "+id+" not found."));
+                        performedExercises.getPerformedSets().remove(performedSet);
                     }
                 }
             }
@@ -118,7 +118,8 @@ public class WorkoutSessionServiceJpa implements WorkoutSessionService {
         }
             //for each za svaki set
         for(Long id : wsIds){
-            performedExerciseRepo.deleteById(id);
+            PerformedExercises performedExercises = performedExerciseRepo.findById(id).orElse(null);
+            workoutSession.getPerformedExercises().remove(performedExercises);
         }
 
         workoutSessionRepo.save(workoutSession);

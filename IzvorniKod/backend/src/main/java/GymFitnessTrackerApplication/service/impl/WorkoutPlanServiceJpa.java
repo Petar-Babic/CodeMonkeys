@@ -124,6 +124,20 @@ public class WorkoutPlanServiceJpa implements WorkoutPlanService {
     }
 
     @Override
+    public WorkoutPlanResponse updateWorkoutPlan2(Long id, WorkoutPlanResponse workoutPlanResponse, MyUser user) {
+        WorkoutPlan workoutPlan = workoutPlanRepo.findById(id)
+                .orElseThrow(()-> new NonExistantEntityException("Workout plan with id "+id+" not found."));
+        if(workoutPlan.getOwner()!=user) {
+            throw new ForbiddenActionException("You have no permission to update this workout session.");
+        }
+
+
+
+        return null;
+    }
+
+
+    @Override
     public WorkoutPlanResponse getWorkoutPlanById(Long workoutPlanId) {
         WorkoutPlan workoutPlan = workoutPlanRepo.findById(workoutPlanId).orElse(null);
         if(workoutPlan == null) {

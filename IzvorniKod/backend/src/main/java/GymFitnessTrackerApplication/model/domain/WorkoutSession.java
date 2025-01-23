@@ -27,7 +27,7 @@ public class WorkoutSession {
     @OneToOne
     @JoinColumn(name = "trainer_review_id")
     private Review trainerReview;
-    @OneToMany(mappedBy = "workoutSession", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "workoutSession", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<PerformedExercises> performedExercises;
     @ManyToOne
     @JoinColumn(name = "workout_id")
