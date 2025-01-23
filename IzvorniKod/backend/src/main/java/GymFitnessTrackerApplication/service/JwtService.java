@@ -1,5 +1,7 @@
 package GymFitnessTrackerApplication.service;
 
+import GymFitnessTrackerApplication.model.domain.MyUser;
+import GymFitnessTrackerApplication.model.dto.response.UserDetailsResponse;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
@@ -10,8 +12,10 @@ import org.springframework.stereotype.Service;
 
 import java.security.Key;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Date;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 import javax.crypto.SecretKey;
 
@@ -29,6 +33,26 @@ public class JwtService {
                 .signWith(generateKey())
                 .compact();
     }
+
+    public String generateTokenTrainer(UserDetails userDetails, List<UserDetailsResponse> users) {
+        return Jwts.builder()
+                .subject(userDetails.getUsername())
+                .issuedAt(Date.from(Instant.now()))
+                .claim("users",users)
+                .expiration(Date.from(Instant.now().plusMillis(VALIDITY)))
+                .signWith(generateKey())
+                .compact();
+    }
+
+    public String generateForTraining(UserDetails userDetails, String userId) {
+        return Jwts.builder()
+                .subject(userDetails.getUsername())
+                .issuedAt(Date.from(Instant.now()))
+                .claim("userId",userId)
+                .expiration(Date.from(Instant.now().plusMillis(VALIDITY)))
+                .signWith(generateKey())
+                .compact();
+    }
     private SecretKey generateKey() {
         byte[] decodedKey = Base64.getDecoder().decode(SECRET);
         return Keys.hmacShaKeyFor(decodedKey);
@@ -37,6 +61,11 @@ public class JwtService {
     public String extractEmail(String jwt) {
         Claims claims = getClaims(jwt);
         return claims.getSubject();
+    }
+
+    public String extractUserId(String jwt){
+        Claims claims = getClaims(jwt);
+        return claims.get("userId",String.class);
     }
 
     private Claims getClaims(String jwt) {

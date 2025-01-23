@@ -64,7 +64,7 @@ public class FoodServiceJpa implements FoodService{
         if(form.getUnit() != null)
             food.setUnit(form.getUnit());
 
-        if(user.getRole().equals(Role.ADMIN)) food.setApproved(form.isApproved());
+        if(user.getRole().equals(Role.ADMIN)) food.setApproved(true);
         else food.setApproved(false);
 
         return foodRepo.save(food);

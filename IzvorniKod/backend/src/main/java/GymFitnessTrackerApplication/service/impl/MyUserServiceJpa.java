@@ -199,4 +199,9 @@ public class MyUserServiceJpa implements MyUserService {
         userRepository.save(user);
     }
 
+    @Override
+    public MyUser getMyUserByID(String id){
+        return userRepository.findById(Long.parseLong(id)).get();
+    }
+
 }

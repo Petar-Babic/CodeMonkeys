@@ -1,5 +1,7 @@
 package GymFitnessTrackerApplication.controller;
 
+import GymFitnessTrackerApplication.exception.AdminRestrictedException;
+import GymFitnessTrackerApplication.exception.NoExistingFoodException;
 import GymFitnessTrackerApplication.exception.NoNutrionPlanException;
 import GymFitnessTrackerApplication.model.domain.MyUser;
 import GymFitnessTrackerApplication.model.domain.NutrionPlan;
@@ -32,44 +34,38 @@ public class NutrionController {
             String email = jwtService.extractEmail(auth.trim().substring(7));
             MyUser user = (MyUser) myUserService.getMyUser(email);
             NutrionPlan plan;
-            if(user.getRole().equals(Role.TRAINER)) plan = myNutrionService.createNutrionPlanTrainer(user,form,form.getUserId());
-            else  plan= myNutrionService.createNutrionPlan(user,form);
+            if(user.getRole().equals(Role.TRAINER)) {
+                plan = myNutrionService.createNutrionPlanTrainer(user, form, Long.parseLong(jwtService.extractUserId(auth.trim().substring(7))));
+            } else  plan= myNutrionService.createNutrionPlan(user,form);
             return ResponseEntity.status(200).body(new NutrionPlanResponse(plan));
     }
 
     @GetMapping("")
     public ResponseEntity<?> getNutrionPlan(@RequestHeader("Authorization") String auth) {
-        System.out.println("Received GET request to /api/nutrition-plan");
-        System.out.println("Authorization header: " + auth);
-        
-        try {
             String email = jwtService.extractEmail(auth.trim().substring(7));
-            System.out.println("Extracted email: " + email);
-            
             MyUser user = (MyUser) myUserService.getMyUser(email);
-            System.out.println("Found user: " + user.getEmail());
-            
-            NutrionPlan plan = myNutrionService.getMyPlan(user);
-            System.out.println("Retrieved nutrition plan: " + (plan != null ? plan.toString() : "null"));
+            NutrionPlan plan;
+            if(user.getRole().equals(Role.TRAINER)){
+                String id = jwtService.extractUserId(auth.trim().substring(7));
+                plan = myNutrionService.getMyPlan(myUserService.getMyUserByID(id));
+            }
+            else  plan = myNutrionService.getMyPlan(user);
             
             return ResponseEntity.status(200).body(new NutrionPlanResponse(plan));
-        } catch (Exception e) {
-            System.out.println("Error in getNutrionPlan: " + e.getMessage());
-            throw e;
-        }
     }
 
     @PutMapping("")
     public ResponseEntity<?> updateCurrentNutrionPlan(@RequestBody NutrionPlanForm form, @RequestHeader("Authorization") String auth) {
         String email = jwtService.extractEmail(auth.trim().substring(7));
         MyUser user = (MyUser) myUserService.getMyUser(email);
-        NutrionPlan plan = myNutrionService.getMyPlan(user);
-
-        if(plan == null) {
-            throw new NoNutrionPlanException("NO existing plan to update");
-        } else {
-            myNutrionService.updateNutrionPlan(form,plan);
+        NutrionPlan plan;
+        if(user.getRole().equals(Role.TRAINER)){
+            String id = jwtService.extractUserId(auth.trim().substring(7));
+            plan = myNutrionService.getMyPlan(myUserService.getMyUserByID(id));
         }
+        else  plan = myNutrionService.getMyPlan(user);
+
+        myNutrionService.updateNutrionPlan(form,plan);
 
         return ResponseEntity.status(200).body(new NutrionPlanResponse(plan));
     }
@@ -80,12 +76,16 @@ public class NutrionController {
         MyUser user = (MyUser) myUserService.getMyUser(email);
         NutrionPlan plan = myNutrionService.getPlanFromId(id);
 
-        if(plan == null) {
-            throw new NoNutrionPlanException("NO existing plan to update");
-        } else {
-            myNutrionService.updateNutrionPlan(form,plan);
-        }   
-
+        if (!plan.getCreatedBy().equals(user.getId())) {
+            if (user.getRole().equals(Role.TRAINER)
+                // ako treba i za admina user.getRole().equals(Role.TRAINER)
+            ) {
+                String idUser = jwtService.extractUserId(auth.trim().substring(7));
+                if (myUserService.getMyUserByID(idUser).getRole().equals(Role.USER) && myUserService.getMyUserByID(idUser).getTrainer().getId().equals(user.getId()))
+                    myNutrionService.updateNutrionPlan(form, plan);
+                else throw new AdminRestrictedException("USER ISNT TRAINED BY THIS");
+            } else throw new AdminRestrictedException("USER nije trener");
+        } else myNutrionService.updateNutrionPlan(form, plan);
         return ResponseEntity.status(200).body(new NutrionPlanResponse(plan));
     }
 }
