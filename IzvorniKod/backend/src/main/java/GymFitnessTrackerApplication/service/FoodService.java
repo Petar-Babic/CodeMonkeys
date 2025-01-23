@@ -13,6 +13,8 @@ public interface FoodService {
 
     Food getSpecificFood(String id);
 
+    Food getSpecificFoodAdmin(String id);
+
     List<Food> foods();
 
     Food updateFood(String id,FoodForm form,MyUser user);
