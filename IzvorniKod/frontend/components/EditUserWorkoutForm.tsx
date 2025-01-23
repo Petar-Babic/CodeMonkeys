@@ -63,7 +63,7 @@ export function EditUserWorkoutForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: workout.name,
-      order: workout.order,
+      order: workout.order || 1,
       exercises: workout.exercises.map((exercise) => ({
         id: exercise.id,
         exerciseId: exercise.exerciseId,
@@ -142,6 +142,23 @@ export function EditUserWorkoutForm({
   useEffect(() => {
     console.log("form.formState.errors", form.formState.errors);
   }, [form.formState.errors]);
+
+  useEffect(() => {
+    console.log("Workout object in EditUserWorkoutForm:", workout);
+    form.reset({
+      name: workout.name,
+      order: workout.order || 1,
+      exercises: workout.exercises.map((exercise) => ({
+        id: exercise.id,
+        exerciseId: exercise.exerciseId,
+        exercise: exercises.find((e) => e.id === exercise.exerciseId)!,
+        sets: exercise.sets,
+        reps: exercise.reps,
+        rpe: exercise.rpe,
+        order: exercise.order,
+      })),
+    });
+  }, [workout, exercises, form]);
 
   return (
     <Form {...form}>

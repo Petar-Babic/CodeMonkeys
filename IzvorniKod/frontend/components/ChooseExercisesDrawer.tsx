@@ -92,12 +92,12 @@ export function ChooseExercisesDrawer({
             {filteredExercises.map((exercise) => (
               <div key={exercise.id} className="flex items-center space-x-2">
                 <Checkbox
-                  id={exercise.id}
+                  id={exercise.id.toString()}
                   checked={selectedExercises.some((e) => e.id === exercise.id)}
                   onCheckedChange={() => handleExerciseToggle(exercise)}
                 />
                 <label
-                  htmlFor={exercise.id}
+                  htmlFor={exercise.id.toString()}
                   className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                 >
                   {exercise.name}

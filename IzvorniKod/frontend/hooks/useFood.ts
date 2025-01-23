@@ -1,6 +1,5 @@
 import { useState, useCallback } from "react";
 import { FoodBase, CreateFoodInput, UpdateFoodInput } from "@/types/food";
-import { useAuthContext } from "@/contexts/AuthContext";
 import { foods as predefinedFoods } from "@/data/food";
 import { backendUrl } from "@/data/backendUrl";
 

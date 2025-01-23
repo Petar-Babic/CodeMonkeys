@@ -25,3 +25,10 @@ export type UpdatePerformedExerciseInput = Partial<PerformedExerciseBase> & {
 export type PerformedExerciseWithPerformedSet = PerformedExerciseBase & {
   performedSets: PerformedSetBase[];
 };
+
+export type CreatePerformedExerciseWithPerformedSetInput = Omit<
+  PerformedExerciseBase,
+  "id"
+> & {
+  performedSets: CreatePerformedSetInput[];
+};

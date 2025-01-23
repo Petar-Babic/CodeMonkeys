@@ -362,7 +362,7 @@ export function UserWorkoutPlanForm() {
         <FormField
           control={form.control}
           name="image"
-          render={({ field: { value, onChange, ...field } }) => (
+          render={({ field: { ref, name, onBlur } }) => (
             <FormItem>
               <FormLabel>Image</FormLabel>
               <FormControl>
@@ -371,7 +371,9 @@ export function UserWorkoutPlanForm() {
                     type="file"
                     accept="image/*"
                     onChange={handleImageChange}
-                    {...field}
+                    ref={ref}
+                    name={name}
+                    onBlur={onBlur}
                   />
                   {previewUrl && (
                     <div className="mt-4">

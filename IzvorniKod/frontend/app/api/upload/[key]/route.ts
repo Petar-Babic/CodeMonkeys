@@ -3,7 +3,7 @@ import {
   GetObjectCommand,
   DeleteObjectCommand,
 } from "@aws-sdk/client-s3";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { Readable } from "stream";
 
 const s3Client = new S3Client({
@@ -15,13 +15,15 @@ const s3Client = new S3Client({
 });
 
 export async function GET(
-  _request: Request,
-  { params }: { params: { id: string } }
+  request: NextRequest,
+  { params }: { params: Promise<{ key: string }> }
 ) {
   try {
+    const key = (await params).key; // 'a', 'b', or 'c'
+
     const s3Params = {
       Bucket: process.env.AWS_BUCKET_NAME!,
-      Key: params.id,
+      Key: key,
     };
 
     const command = new GetObjectCommand(s3Params);
@@ -48,21 +50,21 @@ export async function GET(
   } catch (error) {
     console.error("Greška pri dohvaćanju slike:", error);
     return NextResponse.json(
-      { error: "Greška pri dohvaćanju slike" },
+      { error: "Internal Server Error" },
       { status: 500 }
     );
   }
 }
 
 export async function DELETE(
-  _request: Request,
-  { params }: { params: { id: string } }
+  request: NextRequest,
+  { params }: { params: Promise<{ key: string }> }
 ) {
-  const { id } = params;
+  const { key } = await params;
 
   const s3Params = {
     Bucket: process.env.AWS_BUCKET_NAME!,
-    Key: id,
+    Key: key,
   };
 
   const command = new DeleteObjectCommand(s3Params);

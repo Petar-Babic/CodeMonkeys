@@ -11,12 +11,10 @@ const getFoodAPI = async (id: number): Promise<FoodBase | undefined> => {
   return foods.find((food) => food.id === id);
 };
 
-export default async function AdminEditFoodPage({
-  params,
-}: {
-  params: { id: string };
+export default async function AdminEditFoodPage(props: {
+  params: Promise<{ id: number }>;
 }) {
-  const id = Number(params.id);
+  const { id } = await props.params;
   const food = await getFoodAPI(id);
 
   return (

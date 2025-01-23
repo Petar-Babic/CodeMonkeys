@@ -41,8 +41,8 @@ public class NutrionServiceJpa implements NutrionService {
 
     // za trenera kao user on sam, createdFor se nade iz id
     @Override
-    public NutrionPlan createNutrionPlanTrainer(MyUser user, @RequestBody NutrionPlanForm form,String createdFor) {
-        MyUser createdForUser = myUserRepository.findById(Long.parseLong(createdFor)).get();
+    public NutrionPlan createNutrionPlanTrainer(MyUser user, @RequestBody NutrionPlanForm form,Long createdFor) {
+        MyUser createdForUser = myUserRepository.findById(createdFor).get();
         NutrionPlan nutrionPlan = new NutrionPlan(createdForUser, form);
         nutrionPlan.setCreatedBy(user.getId().toString());
         removeCurrentPlan(createdForUser);
@@ -53,12 +53,20 @@ public class NutrionServiceJpa implements NutrionService {
     @Transactional
     public void updateNutrionPlan(@RequestBody NutrionPlanForm form,NutrionPlan plan) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+        if(!Float.isNaN(form.getCalories()))
         plan.setCalories(form.getCalories());
+        if(!Float.isNaN(form.getCarbs()))
         plan.setCarbs(form.getCarbs());
+        if(!Float.isNaN(form.getFat()))
         plan.setFat(form.getFat());
+        if(!Float.isNaN(form.getProtein()))
         plan.setProtein(form.getProtein());
+
         plan.setUpdatedAt(ZonedDateTime.now());
+        if(form.getEndDate() != null)
         plan.setEndDate(LocalDate.parse(form.getEndDate(), formatter));
+        if(form.getStartDate() != null)
         plan.setStartDate(LocalDate.parse(form.getStartDate(), formatter));
         nutrionPlanRepo.save(plan);
     }

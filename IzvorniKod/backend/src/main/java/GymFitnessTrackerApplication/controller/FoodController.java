@@ -1,13 +1,8 @@
 package GymFitnessTrackerApplication.controller;
 
 
-import GymFitnessTrackerApplication.model.domain.Food;
-import GymFitnessTrackerApplication.model.domain.FoodMeal;
-import GymFitnessTrackerApplication.model.domain.Meal;
-import GymFitnessTrackerApplication.model.domain.MyUser;
-import GymFitnessTrackerApplication.model.dto.forms.DatesForm;
+import GymFitnessTrackerApplication.model.domain.*;
 import GymFitnessTrackerApplication.model.dto.forms.FoodForm;
-import GymFitnessTrackerApplication.model.dto.forms.FoodMealForm;
 import GymFitnessTrackerApplication.model.dto.forms.MealForm;
 import GymFitnessTrackerApplication.model.dto.response.FoodResponse;
 import GymFitnessTrackerApplication.model.dto.response.MealResponse;
@@ -37,6 +32,14 @@ public class FoodController {
 
     @Autowired
     private FoodMealService foodMealService;
+
+    @PostMapping(value = "/api/food/scan-barcode",params = {"barcode"})
+    public ResponseEntity<?> searchFood(@RequestHeader("Authorization") String token,@RequestParam String barcode){
+        String email = jwtService.extractEmail(token.trim().substring(7));
+        MyUser user = (MyUser) myUserService.getMyUser(email);
+        foodService.createFoodFromBarcode(user,barcode);
+        return ResponseEntity.status(200).body(barcode);
+    }
 
     @PostMapping("/api/food")
     public ResponseEntity<?> saveFood(@RequestBody FoodForm form, @RequestHeader("Authorization") String auth){
@@ -70,16 +73,17 @@ public class FoodController {
     public ResponseEntity<?> updateFood(@RequestBody FoodForm form,@RequestHeader("Authorization") String auth,@PathVariable String id){
         String email = jwtService.extractEmail(auth.trim().substring(7));
         MyUser user = (MyUser) myUserService.getMyUser(email);
-        Food food = foodService.updateFood(id,form);
+        Food food = foodService.updateFood(id,form,user);
         return ResponseEntity.status(200).body(new FoodResponse(food));
-
     }
 
     @PostMapping("/api/meal")
     public ResponseEntity<?> createMeal(@RequestBody MealForm form,@RequestHeader("Authorization") String auth){
         String email = jwtService.extractEmail(auth.trim().substring(7));
         MyUser user = (MyUser) myUserService.getMyUser(email);
-        Meal meal = mealService.createMealUser(user,form);
+        Meal meal;
+        if(user.getRole().equals(Role.TRAINER))  meal= mealService.createMealTrainer(user,form);
+        else meal = mealService.createMealUser(user,form);
         List<FoodMeal> foodmeals = foodMealService.createFoodMeals(meal,form);
         mealService.setFoodMeals(meal,foodmeals);
         MealResponse res = new MealResponse(meal);

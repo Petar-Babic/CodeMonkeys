@@ -9,10 +9,7 @@ export type ExerciseBase = {
   secondaryMuscleGroupsIds: number[];
 };
 
-export type CreateExerciseInput = Omit<
-  ExerciseBase,
-  "id" | "isApproved" | "createdById"
->;
+export type CreateExerciseInput = Omit<ExerciseBase, "id" | "createdById">;
 
 export type UpdateExerciseInput = Partial<Omit<ExerciseBase, "createdById">> & {
   id: number;

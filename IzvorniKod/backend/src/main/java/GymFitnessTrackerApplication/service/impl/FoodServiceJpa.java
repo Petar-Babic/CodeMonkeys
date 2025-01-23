@@ -9,7 +9,10 @@ import GymFitnessTrackerApplication.model.domain.Unit;
 import GymFitnessTrackerApplication.model.dto.forms.FoodForm;
 import GymFitnessTrackerApplication.service.FoodService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.web.reactive.function.client.WebClient;
 
 import java.util.List;
 import java.util.Optional;
@@ -41,7 +44,7 @@ public class FoodServiceJpa implements FoodService{
     }
 
     @Override
-    public Food updateFood(String id,FoodForm form){
+    public Food updateFood(String id,FoodForm form,MyUser user){
         Optional<Food> f = foodRepo.findById(Long.parseLong(id));
         if(f.isEmpty()) throw new NoExistingFoodException("No food item with ID : "+id);
         Food food = f.get();
@@ -61,6 +64,30 @@ public class FoodServiceJpa implements FoodService{
         if(form.getUnit() != null)
             food.setUnit(form.getUnit());
 
+        if(user.getRole().equals(Role.ADMIN)) food.setApproved(form.isApproved());
+        else food.setApproved(false);
+
         return foodRepo.save(food);
+    }
+
+    @Override
+    public Food createFoodFromBarcode(MyUser user,String barcode){
+        String url = "https://world.openfoodfacts.net/api/v2/product/";
+        String secondPart = "?product_type=all&fields=product_name%2Cnutriments";
+        String sb = url+barcode.replaceAll(" ","%20").replaceAll("/","%2F")+secondPart;
+        System.out.println(sb);
+
+       /* WebClient webClient = WebClient.create();
+
+        // Parametriziramo tip podataka za vraćanje odgovora s WebClient
+        List<Map<String, Object>> emails = webClient.get()
+                .uri(url)
+                .headers(headers -> headers.setBearerAuth(accessToken.getTokenValue()))
+                .retrieve()
+                .bodyToMono(new ParameterizedTypeReference<List<Map<String, Object>>>() {
+                })
+                .block();*/
+        return null;
+
     }
 }

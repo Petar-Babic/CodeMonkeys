@@ -138,7 +138,7 @@ export function AdminExerciseForm({
         <FormField
           control={form.control}
           name="gif"
-          render={({ field: { value, onChange, ...field } }) => (
+          render={({ field: { ref, name, onBlur } }) => (
             <FormItem>
               <FormLabel>GIF animacija</FormLabel>
               <FormControl>
@@ -147,7 +147,9 @@ export function AdminExerciseForm({
                     type="file"
                     accept="image/gif"
                     onChange={handleGifChange}
-                    {...field}
+                    ref={ref}
+                    name={name}
+                    onBlur={onBlur}
                   />
                   {previewUrl && (
                     <div className="mt-4">

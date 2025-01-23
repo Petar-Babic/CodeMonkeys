@@ -3,6 +3,7 @@ package GymFitnessTrackerApplication.controller;
 import GymFitnessTrackerApplication.exception.NoNutrionPlanException;
 import GymFitnessTrackerApplication.model.domain.MyUser;
 import GymFitnessTrackerApplication.model.domain.NutrionPlan;
+import GymFitnessTrackerApplication.model.domain.Role;
 import GymFitnessTrackerApplication.model.dto.forms.NutrionPlanForm;
 import GymFitnessTrackerApplication.model.dto.response.NutrionPlanResponse;
 import GymFitnessTrackerApplication.service.JwtService;
@@ -28,26 +29,12 @@ public class NutrionController {
 
     @PostMapping("")
     public ResponseEntity<?> postNutrionPlan(@RequestBody NutrionPlanForm form, @RequestHeader("Authorization") String auth) {
-        System.out.println("Received POST request to /api/nutrition-plan");
-        System.out.println("Authorization header: " + auth);
-        System.out.println("Request body: " + form.toString());
-        
-        try {
             String email = jwtService.extractEmail(auth.trim().substring(7));
-            System.out.println("Extracted email: " + email);
-            
             MyUser user = (MyUser) myUserService.getMyUser(email);
-            System.out.println("Found user: " + user.getEmail());
-            
-            NutrionPlan plan = myNutrionService.createNutrionPlan(user,form);
-            System.out.println("Created nutrition plan: " + plan.toString());
-            
+            NutrionPlan plan;
+            if(user.getRole().equals(Role.TRAINER)) plan = myNutrionService.createNutrionPlanTrainer(user,form,form.getUserId());
+            else  plan= myNutrionService.createNutrionPlan(user,form);
             return ResponseEntity.status(200).body(new NutrionPlanResponse(plan));
-        } catch (Exception e) {
-            System.out.println("Error in postNutrionPlan: " + e.getMessage());
-            e.printStackTrace();
-            throw e;
-        }
     }
 
     @GetMapping("")

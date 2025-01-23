@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { Pie, Bar } from "react-chartjs-2";
 import {
   Chart as ChartJS,
@@ -21,85 +21,17 @@ ChartJS.register(
   LinearScale
 );
 
-type Goals = {
-  calories: number;
-  fats: number;
-  saturatedFats: number;
-  transFats: number;
-  polyunsaturatedFats: number;
-  monosaturatedFats: number;
-  cholesterol: number;
-  sodium: number;
-  potassium: number;
-  calcium: number;
-  iron: number;
-  magnesium: number;
-  carbs: number;
-  netCarbs: number;
-  fiber: number;
-  sugars: number;
-  protein: number;
-  C: number;
-  D: number;
-  B12: number;
-  [key: string]: number;
-};
-
-type Food = {
-  id: number;
-  name: string;
-  servingSize: number;
-  servingSizeType: string;
-  calories: number;
-  fats: number;
-  saturatedFats: number;
-  transFats: number;
-  polyunsaturatedFats: number;
-  monosaturatedFats: number;
-  cholesterol: number;
-  sodium: number;
-  potassium: number;
-  calcium: number;
-  iron: number;
-  magnesium: number;
-  carbs: number;
-  netCarbs: number;
-  fiber: number;
-  sugars: number;
-  protein: number;
-  C: number;
-  D: number;
-  B12: number;
-};
-
-type Meal = {
-  id: number;
-  name: string;
-  calories: number;
-  foods: Food[];
-  fats: number;
-  saturatedFats: number;
-  transFats: number;
-  polyunsaturatedFats: number;
-  monosaturatedFats: number;
-  cholesterol: number;
-  sodium: number;
-  potassium: number;
-  calcium: number;
-  iron: number;
-  magnesium: number;
-  carbs: number;
-  netCarbs: number;
-  fiber: number;
-  sugars: number;
-  protein: number;
-  C: number;
-  D: number;
-  B12: number;
-};
+import { FoodBase } from "@/types/food";
+import { MealBase } from "@/types/meal";
+import { NutritionPlanBase } from "@/types/nutritionPlan";
+import { MealSuggestionBase } from "@/types/mealSuggestion";
 
 const NutritionPage = () => {
-  const [meals, setMeals] = useState<Meal[]>([]);
+  const [meals, setMeals] = useState<MealBase[]>([]);
+  const [mealFoods, setMealFoods] = useState<FoodBase[]>([]);
+  const [mealSuggestions, setMealSuggestions] = useState<MealSuggestionBase[]>([]);
+  const [mealSuggestionsByDate, setMealSuggestionsByDate] = useState<{ [key: string]: MealSuggestionBase[] }>({});
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isFoodModalOpen, setIsFoodModalOpen] = useState(false);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
@@ -108,152 +40,51 @@ const NutritionPage = () => {
   const [showConfirmDialogFood, setShowConfirmDialogFood] = useState(false);
 
   const [totalNutrients, setTotalNutrients] = useState({
-    fats: 0,
-    saturatedFats: 0,
-    transFats: 0,
-    polyunsaturatedFats: 0,
-    monosaturatedFats: 0,
-    cholesterol: 0,
-    sodium: 0,
-    potassium: 0,
-    calcium: 0,
-    iron: 0,
-    magnesium: 0,
+    fat: 0,
     carbs: 0,
-    netCarbs: 0,
-    fiber: 0,
-    sugars: 0,
     protein: 0,
-    C: 0,
-    D: 0,
-    B12: 0,
   });
 
-  const [goals, setGoals] = useState<Goals>({
-    calories: 0,
-    fats: 0,
-    saturatedFats: 0,
-    transFats: 0,
-    polyunsaturatedFats: 0,
-    monosaturatedFats: 0,
-    cholesterol: 0,
-    sodium: 0,
-    potassium: 0,
-    calcium: 0,
-    iron: 0,
-    magnesium: 0,
-    carbs: 0,
-    netCarbs: 0,
-    fiber: 0,
-    sugars: 0,
-    protein: 0,
-    C: 0,
-    D: 0,
-    B12: 0,
-  });
-  const [newFood, setNewFood] = useState<Food>({
+  const defaultMeal: MealBase = {
     id: 0,
-    name: "",
-    servingSize: 0,
-    servingSizeType: "",
+    name: '',
     calories: 0,
-    fats: 0,
-    saturatedFats: 0,
-    transFats: 0,
-    polyunsaturatedFats: 0,
-    monosaturatedFats: 0,
-    cholesterol: 0,
-    sodium: 0,
-    potassium: 0,
-    calcium: 0,
-    iron: 0,
-    magnesium: 0,
-    carbs: 0,
-    netCarbs: 0,
-    fiber: 0,
-    sugars: 0,
     protein: 0,
-    C: 0,
-    D: 0,
-    B12: 0,
+    carbs: 0,
+    fat: 0,
+    userId: 0,
+    dailyNutritionLogId: 0,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  };  
+
+  const [goals, setGoals] = useState<NutritionPlanBase>({
+    id: 0,
+    userId: 0,
+    calories: 0,
+    fat: 0,
+    carbs: 0,
+    protein: 0,
+    startDate: new Date(),
+    endDate: undefined,
   });
 
-  const [currentMeal, setCurrentMeal] = useState<{
-    id: number;
-    name: string;
-    calories: number;
-    foods: {
-      id: number;
-      name: string;
-      servingSize: number;
-      servingSizeType: string;
-      calories: number;
-      fats: number;
-      saturatedFats: number;
-      transFats: number;
-      polyunsaturatedFats: number;
-      monosaturatedFats: number;
-      cholesterol: number;
-      sodium: number;
-      potassium: number;
-      calcium: number;
-      iron: number;
-      magnesium: number;
-      carbs: number;
-      netCarbs: number;
-      fiber: number;
-      sugars: number;
-      protein: number;
-      C: number;
-      D: number;
-      B12: number;
-    }[];
-    fats: number;
-    saturatedFats: number;
-    transFats: number;
-    polyunsaturatedFats: number;
-    monosaturatedFats: number;
-    cholesterol: number;
-    sodium: number;
-    potassium: number;
-    calcium: number;
-    iron: number;
-    magnesium: number;
-    carbs: number;
-    netCarbs: number;
-    fiber: number;
-    sugars: number;
-    protein: number;
-    C: number;
-    D: number;
-    B12: number;
-  }>({
+  const [newFood, setNewFood] = useState<FoodBase>({
     id: 0,
     name: "",
+    defaultNumber: 0,
+    unit: "",
     calories: 0,
-    foods: [],
-    fats: 0,
-    saturatedFats: 0,
-    transFats: 0,
-    polyunsaturatedFats: 0,
-    monosaturatedFats: 0,
-    cholesterol: 0,
-    sodium: 0,
-    potassium: 0,
-    calcium: 0,
-    iron: 0,
-    magnesium: 0,
+    fat: 0,
     carbs: 0,
-    netCarbs: 0,
-    fiber: 0,
-    sugars: 0,
     protein: 0,
-    C: 0,
-    D: 0,
-    B12: 0,
   });
+
+  const [currentMeal, setCurrentMeal] = useState<MealBase>(defaultMeal);
+  const [nutritionPlan, setNutritionPlan] = useState<NutritionPlanBase>(goals);
+
   //Date---------------------------------------------------------------------------------------------------------------------
-  const [mealsByDate, setMealsByDate] = useState<{ [key: string]: Meal[] }>({});
+  const [mealsByDate, setMealsByDate] = useState<{ [key: string]: MealBase[] }>({});
   const [currentDate, setCurrentDate] = useState(new Date());
 
   const formatDateKey = (date: Date) => date.toISOString().split("T")[0];
@@ -286,101 +117,64 @@ const NutritionPage = () => {
   }, [currentDate, mealsByDate]);
 
   //Stats---------------------------------------------------------------------------------------------------------------------------------------------------------------
-  const calculateTotalCalories = () => {
+  const calculateTotalCalories = useCallback(() => {
     return meals.reduce((total, meal) => total + meal.calories, 0);
-  };
+  }, [meals]);
 
-  const calculateTotalNutrients = () => {
+  const calculateTotalNutrients = useCallback(() => {
     return meals.reduce(
       (totals, meal) => {
         totals.protein += meal.protein || 0;
         totals.carbs += meal.carbs || 0;
-        totals.fats += meal.fats || 0;
-        totals.saturatedFats += meal.saturatedFats || 0;
-        totals.transFats += meal.transFats || 0;
-        totals.polyunsaturatedFats += meal.polyunsaturatedFats || 0;
-        totals.monosaturatedFats += meal.monosaturatedFats || 0;
-        totals.cholesterol += meal.cholesterol || 0;
-        totals.sodium += meal.sodium || 0;
-        totals.potassium += meal.potassium || 0;
-        totals.calcium += meal.calcium || 0;
-        totals.iron += meal.iron || 0;
-        totals.magnesium += meal.magnesium || 0;
-        totals.netCarbs += meal.netCarbs || 0;
-        totals.fiber += meal.fiber || 0;
-        totals.sugars += meal.sugars || 0;
-        totals.C += meal.C || 0;
-        totals.D += meal.D || 0;
-        totals.B12 += meal.B12 || 0;
+        totals.fat += meal.fat || 0;
         return totals;
       },
       {
         protein: 0,
         carbs: 0,
-        fats: 0,
-        saturatedFats: 0,
-        transFats: 0,
-        polyunsaturatedFats: 0,
-        monosaturatedFats: 0,
-        cholesterol: 0,
-        sodium: 0,
-        potassium: 0,
-        calcium: 0,
-        iron: 0,
-        magnesium: 0,
-        netCarbs: 0,
-        fiber: 0,
-        sugars: 0,
-        C: 0,
-        D: 0,
-        B12: 0,
+        fat: 0,
       }
     );
-  };
+  }, [meals]);
+
+  const calculatePercentages = useCallback(() => {
+    const totalCalories = calculateTotalCalories();
+
+    if (totalCalories === 0) return [0, 0, 0];
+
+    return [
+      ((totalNutrients.protein * 4) / totalCalories) * 100,
+      ((totalNutrients.carbs * 4) / totalCalories) * 100,
+      ((totalNutrients.fat * 9) / totalCalories) * 100,
+    ];
+  }, [calculateTotalCalories, totalNutrients]);
 
   useEffect(() => {
     calculateTotalCalories();
-  }, [meals]);
+  }, [meals, calculateTotalCalories]);
 
   useEffect(() => {
     setTotalNutrients(calculateTotalNutrients());
-  }, [meals]);
+  }, [meals, calculateTotalNutrients]);
 
-  const [tempGoals, setTempGoals] = useState<Goals>(goals);
+  const [tempGoals, setTempGoals] = useState<NutritionPlanBase>(goals);
   const [isGoalsModalOpen, setIsGoalsModalOpen] = useState(false);
 
   const [goalFields, setGoalFields] = useState<
-    { label: string; name: keyof Goals; isPercentage?: boolean }[]
+    { label: string; name: keyof NutritionPlanBase; isPercentage?: boolean }[]
   >([
     { label: "Calories (kcal)", name: "calories" }, //1.1
-    { label: "Trans Fats (g)", name: "transFats" }, //2.1
-    { label: "Fiber (g)", name: "fiber" }, //3.1
-    { label: "Net Carbs (g)", name: "netCarbs" }, //4.1
     { label: "Carbohydrates (g)", name: "carbs", isPercentage: false }, //1.2
-    { label: "Polyunsaturated Fats (g)", name: "polyunsaturatedFats" }, //2.2
-    { label: "Sodium (mg)", name: "sodium" }, //3.2
-    { label: "Magnesium (mg)", name: "magnesium" },
     { label: "Protein (g)", name: "protein", isPercentage: false }, //1.3
-    { label: "Monounsaturated Fats (g)", name: "monosaturatedFats" }, //2.3
-    { label: "Potassium (mg)", name: "potassium" }, //3.3
-    { label: "Vitamin C (mg)", name: "C" }, //4.3
-    { label: "Fats (g)", name: "fats", isPercentage: false }, //1.4
-    { label: "Cholesterol (mg)", name: "cholesterol" }, //2.4
-    { label: "Calcium (mg)", name: "calcium" }, //3.4
-    { label: "Vitamin D (µg)", name: "D" }, //4.4
-    { label: "Saturated Fats (g)", name: "saturatedFats", isPercentage: false }, //1.5
-    { label: "Sugars (g)", name: "sugars" }, //2.5
-    { label: "Iron (mg)", name: "iron" }, //3.5
-    { label: "Vitamin B12 (µg)", name: "B12" }, //4.5
+    { label: "Fats (g)", name: "fat", isPercentage: false }, //1.4
   ]);
 
   const activeGoals = goalFields.filter(
     ({ name }) =>
-      !["calories", "fats", "carbs", "protein"].includes(name as string) &&
-      tempGoals[name] > 0
+      !["calories", "fat", "carbs", "protein"].includes(name as string)
   );
 
-  const handleToggle = (fieldName: keyof Goals) => {
+  const handleToggle = (fieldName: keyof NutritionPlanBase) => {
     setGoalFields((prevFields) =>
       prevFields.map((field) =>
         field.name === fieldName
@@ -414,10 +208,10 @@ const NutritionPage = () => {
   };
 
   const [goalRanges, setGoalRanges] = useState<{
-    [key in keyof Goals]?: string;
+    [key in keyof NutritionPlanBase]?: string;
   }>({});
 
-  const handleRangeChange = (goalName: keyof Goals, range: string) => {
+  const handleRangeChange = (goalName: keyof NutritionPlanBase, range: string) => {
     setGoalRanges((prev) => ({ ...prev, [goalName]: range }));
   };
 
@@ -429,7 +223,7 @@ const NutritionPage = () => {
     dailyCalories: number = 0
   ) => {
     if (isPercentage) {
-      const calorieValue = current * (range === "fats" ? 9 : 4);
+      const calorieValue = current * (range === "fat" ? 9 : 4);
       const percentage = (calorieValue / dailyCalories) * 100;
 
       const lowerBound = goal * 0.8;
@@ -455,34 +249,6 @@ const NutritionPage = () => {
       return "red";
     }
 
-    return getMicronutrientColor(current, goal, range);
-  };
-
-  const getMicronutrientColor = (
-    current: number,
-    goal: number,
-    range: string = "exact"
-  ) => {
-    const lowerBound = goal * 0.8;
-    const upperBound = goal * 1.2;
-    const within10 = goal * 0.9 <= current && current <= goal * 1.1;
-    const within20 = goal * 0.8 <= current && current <= goal * 1.2;
-
-    if (range === "under") {
-      if (current < goal) return "green";
-      else if (current <= upperBound) return "yellow";
-      return "red";
-    } else if (range === "over") {
-      if (current > goal) return "green";
-      else if (current >= lowerBound) return "yellow";
-      return "red";
-    } else if (range === "exact") {
-      if (within10) return "green";
-      if (within20) return "yellow";
-      return "red";
-    }
-
-    return "gray";
   };
 
   //Pie chart--------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -503,23 +269,8 @@ const NutritionPage = () => {
     ],
   });
 
-  const calculatePercentages = () => {
-    const totalCalories = calculateTotalCalories();
-
-    if (totalCalories === 0) {
-      return [0, 0, 0];
-    }
-
-    return [
-      ((totalNutrients.protein * 4) / totalCalories) * 100,
-      ((totalNutrients.carbs * 4) / totalCalories) * 100,
-      ((totalNutrients.fats * 9) / totalCalories) * 100,
-    ];
-  };
-
   useEffect(() => {
     const percentages = calculatePercentages();
-
     setData((prevData) => ({
       ...prevData,
       datasets: [
@@ -529,37 +280,24 @@ const NutritionPage = () => {
         },
       ],
     }));
-  }, [totalNutrients]);
+  }, [totalNutrients, calculatePercentages]);
 
   //Meal modal-----------------------------------------------------------------------------------------------------------------------------------------------------------
-  const openModal = (meal?: Meal) => {
+  const openModal = (meal?: MealBase) => {
     setCurrentMeal(
       meal
         ? meal
         : {
-            id: 0,
-            name: "",
-            calories: 0,
-            foods: [],
-            fats: 0,
-            saturatedFats: 0,
-            transFats: 0,
-            polyunsaturatedFats: 0,
-            monosaturatedFats: 0,
-            cholesterol: 0,
-            sodium: 0,
-            potassium: 0,
-            calcium: 0,
-            iron: 0,
-            magnesium: 0,
-            carbs: 0,
-            netCarbs: 0,
-            fiber: 0,
-            sugars: 0,
-            protein: 0,
-            C: 0,
-            D: 0,
-            B12: 0,
+          id: 0,
+          name: "", 
+          calories: 0,
+          protein: 0,
+          carbs: 0,
+          fat: 0,
+          userId: 0,
+          dailyNutritionLogId: 0,
+          createdAt: new Date(),
+          updatedAt: new Date(),
           }
     );
     setIsModalOpen(true);
@@ -581,19 +319,24 @@ const NutritionPage = () => {
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setCurrentMeal((prevMeal) => ({
-      ...prevMeal,
-      [name]: name === "calories" ? Number(value) : value,
-    }));
-
+  
+    setCurrentMeal((prevMeal) => {
+      if (!prevMeal) return prevMeal;
+  
+      return {
+        ...prevMeal,
+        [name]: name === "calories" ? Number(value) : value,
+      };
+    });
+  
     setHasUnsavedChanges(true);
   };
 
-  const [myMeals, setMyMeals] = useState<Meal[]>([]);
+  const [myMeals, setMyMeals] = useState<MealBase[]>([]);
   const [isMyMealsModalOpen, setIsMyMealsModalOpen] = useState(false);
   const [saveToMyMeals, setSaveToMyMeals] = useState(false);
 
-  const addMealFromMyMeals = (meal: Meal) => {
+  const addMealFromMyMeals = (meal: MealBase) => {
     const dateKey = formatDateKey(currentDate);
 
     setMealsByDate((prev) => {
@@ -615,37 +358,19 @@ const NutritionPage = () => {
   };
 
   const saveMeal = () => {
-    if (!currentMeal.name?.trim()) {
+    if (!currentMeal || !currentMeal.name?.trim()) {
       alert("Please provide a name for your meal!");
       return;
     }
-
-    const updatedMacros = calculateMealMacros(currentMeal);
-    const updatedMeal: Meal = {
+  
+    // Ensure meal macros are already updated in `currentMeal`
+    const updatedMeal: MealBase = {
       ...currentMeal,
-      calories: calculateMealCalories(currentMeal),
-      protein: updatedMacros.protein,
-      carbs: updatedMacros.carbs,
-      fats: updatedMacros.fats,
-      saturatedFats: updatedMacros.saturatedFats,
-      transFats: updatedMacros.transFats,
-      polyunsaturatedFats: updatedMacros.polyunsaturatedFats,
-      monosaturatedFats: updatedMacros.monosaturatedFats,
-      cholesterol: updatedMacros.cholesterol,
-      sodium: updatedMacros.sodium,
-      potassium: updatedMacros.potassium,
-      calcium: updatedMacros.calcium,
-      iron: updatedMacros.iron,
-      magnesium: updatedMacros.magnesium,
-      netCarbs: updatedMacros.netCarbs,
-      fiber: updatedMacros.fiber,
-      sugars: updatedMacros.sugars,
-      C: updatedMacros.C,
-      D: updatedMacros.D,
-      B12: updatedMacros.B12,
     };
-
+  
     const dateKey = formatDateKey(currentDate);
+  
+    // Update the meals by date
     setMealsByDate((prev) => ({
       ...prev,
       [dateKey]: updatedMeal.id
@@ -657,7 +382,8 @@ const NutritionPage = () => {
             { ...updatedMeal, id: prev[dateKey]?.length + 1 || 1 },
           ],
     }));
-
+  
+    // Optionally save the meal to "My Meals"
     if (saveToMyMeals) {
       setMyMeals((prevMeals) => {
         const mealExists = prevMeals.some(
@@ -669,171 +395,80 @@ const NutritionPage = () => {
         return prevMeals;
       });
     }
-
+  
+    // Reset state and close modal
     setSaveToMyMeals(false);
     setHasUnsavedChanges(false);
     setIsModalOpen(false);
   };
+  
 
   const deleteMeal = (id: number) => {
     setMeals((prevMeals) => prevMeals.filter((meal) => meal.id !== id));
   };
 
-  const calculateMealMacros = (meal: Meal) => {
-    return meal.foods.reduce(
-      (totals, meal) => {
-        totals.protein += meal.protein || 0;
-        totals.carbs += meal.carbs || 0;
-        totals.fats += meal.fats || 0;
-        totals.saturatedFats += meal.saturatedFats || 0;
-        totals.transFats += meal.transFats || 0;
-        totals.polyunsaturatedFats += meal.polyunsaturatedFats || 0;
-        totals.monosaturatedFats += meal.monosaturatedFats || 0;
-        totals.cholesterol += meal.cholesterol || 0;
-        totals.sodium += meal.sodium || 0;
-        totals.potassium += meal.potassium || 0;
-        totals.calcium += meal.calcium || 0;
-        totals.iron += meal.iron || 0;
-        totals.magnesium += meal.magnesium || 0;
-        totals.netCarbs += meal.netCarbs || 0;
-        totals.fiber += meal.fiber || 0;
-        totals.sugars += meal.sugars || 0;
-        totals.C += meal.C || 0;
-        totals.D += meal.D || 0;
-        totals.B12 += meal.B12 || 0;
-        return totals;
-      },
-      {
-        protein: 0,
-        carbs: 0,
-        fats: 0,
-        saturatedFats: 0,
-        transFats: 0,
-        polyunsaturatedFats: 0,
-        monosaturatedFats: 0,
-        cholesterol: 0,
-        sodium: 0,
-        potassium: 0,
-        calcium: 0,
-        iron: 0,
-        magnesium: 0,
-        netCarbs: 0,
-        fiber: 0,
-        sugars: 0,
-        C: 0,
-        D: 0,
-        B12: 0,
-      }
-    );
-  };
-
-  const calculateMealCalories = (meal: Meal) => {
-    return meal.foods.reduce((total, food) => total + food.calories, 0);
-  };
+  const calculateMealMacros = (
+    meal: MealBase,
+    food: FoodBase
+  ): MealBase => ({
+    ...meal,
+    calories: meal.calories + food.calories,
+    protein: meal.protein + food.protein,
+    carbs: meal.carbs + food.carbs,
+    fat: meal.fat + food.fat,
+  });
 
   const [servingSize, setServingSize] = useState<number>(0);
 
-  const handleSave = (food: Food, newAmount: number) => {
-    const ratio = newAmount / food.servingSize;
-    const updatedFood: Food = {
-      id: food.id,
-      name: food.name,
-      servingSize: newAmount,
-      servingSizeType: food.servingSizeType,
+  const handleSave = (food: FoodBase, newAmount: number) => {
+    const ratio = newAmount / food.defaultNumber;
+  
+    const updatedFood: FoodBase = {
+      ...food,
+      defaultNumber: newAmount,
       calories: Math.round(food.calories * ratio),
-      fats: parseFloat((food.fats * ratio).toFixed(1)),
-      saturatedFats: parseFloat((food.saturatedFats * ratio).toFixed(1)),
-      transFats: parseFloat((food.transFats * ratio).toFixed(1)),
-      polyunsaturatedFats: parseFloat(
-        (food.polyunsaturatedFats * ratio).toFixed(1)
-      ),
-      monosaturatedFats: parseFloat(
-        (food.monosaturatedFats * ratio).toFixed(1)
-      ),
-      cholesterol: parseFloat((food.cholesterol * ratio).toFixed(1)),
-      sodium: parseFloat((food.sodium * ratio).toFixed(1)),
-      potassium: parseFloat((food.potassium * ratio).toFixed(1)),
-      calcium: parseFloat((food.calcium * ratio).toFixed(1)),
-      iron: parseFloat((food.iron * ratio).toFixed(1)),
-      magnesium: parseFloat((food.magnesium * ratio).toFixed(1)),
-      carbs: parseFloat((food.carbs * ratio).toFixed(1)),
-      netCarbs: parseFloat((food.netCarbs * ratio).toFixed(1)),
-      fiber: parseFloat((food.fiber * ratio).toFixed(1)),
-      sugars: parseFloat((food.sugars * ratio).toFixed(1)),
+      fat: parseFloat((food.fat * ratio).toFixed(1)),
       protein: parseFloat((food.protein * ratio).toFixed(1)),
-      C: parseFloat((food.C * ratio).toFixed(1)),
-      D: parseFloat((food.D * ratio).toFixed(1)),
-      B12: parseFloat((food.B12 * ratio).toFixed(1)),
+      carbs: parseFloat((food.carbs * ratio).toFixed(1)),
     };
-
+  
     setCurrentMeal((prevMeal) => ({
       ...prevMeal,
-      foods: prevMeal.foods.map((f) =>
-        f.id === updatedFood.id ? updatedFood : f
-      ),
+      calories: prevMeal.calories - food.calories + updatedFood.calories,
+      protein: prevMeal.protein - food.protein + updatedFood.protein,
+      carbs: prevMeal.carbs - food.carbs + updatedFood.carbs,
+      fat: prevMeal.fat - food.fat + updatedFood.fat,
     }));
-
+  
     setEditingFoodId(null);
-  };
+  };  
 
   const [editingFoodId, setEditingFoodId] = useState<number | null>(null);
 
   //Food modal----------------------------------------------------------------------------------------------------------------------------------------------------------
-  const fields: { label: string; name: keyof Food }[] = [
+  const fields: { label: string; name: keyof FoodBase }[] = [
     { label: "Food Name", name: "name" },
-    { label: "Serving Size", name: "servingSize" },
-    { label: "Serving Size Type", name: "servingSizeType" },
+    { label: "Serving Size", name: "defaultNumber" },
+    { label: "Unit", name: "unit" },
     { label: "Calories", name: "calories" },
-    { label: "Fats", name: "fats" },
-    { label: "Saturated Fats", name: "saturatedFats" },
-    { label: "Trans Fats", name: "transFats" },
-    { label: "Polyunsaturated Fats", name: "polyunsaturatedFats" },
-    { label: "Monosaturated Fats", name: "monosaturatedFats" },
-    { label: "Cholesterol", name: "cholesterol" },
-    { label: "Sodium", name: "sodium" },
-    { label: "Potassium", name: "potassium" },
-    { label: "Calcium", name: "calcium" },
-    { label: "Iron", name: "iron" },
-    { label: "Magnesium", name: "magnesium" },
+    { label: "Fats", name: "fat" },
     { label: "Carbs", name: "carbs" },
-    { label: "Net Carbs", name: "netCarbs" },
-    { label: "Fiber", name: "fiber" },
-    { label: "Sugars", name: "sugars" },
     { label: "Protein", name: "protein" },
-    { label: "Vitamin C", name: "C" },
-    { label: "Vitamin D", name: "D" },
-    { label: "Vitamin B12", name: "B12" },
   ];
 
-  const openFoodModal = (food?: Food) => {
+  const openFoodModal = (food?: FoodBase) => {
     setNewFood(
       food
         ? { ...food }
         : {
             id: 0,
             name: "",
-            servingSize: 0,
-            servingSizeType: "",
+            defaultNumber: 0,
+            unit: "",
             calories: 0,
-            fats: 0,
-            saturatedFats: 0,
-            transFats: 0,
-            polyunsaturatedFats: 0,
-            monosaturatedFats: 0,
-            cholesterol: 0,
-            sodium: 0,
-            potassium: 0,
-            calcium: 0,
-            iron: 0,
-            magnesium: 0,
+            fat: 0,
             carbs: 0,
-            netCarbs: 0,
-            fiber: 0,
-            sugars: 0,
             protein: 0,
-            C: 0,
-            D: 0,
-            B12: 0,
           }
     );
     setIsFoodModalOpen(true);
@@ -861,24 +496,8 @@ const NutritionPage = () => {
       "servingSize",
       "calories",
       "fats",
-      "saturatedFats",
-      "transFats",
-      "polyunsaturatedFats",
-      "monosaturatedFats",
-      "cholesterol",
-      "sodium",
-      "potassium",
-      "calcium",
-      "iron",
-      "magnesium",
       "carbs",
-      "netCarbs",
-      "fiber",
-      "sugars",
       "protein",
-      "C",
-      "D",
-      "B12",
     ];
 
     setNewFood((prevFood) => ({
@@ -889,7 +508,7 @@ const NutritionPage = () => {
     setHasUnsavedChangesFood(true);
   };
 
-  const [myFoods, setMyFoods] = useState<Food[]>([]);
+  const [myFoods, setMyFoods] = useState<FoodBase[]>([]);
   const [isMyFoodsModalOpen, setIsMyFoodsModalOpen] = useState(false);
 
   const openMyFoodModal = () => {
@@ -900,69 +519,57 @@ const NutritionPage = () => {
     setIsMyFoodsModalOpen(false);
   };
 
-  const addFoodFromMyFoods = (food: Food) => {
-    setCurrentMeal((prevMeal) => {
-      const updatedFoods = [
-        ...prevMeal.foods,
-        { ...food, id: prevMeal.foods.length + 1 },
-      ];
-      const updatedMeal = {
-        ...prevMeal,
-        foods: updatedFoods,
-        calories: calculateMealCalories({ ...prevMeal, foods: updatedFoods }),
-      };
-      return updatedMeal;
-    });
-
+  const addFoodFromMyFoods = (food: FoodBase) => {
+    setCurrentMeal((prevMeal) => ({
+      ...prevMeal,
+      calories: prevMeal.calories + food.calories,
+      protein: prevMeal.protein + food.protein,
+      carbs: prevMeal.carbs + food.carbs,
+      fat: prevMeal.fat + food.fat,
+    }));
+  
     closeFoodModal();
-  };
+  };  
 
   const addFood = () => {
     if (!newFood.name?.trim()) {
       alert("Please provide a name for the food!");
       return;
     }
-
-    setCurrentMeal((prevMeal) => {
-      const updatedFoods = prevMeal.foods.some((food) => food.id === newFood.id)
-        ? prevMeal.foods.map((food) =>
-            food.id === newFood.id ? newFood : food
-          )
-        : [...prevMeal.foods, { ...newFood, id: prevMeal.foods.length + 1 }];
-
-      const updatedMeal = {
-        ...prevMeal,
-        foods: updatedFoods,
-        calories: calculateMealCalories({ ...prevMeal, foods: updatedFoods }),
-      };
-
-      return updatedMeal;
-    });
-
+  
+    setCurrentMeal((prevMeal) => ({
+      ...prevMeal,
+      calories: prevMeal.calories + newFood.calories,
+      protein: prevMeal.protein + newFood.protein,
+      carbs: prevMeal.carbs + newFood.carbs,
+      fat: prevMeal.fat + newFood.fat,
+    }));
+  
     setMyFoods((prevFoods) => {
       const foodExists = prevFoods.some(
         (food) => food.name.toLowerCase() === newFood.name.toLowerCase()
       );
-
+  
       if (!foodExists) {
         return [...prevFoods, { ...newFood, id: prevFoods.length + 1 }];
       }
-
+  
       return prevFoods;
     });
-
+  
     setHasUnsavedChangesFood(false);
     setIsFoodModalOpen(false);
-  };
+  };  
 
-  const deleteFood = (foodId: number) => {
-    setCurrentMeal((prevMeal) => {
-      const updatedFoods = prevMeal.foods.filter((food) => food.id !== foodId);
-      const updatedMeal = { ...prevMeal, foods: updatedFoods };
-      updatedMeal.calories = calculateMealCalories(updatedMeal);
-      return updatedMeal;
-    });
-  };
+  const deleteFood = (food: FoodBase) => {
+    setCurrentMeal((prevMeal) => ({
+      ...prevMeal,
+      calories: Math.max(0, prevMeal.calories - food.calories),
+      protein: Math.max(0, prevMeal.protein - food.protein),
+      carbs: Math.max(0, prevMeal.carbs - food.carbs),
+      fat: Math.max(0, prevMeal.fat - food.fat),
+    }));
+  };  
 
   const scanBarcode = () => {
     // Logic to scan barcode here
@@ -977,41 +584,28 @@ const NutritionPage = () => {
     return new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
   };
 
-  const calculateDailyCalories = () => {
+  const calculateDailyCalories = useCallback(() => {
     const monthKey = formatMonthKey(currentMonth);
-    const daysInMonth = getDaysInMonth(currentMonth); // Dynamically get days in the month
+    const daysInMonth = getDaysInMonth(currentMonth);
 
-    const dailyCalories = Array(daysInMonth).fill(0); // Initialize array with the correct size
+    const dailyCalories = Array(daysInMonth).fill(0);
 
     Object.entries(mealsByDate).forEach(([dateKey, meals]) => {
       if (dateKey.startsWith(monthKey)) {
-        // Check if the date belongs to the current month
-        const day = parseInt(dateKey.split("-")[2], 10) - 1; // Extract day (0-based index)
+        const day = parseInt(dateKey.split("-")[2], 10) - 1;
         dailyCalories[day] = meals.reduce(
           (sum, meal) => sum + meal.calories,
           0
-        ); // Sum up calories for the day
+        );
       }
     });
 
     return dailyCalories;
-  };
+  }, [currentMonth, mealsByDate]);
 
   useEffect(() => {
-    const dailyCalories = calculateDailyCalories();
-    const daysInMonth = getDaysInMonth(currentMonth);
-
-    setDataMonthCalories({
-      labels: Array.from({ length: daysInMonth }, (_, i) => `${i + 1}`),
-      datasets: [
-        {
-          label: "Calories",
-          data: dailyCalories,
-          backgroundColor: "green",
-        },
-      ],
-    });
-  }, [currentMonth, mealsByDate]);
+    calculateDailyCalories();
+  }, [currentMonth, mealsByDate, calculateDailyCalories]);
 
   const CHART_PROPERTIES_Bar = {
     labels: Array.from({ length: 30 }, (_, i) => `${i + 1}`),
@@ -1029,10 +623,24 @@ const NutritionPage = () => {
     ],
   });
 
+  useEffect(() => {
+    const dailyCalories = calculateDailyCalories();
+    const daysInMonth = getDaysInMonth(currentMonth);
+
+    setDataMonthCalories({
+      labels: Array.from({ length: daysInMonth }, (_, i) => `${i + 1}`),
+      datasets: [
+        {
+          label: "Calories",
+          data: dailyCalories,
+          backgroundColor: "green",
+        },
+      ],
+    });
+  }, [currentMonth, mealsByDate, calculateDailyCalories]);
+
   //Month Selector--------------------------------------------------------------------------------------------------------------------------------------------------------
-  const [mealsByMonth, setMealsByMonth] = useState<{ [key: string]: any[] }>(
-    {}
-  );
+  const [mealsByMonth, setMealsByMonth] = useState<Record<string, MealBase[]>>({});
 
   const formatMonthKey = (date: Date) => {
     return `${date.getFullYear()}-${(date.getMonth() + 1)
@@ -1040,14 +648,22 @@ const NutritionPage = () => {
       .padStart(2, "0")}`;
   };
 
-  const handleMonthChange = (direction: "prev" | "next") => {
-    const newDate =
-      direction === "prev"
-        ? new Date(currentMonth.setMonth(currentMonth.getMonth() - 1))
-        : new Date(currentMonth.setMonth(currentMonth.getMonth() + 1));
-    setCurrentMonth(newDate);
-    const monthKey = formatMonthKey(newDate);
-    setMeals(mealsByMonth[monthKey] || []);
+  const handleMonthChange = (month: Date) => {
+    setCurrentMonth(month);
+    const updatedMealsByMonth = Object.entries(mealsByDate).reduce(
+      (acc, [date, meals]) => {
+        const mealDate = new Date(date);
+        if (
+          mealDate.getMonth() === month.getMonth() &&
+          mealDate.getFullYear() === month.getFullYear()
+        ) {
+          acc[date] = meals;
+        }
+        return acc;
+      },
+      {} as Record<string, MealBase[]>
+    );
+    setMealsByMonth(updatedMealsByMonth);
   };
 
   const formatMonth = (date: Date) => {
@@ -1103,14 +719,14 @@ const NutritionPage = () => {
           { name: "fats", label: "Fats", bgColor: "bg-yellow-100" },
         ].map(({ name, label, bgColor }) => {
           const value = totalNutrients[name as keyof typeof totalNutrients];
-          const goal = goals[name as keyof Goals];
-          const range = goalRanges[name as keyof Goals] ?? "exact";
+          const goal = goals[name as keyof NutritionPlanBase];
+          const range = goalRanges[name as keyof NutritionPlanBase] ?? "exact";
           const isPercentage =
             goalFields.find((field) => field.name === name)?.isPercentage ??
             false;
 
           const content =
-            goal > 0 ? (
+          typeof goal === "number" && goal > 0 ? (
               <>
                 <h2 className="text-xl font-semibold">{label}</h2>
                 <p
@@ -1136,7 +752,7 @@ const NutritionPage = () => {
                 >
                   {isPercentage
                     ? `${(
-                        ((value * (name === "fats" ? 9 : 4)) /
+                        ((value * (name === "fat" ? 9 : 4)) /
                           calculateTotalCalories()) *
                         100
                       ).toFixed(1)}%`
@@ -1159,65 +775,6 @@ const NutritionPage = () => {
             </div>
           );
         })}
-      </div>
-
-      {/* Micronutrients Tracker */}
-      <div className="flex justify-center">
-        <div
-          className="grid gap-6 mt-2"
-          style={{
-            gridTemplateColumns: `repeat(${activeGoals.length}, 1fr)`,
-            width: "100%",
-            maxWidth: "80rem",
-          }}
-        >
-          {activeGoals.map(({ label, name }) => {
-            const value = totalNutrients[name as keyof typeof totalNutrients];
-            const goal = goals[name as keyof Goals];
-            const range = goalRanges[name as keyof Goals];
-            const isPercentage =
-              goalFields.find((field) => field.name === name)?.isPercentage ??
-              false;
-            const unitMatch = label.match(/\((.*?)\)/);
-
-            const displayValue = isPercentage
-              ? `${(((value * 9) / calculateTotalCalories()) * 100).toFixed(
-                  1
-                )}%`
-              : `${value}${unitMatch ? unitMatch[1] : ""}`;
-
-            const color = isPercentage
-              ? getMacronutrientColor(
-                  value,
-                  goal,
-                  range,
-                  isPercentage,
-                  calculateTotalCalories()
-                )
-              : getMicronutrientColor(value, goal, range);
-
-            return (
-              <div key={name} className="text-center">
-                <p
-                  className={`text-3xl font-bold ${
-                    color === "green"
-                      ? "text-green-500"
-                      : color === "yellow"
-                      ? "text-yellow-500"
-                      : color === "red"
-                      ? "text-red-500"
-                      : "text-gray-800"
-                  }`}
-                >
-                  {displayValue}
-                </p>
-                <p className="text-sm text-gray-500">
-                  {label.replace(/\s\((.*?)\)/, "")}
-                </p>
-              </div>
-            );
-          })}
-        </div>
       </div>
 
       {/* Edit Goals Button */}
@@ -1250,35 +807,13 @@ const NutritionPage = () => {
                   <ul className="mt-2 list-disc list-inside">
                     <li>Calories: ~2000–2500 kcal/day</li>
                     <li>Fats: ~70–90 g/day (about 30% of daily calories)</li>
-                    <li>
-                      Saturated fats: {"<"}10% of daily calories (~20 g/day)
-                    </li>
-                    <li>Trans Fats: {"<"}2 g/day</li>
-                    <li>Polyunsaturated Fats: ~11–22 g/day</li>
-                    <li>Monounsaturated Fats: ~33–44 g/day</li>
-                    <li>Cholesterol: {"<"}300 mg/day</li>
-                    <li>Sodium: {"<"}2,300 mg/day</li>
-                    <li>Potassium: ~4,700 mg/day</li>
-                    <li>Calcium: ~1,000–1,200 mg/day</li>
-                    <li>Iron: ~8–18 mg/day</li>
-                    <li>Magnesium: ~310–420 mg/day</li>
                     <li>Carbs: ~225–325 g/day (55% of daily calories)</li>
-                    <li>Net Carbs: Varies based on dietary goals</li>
-                    <li>Fiber: ~28–30 g/day</li>
-                    <li>Sugars: {"<"}50 g/day</li>
                     <li>Protein: ~50–60 g/day (10–15% of daily calories)</li>
-                    <li>Vitamin C: ~75–90 mg/day</li>
-                    <li>Vitamin D: ~15–20 µg/day</li>
-                    <li>Vitamin B12: ~2.4 µg/day</li>
                   </ul>
                   <p className="mt-2">
-                    Before setting goals, it's important to consult a doctor and
-                    undergo a blood test to ensure your targets are realistic
-                    and safe, and not potentially harmful.
-                    <br />
-                    <br />
-                    *If your nutrition label lists sodium instead of salt, you
-                    can convert it: 1 g salt = 400 mg of sodium.
+                    Before setting goals, it&apos;s important to consult a
+                    doctor and undergo a blood test to ensure your targets are
+                    realistic and safe, and not potentially harmful.
                   </p>
                 </div>
               </div>
@@ -1295,13 +830,13 @@ const NutritionPage = () => {
                       type="text"
                       inputMode="numeric"
                       name={field.name as string}
-                      value={tempGoals[field.name]}
+                      value={goals.startDate ? goals.startDate.toISOString().split("T")[0] : ""}
                       onChange={handleGoalsChange}
                       className="w-full border border-gray-300 rounded-md px-3 py-2"
                     />
                   </div>
 
-                  {["fats", "carbs", "protein", "saturatedFats"].includes(
+                  {["fats", "carbs", "protein"].includes(
                     field.name as string
                   ) && (
                     <div>
@@ -1377,6 +912,7 @@ const NutritionPage = () => {
       <div className="flex w-full max-w-5xl justify-center mt-5">
         {/* Meal List Section */}
         <div className="flex flex-col w-1/2 space-y-4">
+          <h2 className="text-2xl font-semibold">My Meals</h2>
           {meals.map((meal) => (
             <div
               key={meal.id}
@@ -1454,9 +990,34 @@ const NutritionPage = () => {
             </div>
           )}
         </div>
+        <div className="flex flex-col w-1/2 space-y-4">
 
-        {/* Pie Chart and Progress Section */}
-        <div className="flex flex-col items-center w-1/2 space-y-4">
+          {/* Suggested Meal List Section */}
+          <h2 className="text-2xl font-semibold">Suggested Meals</h2>
+          {meals.map((meal) => (
+            <div
+              key={meal.id}
+              className="bg-gray-100 p-4 rounded-md shadow-md flex justify-between items-center"
+            >
+              <div>
+                <h3 className="text-lg font-semibold">{meal.name}</h3>
+                <p>Calories: {meal.calories} kcal</p>
+              </div>
+              <div className="flex space-x-2">
+                <button
+                  onClick={() => addMealFromMyMeals(meal)}
+                  className="bg-red-500 text-white p-2 rounded-md shadow-md hover:bg-red-700"
+                >
+                  Add
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Pie Chart and Progress Section */}
+      <div className="flex flex-col items-center w-1/2 space-y-4">
           <div className="w-full max-w-md h-[400px] flex items-center justify-center">
             {isAllZero ? (
               <p className="text-center text-gray-500">
@@ -1514,7 +1075,6 @@ const NutritionPage = () => {
             </p>
           )}
         </div>
-      </div>
 
       {isModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-10">
@@ -1537,7 +1097,7 @@ const NutritionPage = () => {
                       setShowConfirmDialog(false);
                       setHasUnsavedChanges(false);
                       setIsModalOpen(false);
-                      confirmModalClose;
+                      confirmModalClose();
                     }}
                     className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
                   >
@@ -1562,27 +1122,22 @@ const NutritionPage = () => {
                 </div>
                 <div className="mb-4">
                   <label className="block text-gray-700">Total Calories</label>
-                  <p>{calculateMealCalories(currentMeal)} kcal</p>
+                  <p>{currentMeal.calories} kcal</p>
                 </div>
-                {currentMeal.foods.length > 0 && (
-                  <table className="macro-table w-full mt-4">
-                    <thead>
-                      <tr>
-                        <th className="px-4 py-2">Food</th>
-                        <th className="px-4 py-2">Amount</th>
-                        <th className="px-4 py-2">Calories</th>
-                        <th className="px-4 py-2">Protein</th>
-                        <th className="px-4 py-2">Carbs</th>
-                        <th className="px-4 py-2">Fats</th>
-                        {activeGoals.map(({ label }) => (
-                          <th key={label} className="px-4 py-2">
-                            {label}
-                          </th>
-                        ))}
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {currentMeal.foods.map((food) => (
+                {mealFoods.length > 0 ? (
+                <table className="macro-table w-full mt-4">
+                  <thead>
+                    <tr>
+                      <th className="px-4 py-2">Food</th>
+                      <th className="px-4 py-2">Amount</th>
+                      <th className="px-4 py-2">Calories</th>
+                      <th className="px-4 py-2">Protein</th>
+                      <th className="px-4 py-2">Carbs</th>
+                      <th className="px-4 py-2">Fats</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {mealFoods.map((food) => (
                         <tr key={food.id}>
                           <td className="px-4 py-2">{food.name}</td>
                           <td className="px-4 py-2 flex justify-between items-center">
@@ -1597,7 +1152,7 @@ const NutritionPage = () => {
                                   }}
                                   className="w-16 border border-gray-300 rounded px-2"
                                 />
-                                <span> ({food.servingSizeType})</span>
+                                <span> ({food.unit})</span>
                                 <button
                                   onClick={() => handleSave(food, servingSize)}
                                   className="bg-green-500 text-white px-2 py-1 rounded-md hover:bg-green-700"
@@ -1608,7 +1163,7 @@ const NutritionPage = () => {
                             ) : (
                               <>
                                 <span>
-                                  {food.servingSize} ({food.servingSizeType})
+                                  {food.defaultNumber} ({food.unit})
                                 </span>
                                 <button
                                   onClick={() => setEditingFoodId(food.id)}
@@ -1622,7 +1177,7 @@ const NutritionPage = () => {
                           <td className="px-4 py-2">{food.calories}</td>
                           <td className="px-4 py-2">{food.protein}</td>
                           <td className="px-4 py-2">{food.carbs}</td>
-                          <td className="px-4 py-2">{food.fats}</td>
+                          <td className="px-4 py-2">{food.fat}</td>
                           {activeGoals.map(({ name }) => (
                             <td key={name} className="px-4 py-2">
                               {food[name as keyof typeof food]}
@@ -1636,7 +1191,7 @@ const NutritionPage = () => {
                               Edit
                             </button>
                             <button
-                              onClick={() => deleteFood(food.id)}
+                              onClick={() => deleteFood(food)}
                               className="bg-red-500 text-white p-1 rounded-md shadow-md hover:bg-red-700 ml-2"
                             >
                               Delete
@@ -1646,6 +1201,8 @@ const NutritionPage = () => {
                       ))}
                     </tbody>
                   </table>
+                ) : (
+                  <p className="text-gray-500 mt-4">No foods added to this meal yet.</p>
                 )}
                 <div className="mt-4 flex justify-between">
                   <div className="flex">
@@ -1767,7 +1324,7 @@ const NutritionPage = () => {
                       setShowConfirmDialogFood(false);
                       setHasUnsavedChangesFood(false);
                       setIsFoodModalOpen(false);
-                      confirmFoodModalClose;
+                      confirmFoodModalClose();
                     }}
                     className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
                   >
@@ -1792,7 +1349,7 @@ const NutritionPage = () => {
                         onChange={handleFoodInputChange}
                         className="p-2 border border-gray-300 rounded-md w-full"
                         placeholder={
-                          field.name === "servingSizeType"
+                          field.name === "unit"
                             ? "e.g., grams, cup, piece, glass"
                             : ""
                         }
@@ -1832,7 +1389,11 @@ const NutritionPage = () => {
 
       <div className="flex items-center justify-center mb-6">
         <button
-          onClick={() => handleMonthChange("prev")}
+          onClick={() =>
+            handleMonthChange(
+              new Date(currentMonth.setMonth(currentMonth.getMonth() - 1))
+            )
+          }
           className="px-8 py-2 bg-white-300 text-gray-400 rounded-l text-xl font-bold"
         >
           {"<"}
@@ -1845,7 +1406,11 @@ const NutritionPage = () => {
           {/* Month and year */}
         </div>
         <button
-          onClick={() => handleMonthChange("next")}
+          onClick={() =>
+            handleMonthChange(
+              new Date(currentMonth.setMonth(currentMonth.getMonth() - 1))
+            )
+          }
           className="px-8 py-2 bg-white-300 text-gray-400 text-xl font-bold"
         >
           {">"}

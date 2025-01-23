@@ -3,19 +3,25 @@
 import { useEffect } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { NutritionPlanBase } from "@/types/nutritionPlan";
+import { useAppContext } from "@/contexts/AppContext";
 
 export default function NutritionPlanRedirect({
-  nutritionPlan,
+  innitialNutritionPlan,
 }: {
-  nutritionPlan: NutritionPlanBase | null;
+  innitialNutritionPlan: NutritionPlanBase | null;
 }) {
   const router = useRouter();
   const pathname = usePathname();
+  const { nutritionPlan } = useAppContext();
   useEffect(() => {
-    if (nutritionPlan === null && pathname !== "/body-stats-and-goals") {
+    if (
+      innitialNutritionPlan === null &&
+      nutritionPlan === null &&
+      pathname !== "/body-stats-and-goals"
+    ) {
       router.push("/body-stats-and-goals");
     }
-  }, [nutritionPlan, router, pathname]);
+  }, [innitialNutritionPlan, nutritionPlan, router, pathname]);
 
   return null;
 }
