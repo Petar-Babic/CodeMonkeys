@@ -4,8 +4,6 @@ import GymFitnessTrackerApplication.model.domain.FoodMeal;
 import GymFitnessTrackerApplication.model.domain.Meal;
 import GymFitnessTrackerApplication.model.domain.MyUser;
 import GymFitnessTrackerApplication.model.dto.forms.MealForm;
-import org.hibernate.boot.jaxb.internal.stax.LocalSchemaLocator;
-import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -20,7 +18,7 @@ public interface MealService {
 
     Meal createMealUser(MyUser user,MealForm form);
 
-    Meal createMealAdmin(MyUser user,MealForm form);
+    Meal createMealTrainer(MyUser user, MealForm form);
 
     Meal getMeal(MyUser u,String id);
 
