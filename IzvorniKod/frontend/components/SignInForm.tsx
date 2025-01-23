@@ -19,7 +19,7 @@ import { ArrowRight, Loader2, Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
 import {
   FaGoogle,
-  FaFacebook,
+  // FaFacebook,
   //  FaApple
 } from "react-icons/fa";
 import { SignInResponse } from "next-auth/react";
@@ -106,7 +106,7 @@ export function SignInForm() {
             <h1 className="text-3xl font-semibold mb-4 text-white">Sign In</h1>
             <p className="text-gray-300 text-sm mb-6">
               You can choose to sign in with your email, with your Google
-              account, Apple ID or Facebook account.
+              account.
             </p>
             <div className="flex flex-col space-y-3">
               <Button
@@ -125,7 +125,7 @@ export function SignInForm() {
                   </>
                 )}
               </Button>
-              <Button
+              {/* <Button
                 type="button"
                 variant="outlineWhite"
                 className="w-full flex text-white items-center justify-center"
@@ -140,7 +140,7 @@ export function SignInForm() {
                     Sign in with Facebook
                   </>
                 )}
-              </Button>
+              </Button> */}
               {/* <Button
                 type="button"
                 variant="outlineWhite"

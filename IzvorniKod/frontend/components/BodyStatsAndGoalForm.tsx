@@ -29,6 +29,7 @@ import { BodyStatsAndGoalDataType } from "@/types/bodyStatsAndGoal";
 import { ActivityLevel, Gender } from "@/types/user";
 import StepProgress from "./StepProgress";
 import { useAppContext } from "@/contexts/AppContext";
+import { usePathname } from "next/navigation";
 
 const activityLevels = [
   {
@@ -131,16 +132,17 @@ export default function BodyStatsAndGoalForm() {
   const [direction, setDirection] = useState<"forward" | "backward">("forward");
   const [isLoadingNutritionalPlan, setIsLoadingNutritionalPlan] =
     useState(false);
+  const pathname = usePathname();
 
   useEffect(() => {
     const isExistingPlan = async () => {
       const isExistingPlan = await getNutritionPlan();
-      if (isExistingPlan) {
+      if (isExistingPlan && pathname !== "/workouts") {
         router.push("/workouts");
       }
     };
     isExistingPlan();
-  }, [getNutritionPlan, router]);
+  }, [getNutritionPlan, router, pathname]);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -153,9 +155,10 @@ export default function BodyStatsAndGoalForm() {
       goalWeight: "85",
       isGoalWeightImperial: false,
       activityLevel: "moderate",
-      protein: 0,
-      carbs: 0,
-      fat: 0,
+      timelineWeeks: 12,
+      protein: 100,
+      carbs: 100,
+      fat: 100,
     },
   });
 
@@ -299,7 +302,25 @@ export default function BodyStatsAndGoalForm() {
       };
 
       await bodyStatsAndGoal(data);
-      router.push("/workouts");
+
+      let attempts = 0;
+      let planExists = false;
+
+      while (attempts < 3 && !planExists) {
+        planExists = await getNutritionPlan();
+        if (!planExists) {
+          await new Promise((resolve) => setTimeout(resolve, 500));
+        }
+        attempts++;
+      }
+
+      if (planExists) {
+        router.push("/workouts");
+      } else {
+        console.error(
+          "Failed to verify nutrition plan creation after multiple attempts"
+        );
+      }
     } catch (error) {
       router.push("/sign-in");
       console.error("Body stats and goal error:", error);

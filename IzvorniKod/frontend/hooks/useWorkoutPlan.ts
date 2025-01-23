@@ -69,8 +69,12 @@ export const useWorkoutPlan = () => {
   );
 
   const updateWorkoutPlan = useCallback(
-    (input: UpdateWorkoutPlanInput): WorkoutPlanBase | undefined => {
+    async (
+      input: UpdateWorkoutPlanInput
+    ): Promise<WorkoutPlanBase | undefined> => {
       let updatedPlan: WorkoutPlanBase | undefined;
+
+      console.log("input", input);
 
       setWorkoutPlans((prevPlans) =>
         prevPlans.map((plan) => {
@@ -84,6 +88,20 @@ export const useWorkoutPlan = () => {
           return plan;
         })
       );
+
+      const accessToken = localStorage.getItem("accessToken");
+
+      if (!accessToken) {
+        throw new Error("Access token is not set");
+      }
+
+      await fetch(`${backendUrl}/api/workout-plans/${input.id}`, {
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+        body: JSON.stringify(input),
+      });
 
       return updatedPlan;
     },
@@ -132,7 +150,7 @@ export type UseWorkoutPlanContextType = {
   getWorkoutPlanById: (id: number) => WorkoutPlanBase | undefined;
   updateWorkoutPlan: (
     input: UpdateWorkoutPlanInput
-  ) => WorkoutPlanBase | undefined;
+  ) => Promise<WorkoutPlanBase | undefined>;
   deleteWorkoutPlan: (id: number) => Promise<void>;
   workoutPlansLoading: boolean;
 };

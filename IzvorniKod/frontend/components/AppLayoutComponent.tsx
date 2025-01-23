@@ -189,37 +189,26 @@ export default async function AppLayoutComponent({
     role: "USER",
   } as const;
 
-  if (initialData.nutritionPlan) {
-    return (
-      <AuthProvider>
-        <AppProvider initialData={safeInitialData}>
-          <div className="flex flex-col min-h-screen">
-            <Toaster />
-            <Header />
-            <div className="flex flex-1 h-[calc(100dvh-60px)]">
-              <div className="hidden xl:block">
-                <Navigation orientation="vertical" role={"USER"} />
-              </div>
-              <main className="flex-1 overflow-y-auto max-xl:pb-[60px]">
-                {children}
-              </main>
-            </div>
-            <div className="xl:hidden fixed bottom-0 w-full">
-              <Navigation orientation="horizontal" role={"USER"} />
-            </div>
-          </div>
-        </AppProvider>
-      </AuthProvider>
-    );
-  }
-
   return (
     <AuthProvider>
       <AppProvider initialData={safeInitialData}>
-        <div className="flex bg-black flex-col min-h-screen">
-          <Toaster />
-          <NutritionPlanRedirect nutritionPlan={initialData.nutritionPlan} />
-          {children}
+        <div className="flex flex-col min-h-screen">
+          <Toaster />{" "}
+          <NutritionPlanRedirect
+            innitialNutritionPlan={initialData.nutritionPlan}
+          />
+          <Header />
+          <div className="flex flex-1 h-[calc(100dvh-60px)]">
+            <div className="hidden xl:block">
+              <Navigation orientation="vertical" role={"USER"} />
+            </div>
+            <main className="flex-1 overflow-y-auto max-xl:pb-[60px]">
+              {children}
+            </main>
+          </div>
+          <div className="xl:hidden fixed bottom-0 w-full">
+            <Navigation orientation="horizontal" role={"USER"} />
+          </div>
         </div>
       </AppProvider>
     </AuthProvider>

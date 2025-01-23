@@ -81,6 +81,7 @@ export const authOptions: NextAuthOptions = {
             name: data.name,
             role: data.role,
             accessToken: data.token,
+            image: data.image,
           };
         } catch (error) {
           console.error("Authentication error:", error);
