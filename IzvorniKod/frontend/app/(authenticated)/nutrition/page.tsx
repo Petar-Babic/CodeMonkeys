@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { Pie, Bar } from "react-chartjs-2";
 import {
   Chart as ChartJS,
@@ -286,11 +286,11 @@ const NutritionPage = () => {
   }, [currentDate, mealsByDate]);
 
   //Stats---------------------------------------------------------------------------------------------------------------------------------------------------------------
-  const calculateTotalCalories = () => {
+  const calculateTotalCalories = useCallback(() => {
     return meals.reduce((total, meal) => total + meal.calories, 0);
-  };
+  }, [meals]);
 
-  const calculateTotalNutrients = () => {
+  const calculateTotalNutrients = useCallback(() => {
     return meals.reduce(
       (totals, meal) => {
         totals.protein += meal.protein || 0;
@@ -336,15 +336,27 @@ const NutritionPage = () => {
         B12: 0,
       }
     );
-  };
+  }, [meals]);
+
+  const calculatePercentages = useCallback(() => {
+    const totalCalories = calculateTotalCalories();
+
+    if (totalCalories === 0) return [0, 0, 0];
+
+    return [
+      ((totalNutrients.protein * 4) / totalCalories) * 100,
+      ((totalNutrients.carbs * 4) / totalCalories) * 100,
+      ((totalNutrients.fats * 9) / totalCalories) * 100,
+    ];
+  }, [calculateTotalCalories, totalNutrients]);
 
   useEffect(() => {
     calculateTotalCalories();
-  }, [meals]);
+  }, [meals, calculateTotalCalories]);
 
   useEffect(() => {
     setTotalNutrients(calculateTotalNutrients());
-  }, [meals]);
+  }, [meals, calculateTotalNutrients]);
 
   const [tempGoals, setTempGoals] = useState<Goals>(goals);
   const [isGoalsModalOpen, setIsGoalsModalOpen] = useState(false);
@@ -503,23 +515,8 @@ const NutritionPage = () => {
     ],
   });
 
-  const calculatePercentages = () => {
-    const totalCalories = calculateTotalCalories();
-
-    if (totalCalories === 0) {
-      return [0, 0, 0];
-    }
-
-    return [
-      ((totalNutrients.protein * 4) / totalCalories) * 100,
-      ((totalNutrients.carbs * 4) / totalCalories) * 100,
-      ((totalNutrients.fats * 9) / totalCalories) * 100,
-    ];
-  };
-
   useEffect(() => {
     const percentages = calculatePercentages();
-
     setData((prevData) => ({
       ...prevData,
       datasets: [
@@ -529,7 +526,7 @@ const NutritionPage = () => {
         },
       ],
     }));
-  }, [totalNutrients]);
+  }, [totalNutrients, calculatePercentages]);
 
   //Meal modal-----------------------------------------------------------------------------------------------------------------------------------------------------------
   const openModal = (meal?: Meal) => {
@@ -977,41 +974,28 @@ const NutritionPage = () => {
     return new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
   };
 
-  const calculateDailyCalories = () => {
+  const calculateDailyCalories = useCallback(() => {
     const monthKey = formatMonthKey(currentMonth);
-    const daysInMonth = getDaysInMonth(currentMonth); // Dynamically get days in the month
+    const daysInMonth = getDaysInMonth(currentMonth);
 
-    const dailyCalories = Array(daysInMonth).fill(0); // Initialize array with the correct size
+    const dailyCalories = Array(daysInMonth).fill(0);
 
     Object.entries(mealsByDate).forEach(([dateKey, meals]) => {
       if (dateKey.startsWith(monthKey)) {
-        // Check if the date belongs to the current month
-        const day = parseInt(dateKey.split("-")[2], 10) - 1; // Extract day (0-based index)
+        const day = parseInt(dateKey.split("-")[2], 10) - 1;
         dailyCalories[day] = meals.reduce(
           (sum, meal) => sum + meal.calories,
           0
-        ); // Sum up calories for the day
+        );
       }
     });
 
     return dailyCalories;
-  };
+  }, [currentMonth, mealsByDate]);
 
   useEffect(() => {
-    const dailyCalories = calculateDailyCalories();
-    const daysInMonth = getDaysInMonth(currentMonth);
-
-    setDataMonthCalories({
-      labels: Array.from({ length: daysInMonth }, (_, i) => `${i + 1}`),
-      datasets: [
-        {
-          label: "Calories",
-          data: dailyCalories,
-          backgroundColor: "green",
-        },
-      ],
-    });
-  }, [currentMonth, mealsByDate]);
+    calculateDailyCalories();
+  }, [currentMonth, mealsByDate, calculateDailyCalories]);
 
   const CHART_PROPERTIES_Bar = {
     labels: Array.from({ length: 30 }, (_, i) => `${i + 1}`),
@@ -1029,10 +1013,24 @@ const NutritionPage = () => {
     ],
   });
 
+  useEffect(() => {
+    const dailyCalories = calculateDailyCalories();
+    const daysInMonth = getDaysInMonth(currentMonth);
+
+    setDataMonthCalories({
+      labels: Array.from({ length: daysInMonth }, (_, i) => `${i + 1}`),
+      datasets: [
+        {
+          label: "Calories",
+          data: dailyCalories,
+          backgroundColor: "green",
+        },
+      ],
+    });
+  }, [currentMonth, mealsByDate, calculateDailyCalories]);
+
   //Month Selector--------------------------------------------------------------------------------------------------------------------------------------------------------
-  const [mealsByMonth, setMealsByMonth] = useState<{ [key: string]: any[] }>(
-    {}
-  );
+  const [mealsByMonth, setMealsByMonth] = useState<Record<string, Meal[]>>({});
 
   const formatMonthKey = (date: Date) => {
     return `${date.getFullYear()}-${(date.getMonth() + 1)
@@ -1040,14 +1038,22 @@ const NutritionPage = () => {
       .padStart(2, "0")}`;
   };
 
-  const handleMonthChange = (direction: "prev" | "next") => {
-    const newDate =
-      direction === "prev"
-        ? new Date(currentMonth.setMonth(currentMonth.getMonth() - 1))
-        : new Date(currentMonth.setMonth(currentMonth.getMonth() + 1));
-    setCurrentMonth(newDate);
-    const monthKey = formatMonthKey(newDate);
-    setMeals(mealsByMonth[monthKey] || []);
+  const handleMonthChange = (month: Date) => {
+    setCurrentMonth(month);
+    const updatedMealsByMonth = Object.entries(mealsByDate).reduce(
+      (acc, [date, meals]) => {
+        const mealDate = new Date(date);
+        if (
+          mealDate.getMonth() === month.getMonth() &&
+          mealDate.getFullYear() === month.getFullYear()
+        ) {
+          acc[date] = meals;
+        }
+        return acc;
+      },
+      {} as Record<string, Meal[]>
+    );
+    setMealsByMonth(updatedMealsByMonth);
   };
 
   const formatMonth = (date: Date) => {
@@ -1272,13 +1278,9 @@ const NutritionPage = () => {
                     <li>Vitamin B12: ~2.4 µg/day</li>
                   </ul>
                   <p className="mt-2">
-                    Before setting goals, it's important to consult a doctor and
-                    undergo a blood test to ensure your targets are realistic
-                    and safe, and not potentially harmful.
-                    <br />
-                    <br />
-                    *If your nutrition label lists sodium instead of salt, you
-                    can convert it: 1 g salt = 400 mg of sodium.
+                    Before setting goals, it&apos;s important to consult a
+                    doctor and undergo a blood test to ensure your targets are
+                    realistic and safe, and not potentially harmful.
                   </p>
                 </div>
               </div>
@@ -1537,7 +1539,7 @@ const NutritionPage = () => {
                       setShowConfirmDialog(false);
                       setHasUnsavedChanges(false);
                       setIsModalOpen(false);
-                      confirmModalClose;
+                      confirmModalClose();
                     }}
                     className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
                   >
@@ -1767,7 +1769,7 @@ const NutritionPage = () => {
                       setShowConfirmDialogFood(false);
                       setHasUnsavedChangesFood(false);
                       setIsFoodModalOpen(false);
-                      confirmFoodModalClose;
+                      confirmFoodModalClose();
                     }}
                     className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
                   >
@@ -1832,7 +1834,11 @@ const NutritionPage = () => {
 
       <div className="flex items-center justify-center mb-6">
         <button
-          onClick={() => handleMonthChange("prev")}
+          onClick={() =>
+            handleMonthChange(
+              new Date(currentMonth.setMonth(currentMonth.getMonth() - 1))
+            )
+          }
           className="px-8 py-2 bg-white-300 text-gray-400 rounded-l text-xl font-bold"
         >
           {"<"}
@@ -1845,7 +1851,11 @@ const NutritionPage = () => {
           {/* Month and year */}
         </div>
         <button
-          onClick={() => handleMonthChange("next")}
+          onClick={() =>
+            handleMonthChange(
+              new Date(currentMonth.setMonth(currentMonth.getMonth() + 1))
+            )
+          }
           className="px-8 py-2 bg-white-300 text-gray-400 text-xl font-bold"
         >
           {">"}

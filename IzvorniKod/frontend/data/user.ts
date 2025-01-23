@@ -1,5 +1,5 @@
 import { UserBase } from "@/types/user";
-import { Role, Gender, ActivityLevel } from "@/types/user";
+import { Role, Gender } from "@/types/user";
 
 export const users: UserBase[] = [
   {

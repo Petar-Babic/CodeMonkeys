@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import Image from "next/image";
 
 interface ExerciseModalProps {
   exercise: {
@@ -56,14 +57,15 @@ export default function ExerciseModal({
         <div className="flex-grow overflow-y-auto">
           {activeTab === "About" && (
             <div>
-              <p className="mb-4 text-lg">{exercise.description}</p>
-              <div className="mb-4">
-                <img
-                  src={exercise.gifUrl}
+              <div className="relative w-64 h-64 mb-4">
+                <Image
+                  src={`/api/upload/${exercise.gifUrl}`}
                   alt={exercise.name}
-                  className="w-full rounded-md"
+                  fill
+                  className="object-cover rounded-lg"
                 />
               </div>
+              <p className="mb-4 text-lg">{exercise.description}</p>
             </div>
           )}
           {activeTab === "History" && (

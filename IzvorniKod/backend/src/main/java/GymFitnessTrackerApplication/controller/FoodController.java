@@ -72,7 +72,6 @@ public class FoodController {
         MyUser user = (MyUser) myUserService.getMyUser(email);
         Food food = foodService.updateFood(id,form);
         return ResponseEntity.status(200).body(new FoodResponse(food));
-
     }
 
     @PostMapping("/api/meal")

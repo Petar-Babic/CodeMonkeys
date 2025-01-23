@@ -29,8 +29,7 @@ import {
 
 import { ExerciseBase } from "@/types/exercise";
 import { MuscleGroupBase } from "@/types/muscleGroup";
-import { NutritionPlanBase } from "@/types/nutritionPlan";
-import { WorkoutPlanBase, WorkoutPlanWithWorkouts } from "@/types/workoutPlan";
+import { WorkoutPlanBase } from "@/types/workoutPlan";
 import { UserBase } from "@/types/user";
 import {
   useWorkoutSession,

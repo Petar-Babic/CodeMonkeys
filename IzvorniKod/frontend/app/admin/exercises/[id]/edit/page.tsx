@@ -1,5 +1,4 @@
 import React from "react";
-import { exercises } from "@/data/exercise";
 import { ExerciseBase } from "@/types/exercise";
 import { AdminExerciseForm } from "@/components/AdminExerciseForm";
 import { getServerSession } from "next-auth";

@@ -42,3 +42,8 @@ export type WorkoutWithPlannedExerciseBaseUpdateInput = Partial<
 export type WorkoutWithPlannedExercise = WorkoutBase & {
   exercises: PlannedExerciseWithExercise[];
 };
+
+export type WorkoutWithUserPlannedExerciseUpdateInput =
+  WorkoutWithPlannedExerciseBaseUpdateInput & {
+    exercises: UpdatePlannedExerciseInput[];
+  };

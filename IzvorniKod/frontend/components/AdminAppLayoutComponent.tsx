@@ -4,7 +4,6 @@ import Navigation from "@/components/Navigation";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { ExerciseBase } from "@/types/exercise";
 import { MuscleGroupBase } from "@/types/muscleGroup";
-import { userWorkoutPlans } from "@/data/userWorkoutPlan";
 import { WorkoutPlanWithWorkouts } from "@/types/workoutPlan";
 import { WorkoutPlanBase } from "@/types/workoutPlan";
 import { backendUrl } from "@/data/backendUrl";
@@ -94,13 +93,10 @@ const getInitialData = async (
     console.error("Error fetching workout plans:", error);
   }
 
-  const userWorkoutPlan =
-    userWorkoutPlans.find((plan) => plan.userId === userId) || null;
-
   return {
     muscleGroups,
     exercises,
-    userWorkoutPlan,
+    userWorkoutPlan: null,
     workoutPlans,
     accessToken,
     user,
