@@ -116,7 +116,6 @@ public class WorkoutSessionServiceJpa implements WorkoutSessionService {
                 workoutSession.addPerformedExercise(newPerformedExercise);
             }
         }
-            //for each za svaki set
         for(Long id : wsIds){
             PerformedExercises performedExercises = performedExerciseRepo.findById(id).orElse(null);
             workoutSession.getPerformedExercises().remove(performedExercises);

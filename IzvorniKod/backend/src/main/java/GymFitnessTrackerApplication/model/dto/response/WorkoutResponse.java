@@ -1,21 +1,20 @@
 package GymFitnessTrackerApplication.model.dto.response;
 
-import GymFitnessTrackerApplication.model.domain.Exercise;
-import GymFitnessTrackerApplication.model.domain.PlannedExercise;
-
 import java.util.HashSet;
 import java.util.Set;
 
 public class WorkoutResponse {
-    private Long id;
-    private String name;
-    private String description;
+    private final Long id;
+    private final String name;
+    private final String description;
+    private final Integer order;
     private Set<PlannedExerciseResponse> exercises;
 
-    public WorkoutResponse(Long id, String name, String description) {
+    public WorkoutResponse(Long id, String name, String description, Integer order) {
         this.id = id;
         this.name = name;
         this.description = description;
+        this.order = order;
         exercises = new HashSet<>();
     }
     public void addExercise(PlannedExerciseResponse exercise) {
@@ -36,5 +35,9 @@ public class WorkoutResponse {
 
     public Set<PlannedExerciseResponse> getExercises() {
         return exercises;
+    }
+
+    public Integer getOrder() {
+        return order;
     }
 }

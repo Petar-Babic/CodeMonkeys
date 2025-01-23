@@ -2,10 +2,8 @@ package GymFitnessTrackerApplication.service.impl;
 
 import GymFitnessTrackerApplication.exception.ForbiddenActionException;
 import GymFitnessTrackerApplication.exception.NonExistantEntityException;
-import GymFitnessTrackerApplication.model.dao.ExerciseRepo;
-import GymFitnessTrackerApplication.model.dao.MuscleGroupRepo;
-import GymFitnessTrackerApplication.model.dao.MyUserRepository;
-import GymFitnessTrackerApplication.model.dao.WorkoutPlanRepo;
+import GymFitnessTrackerApplication.exception.RemoveWorkoutException;
+import GymFitnessTrackerApplication.model.dao.*;
 import GymFitnessTrackerApplication.model.domain.*;
 import GymFitnessTrackerApplication.model.dto.workoutDTOs.PlannedExerciseDTO;
 import GymFitnessTrackerApplication.model.dto.workoutDTOs.WorkoutDTO;
@@ -29,6 +27,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class WorkoutPlanServiceJpa implements WorkoutPlanService {
@@ -41,11 +40,17 @@ public class WorkoutPlanServiceJpa implements WorkoutPlanService {
     @Autowired
     private ExerciseRepo exerciseRepo;
     @Autowired
-    private MuscleGroupRepo muscleGroupRepo;
-    @Autowired
     private AmazonS3 s3Client;
     @Value("${cloud.aws.s3.bucket}")
     private String bucketName;
+    @Autowired
+    private WorkoutRepo workoutRepo;
+    @Autowired
+    private PlannedExerciseRepo plannedExerciseRepo;
+    @Autowired
+    private WorkoutSessionRepo workoutSessionRepo;
+    @Autowired
+    private PerformedExerciseRepo performedExerciseRepo;
 
 
     @Override
@@ -89,7 +94,7 @@ public class WorkoutPlanServiceJpa implements WorkoutPlanService {
         workoutPlanRepo.delete(workoutPlan);
     }
 
-    //treba popravit da ne obrise stare workoute nego ih samo prepravi
+  /*  //treba popravit da ne obrise stare workoute nego ih samo prepravi
     //mouzda napraviti da prima ExerciseResponse, a ne form jer mi trebaju id-evi svega
     @Override
     public WorkoutPlanResponse updateWorkoutPlan(Long id, WorkoutPlanForm workoutPlanForm, MyUser user) {
@@ -122,18 +127,114 @@ public class WorkoutPlanServiceJpa implements WorkoutPlanService {
         workoutPlanRepo.save(workoutPlan);
         return generateWorkoutPlanResponse(workoutPlan);
     }
-
+*/
     @Override
-    public WorkoutPlanResponse updateWorkoutPlan2(Long id, WorkoutPlanResponse workoutPlanResponse, MyUser user) {
+    public WorkoutPlanResponse updateWorkoutPlan(Long id, WorkoutPlanResponse workoutPlanResponse, MyUser user) {
         WorkoutPlan workoutPlan = workoutPlanRepo.findById(id)
                 .orElseThrow(()-> new NonExistantEntityException("Workout plan with id "+id+" not found."));
         if(workoutPlan.getOwner()!=user) {
             throw new ForbiddenActionException("You have no permission to update this workout session.");
         }
 
+        workoutPlan.setName(workoutPlanResponse.getName());
+        workoutPlan.setDescription(workoutPlanResponse.getDescription());
+        if (workoutPlanResponse.getImage() != null) {
+            workoutPlan.setImage(workoutPlanResponse.getImage());
+        }
+        //svi workout id-evi otprije
+        Set<Long> workoutIds = workoutPlan.getWorkouts().stream().map(Workout::getId).collect(Collectors.toSet());
+        System.out.println("1.workout ids: "+workoutIds);
 
+        Set<Long> newIds = workoutPlanResponse.getWorkouts().stream().map(WorkoutResponse::getId).collect(Collectors.toSet());
+        for(Long newId : newIds) {
+            if(newId!=null){
+                Workout workout = workoutRepo.findById(newId).orElseThrow(()-> new NonExistantEntityException("Workout with id " + newId + " not found."));
+            }
+        }
+        System.out.println("workout id set: "+workoutIds);
+        for(WorkoutResponse workoutResponse : workoutPlanResponse.getWorkouts()){
+            System.out.println("workout id: "+ workoutResponse.getId());
+            if(workoutResponse.getId()!=null){
+                //promijeni stari
+                System.out.println("sada idem azurirati stari jer je id: "+ workoutPlanResponse.getId());
+                Workout workout = workoutRepo.findById(workoutResponse.getId()).orElseThrow(()->new NonExistantEntityException("Workout with id "+workoutResponse.getId()+" not found."));
+                workoutIds.remove(workoutResponse.getId());
+                workout.setName(workoutResponse.getName());
+                workout.setDescription(workoutResponse.getDescription());
+                workout.setOrderNumber(workoutResponse.getOrder());
+                Set<Long> plannedExerciseIds = workout.getPlannedExercises().stream().map(PlannedExercise::getId).collect(Collectors.toSet());
+                for(PlannedExerciseResponse plannedExerciseResponse : workoutResponse.getExercises()) {
+                    System.out.print("  planned exercise id: "+ plannedExerciseResponse.plannedExerciseId());
+                    if(plannedExerciseResponse.plannedExerciseId()!=null){
+                        //promijeni stari
+                        PlannedExercise plannedExercise = plannedExerciseRepo.findById(plannedExerciseResponse.plannedExerciseId())
+                                .orElseThrow(()->new NonExistantEntityException("Planned exercise with id "+plannedExerciseResponse.plannedExerciseId()+" not found."));
+                        plannedExerciseIds.remove(plannedExerciseResponse.plannedExerciseId());
 
-        return null;
+                        if(!plannedExercise.getExercise().getId().equals(plannedExerciseResponse.exerciseId())){
+                            Exercise exercise = exerciseRepo.findById(plannedExerciseResponse.exerciseId())
+                                    .orElseThrow(()->new NonExistantEntityException("Exercise with id "+plannedExerciseResponse.exerciseId()+" not found."));
+                            plannedExercise.setExercise(exercise);
+                        }
+                        plannedExercise.setSets(plannedExerciseResponse.sets());
+                        plannedExercise.setReps(plannedExerciseResponse.reps());
+                        plannedExercise.setRpe(plannedExerciseResponse.rpe());
+                        plannedExercise.setOrderNumber(plannedExerciseResponse.order());
+                    }
+                    else{
+                        //napravi novi
+                        Exercise exercise = exerciseRepo.findById(plannedExerciseResponse.exerciseId())
+                                .orElseThrow(() -> new NonExistantEntityException("Exercise with id " + plannedExerciseResponse.exerciseId() +" not found."));
+                        PlannedExercise newPlannedExercise = new PlannedExercise(plannedExerciseResponse.sets(), plannedExerciseResponse.reps(),
+                                plannedExerciseResponse.rpe(), plannedExerciseResponse.order(), exercise, workout);
+
+                        workout.addPlannedExercise(newPlannedExercise);
+                    }
+                    if(!plannedExerciseIds.isEmpty()) {
+                        for(Long peId : plannedExerciseIds){
+                            PlannedExercise plannedExercise= plannedExerciseRepo.findById(peId)
+                                    .orElseThrow(()-> new NonExistantEntityException("Planned exercise with id "+id+" not found."));
+                            if(performedExerciseRepo.countByPlannedExercise(plannedExercise)==0){
+                                //smije se obrisati samo ako nije u performed_exercises
+                                workout.getPlannedExercises().remove(plannedExercise);
+                            }
+                        }
+                    }
+                }
+            }
+            else{
+                //napravi novi workout
+                System.out.println("sada idem napraviti novi jer je id: "+ workoutPlanResponse.getId());
+                Workout newWorkout = new Workout(workoutResponse.getName(),workoutResponse.getDescription(), workoutResponse.getOrder(),
+                            workoutPlan);
+                for(PlannedExerciseResponse plannedExerciseResponse : workoutResponse.getExercises()){
+                    Exercise exercise = exerciseRepo.findById(plannedExerciseResponse.exerciseId())
+                            .orElseThrow(() -> new NonExistantEntityException("Exercise with id " + plannedExerciseResponse.exerciseId() +" not found."));
+                    PlannedExercise newPlannedExercise = new PlannedExercise(plannedExerciseResponse.sets(), plannedExerciseResponse.reps(),
+                            plannedExerciseResponse.rpe(), plannedExerciseResponse.order(), exercise, newWorkout);
+
+                    newWorkout.addPlannedExercise(newPlannedExercise);
+                }
+                workoutPlan.addWorkout(newWorkout);
+            }
+            System.out.println("2.workout ids: "+workoutIds);
+            if(!workoutIds.isEmpty()){
+                for(Long wId : workoutIds){
+                    Workout workout = workoutRepo.findById(wId).orElseThrow(()-> new NonExistantEntityException("Workout with id "+id+" not found."));
+                    if(workoutSessionRepo.countByWorkout(workout)==0){
+                        workoutRepo.delete(workout);
+                        workoutPlan.getWorkouts().remove(workout);
+
+                    }
+//                    else{
+//                        throw new RemoveWorkoutException("You can't remove a workout from a workout plan if you used it.");
+//                    }
+
+                }
+            }
+        }
+        workoutPlanRepo.save(workoutPlan);
+        return generateWorkoutPlanResponse(workoutPlan);
     }
 
 
@@ -202,12 +303,12 @@ public class WorkoutPlanServiceJpa implements WorkoutPlanService {
         WorkoutPlanResponse wpr = new WorkoutPlanResponse(workoutPlan.getId(), workoutPlan.getName(), workoutPlan.getDescription(),
                 workoutPlan.getImage(), workoutPlan.getCreator().getId(), workoutPlan.getOwner().getId());
         for(Workout workout : workoutPlan.getWorkouts()){
-            WorkoutResponse wp = new WorkoutResponse(workout.getId(), workout.getName(), workout.getDescription());
+            WorkoutResponse wp = new WorkoutResponse(workout.getId(), workout.getName(), workout.getDescription(), workout.getorderNumber());
             for(PlannedExercise exercise : workout.getPlannedExercises()){
                 Exercise originalExercise = exerciseRepo.findById(exercise.getExercise().getId()).orElse(null);
                 String exerciseName = "";
                 if(originalExercise!=null) {exerciseName = originalExercise.getName(); }
-                PlannedExerciseResponse per = new PlannedExerciseResponse(exercise.getExercise().getId(), exerciseName,
+                PlannedExerciseResponse per = new PlannedExerciseResponse(exercise.getId(), exercise.getExercise().getId(), exerciseName,
                         exercise.getSets(), exercise.getReps(), exercise.getRpe(), exercise.getOrderNumber());
                 wp.addExercise(per);
             }

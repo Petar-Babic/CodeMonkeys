@@ -18,7 +18,7 @@ public class Workout {
     @ManyToOne
     @JoinColumn(name = "workout_plan_id")
     private WorkoutPlan workoutPlan;
-    @OneToMany(mappedBy = "workout", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "workout", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<PlannedExercise> plannedExercises;
     @OneToMany(mappedBy = "workout")
     private Set<WorkoutSession> workoutSessions;
@@ -59,5 +59,25 @@ public class Workout {
 
     public void addPlannedExercise(PlannedExercise plannedExercise) {
         plannedExercises.add(plannedExercise);
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public void setOrderNumber(Integer orderNumber) {
+        this.orderNumber = orderNumber;
+    }
+
+    public void setWorkoutPlan(WorkoutPlan workoutPlan) {
+        this.workoutPlan = workoutPlan;
+    }
+
+    public void setPlannedExercises(Set<PlannedExercise> plannedExercises) {
+        this.plannedExercises = plannedExercises;
     }
 }

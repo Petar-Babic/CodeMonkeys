@@ -16,4 +16,5 @@ public interface WorkoutSessionRepo extends JpaRepository<WorkoutSession, Long> 
     Set<WorkoutSession> findByWorkout(Workout workout);
     @Query("SELECT distinct ws FROM WorkoutSession ws WHERE ws.user=:user AND ws.date>=:startDate AND ws.date<=:endDate")
     Set<WorkoutSession> findByUserAndDateInterval(MyUser user, Date startDate, Date endDate);
+    int countByWorkout(Workout workout);
 }

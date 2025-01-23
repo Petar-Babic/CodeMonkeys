@@ -76,10 +76,10 @@ public class WorkoutPlanController {
     }
 
     @PutMapping("workout-plans/{id}")
-    public ResponseEntity<?> updateWorkoutPlan(@RequestHeader("Authorization") String token, @PathVariable Long id, @RequestBody WorkoutPlanForm workoutPlanForm) {
+    public ResponseEntity<?> updateWorkoutPlan(@RequestHeader("Authorization") String token, @PathVariable Long id, @RequestBody WorkoutPlanResponse workoutPlanResponse) {
         String email = jwtService.extractEmail(token.trim().substring(7));
         MyUser user = (MyUser) myUserService.getMyUser(email);
-        WorkoutPlanResponse updatedWorkoutPlan = workoutPlanService.updateWorkoutPlan(id, workoutPlanForm, user);
+        WorkoutPlanResponse updatedWorkoutPlan = workoutPlanService.updateWorkoutPlan(id, workoutPlanResponse, user);
         return ResponseEntity.status(HttpStatus.OK).body(updatedWorkoutPlan);
     }
 

@@ -67,4 +67,32 @@ public class PlannedExercise {
     public Set<PerformedExercises> getPerformedExercises() {
         return performedExercises;
     }
+
+    public void setExercise(Exercise exercise) {
+        this.exercise = exercise;
+    }
+
+    public void setSets(Integer sets) {
+        this.sets = sets;
+    }
+
+    public void setReps(Integer reps) {
+        this.reps = reps;
+    }
+
+    public void setRpe(Integer rpe) {
+        this.rpe = rpe;
+    }
+
+    public void setOrderNumber(Integer orderNumber) {
+        this.orderNumber = orderNumber;
+    }
+
+    public void setWorkout(Workout workout) {
+        this.workout = workout;
+    }
+
+    public void setPerformedExercises(Set<PerformedExercises> performedExercises) {
+        this.performedExercises = performedExercises;
+    }
 }

@@ -28,7 +28,7 @@ public class WorkoutPlan {
     @ManyToOne
     @JoinColumn(name = "original_workout_plan_id")
     private WorkoutPlan originalWorkoutPlan;
-    @OneToMany(mappedBy = "workoutPlan", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "workoutPlan", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Workout> workouts;
     private boolean isActive=false;
 
@@ -127,5 +127,9 @@ public class WorkoutPlan {
 
     public void setActive(boolean active) {
         isActive = active;
+    }
+
+    public void setWorkouts(Set<Workout> workouts) {
+        this.workouts = workouts;
     }
 }
