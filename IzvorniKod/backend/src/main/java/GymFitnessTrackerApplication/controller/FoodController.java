@@ -33,6 +33,14 @@ public class FoodController {
     @Autowired
     private FoodMealService foodMealService;
 
+    @PostMapping(value = "/api/food/scan-barcode",params = {"barcode"})
+    public ResponseEntity<?> searchFood(@RequestHeader("Authorization") String token,@RequestParam String barcode){
+        String email = jwtService.extractEmail(token.trim().substring(7));
+        MyUser user = (MyUser) myUserService.getMyUser(email);
+        foodService.createFoodFromBarcode(user,barcode);
+        return ResponseEntity.status(200).body(barcode);
+    }
+
     @PostMapping("/api/food")
     public ResponseEntity<?> saveFood(@RequestBody FoodForm form, @RequestHeader("Authorization") String auth){
         String email = jwtService.extractEmail(auth.trim().substring(7));
