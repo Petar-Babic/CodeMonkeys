@@ -34,6 +34,7 @@ public class SecurityConfiguration {
                 .cors(cors -> cors.configure(http))
                 .authorizeHttpRequests(registry -> {
                     registry.requestMatchers("/home","/get", "/api/auth/**").permitAll();
+                    registry.requestMatchers("/api/trainers").authenticated();
                     registry.requestMatchers("/admin/**", "/api/admin/**","api/user/admin").hasRole("ADMIN");
                     registry.requestMatchers("/trainer/**").hasRole("TRAINER");
                     registry.requestMatchers("/user/**", "/api/nutrition-plan/**", "/api/user/**").hasRole("USER");

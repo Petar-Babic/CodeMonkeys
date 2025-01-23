@@ -190,7 +190,10 @@ public class UserDataController {
 
     @PostMapping("/choose-trainer")
     public ResponseEntity<?> chooseTrainer(@RequestHeader("Authorization") String token, @RequestBody UserIDForm form){
-        return ResponseEntity.status(200).body("Odabran "+form.userId());
+        String email = jwtService.extractEmail(token.trim().substring(7));
+        MyUser user = (MyUser) myUserService.getMyUser(email);
+        myUserService.chooseTrainer(user,form.userId());
+        return ResponseEntity.status(200).body("Chosen trainer "+form.userId());
     }
 
     @PostMapping("/admin")

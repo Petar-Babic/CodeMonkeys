@@ -28,8 +28,10 @@ import java.io.IOException;
 import java.net.URL;
 import java.time.LocalDateTime;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class MyUserServiceJpa implements MyUserService {
@@ -171,4 +173,30 @@ public class MyUserServiceJpa implements MyUserService {
             throw new AdminRestrictedException("USER isnt ADMIN/TRAINER");
         return userRepository.findAllByTrainer(user);
     }
+
+    public List<MyUser> getTrainers(){
+        return userRepository.findAll().stream().filter(myUser -> myUser.getRole().equals(Role.TRAINER)).collect(Collectors.toList());
+    }
+
+    @Override
+    public HashMap<MyUser,Integer> numberOfClients(List<MyUser> trainers){
+        HashMap<MyUser,Integer> stuff = new HashMap<>();
+        trainers.forEach(trainer -> stuff.put(trainer,0));
+        userRepository.findAll().forEach(user -> {
+            if(user.getRole().equals(Role.USER) && user.getTrainer() != null)
+                stuff.put(user.getTrainer(), stuff.get(user.getTrainer()) + 1);
+        });
+
+        return stuff;
+    }
+    @Override
+    public void chooseTrainer(MyUser user,Long id){
+        Optional<MyUser> trainer = userRepository.findById(id);
+        if(trainer.isEmpty()) throw new NoExistingFoodException("No such user");
+        MyUser tr = trainer.get();
+        if(!tr.getRole().equals(Role.TRAINER)) throw new AdminRestrictedException("Choosen user is not a trainer");
+        user.setTrainer(tr);
+        userRepository.save(user);
+    }
+
 }
