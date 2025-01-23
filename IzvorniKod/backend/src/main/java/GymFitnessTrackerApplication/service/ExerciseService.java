@@ -17,5 +17,6 @@ public interface ExerciseService {
     public ExerciseResponse getExerciseById(Long id);
     public List<ExerciseResponse> listAllApprovedExercises();
     public Set<PerformedExerciseResponse> listExerciseHistoryForUser(MyUser user, Long exerciseId);
+    public void approveExercise(Long exerciseId);
 
 }

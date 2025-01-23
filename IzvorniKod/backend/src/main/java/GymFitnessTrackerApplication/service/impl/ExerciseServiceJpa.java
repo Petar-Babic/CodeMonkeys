@@ -81,6 +81,14 @@ public class ExerciseServiceJpa implements ExerciseService {
     }
 
     @Override
+    public void approveExercise(Long exerciseId) {
+        Exercise exercise = exerciseRepo.findById(exerciseId)
+                .orElseThrow(() -> new NonExistantEntityException("Exercise with "+ exerciseId +" not found."));
+        exercise.setApproved(true);
+        exerciseRepo.save(exercise);
+    }
+
+    @Override
     public List<ExerciseResponse> listAllExercisesCreatedByUser(MyUser user) {
         List<Exercise> exercises = exerciseRepo.findByCreatedByUser(user);
         List<ExerciseResponse> result = new ArrayList<>();
@@ -121,7 +129,7 @@ public class ExerciseServiceJpa implements ExerciseService {
     @Override
     public ExerciseResponse updateExercise(Long id, ExerciseForm exerciseForm) {
         Exercise exercise = exerciseRepo.findById(id)
-                .orElseThrow(() -> new NonExistantEntityException("EExercise with "+ id +" not found."));
+                .orElseThrow(() -> new NonExistantEntityException("Exercise with "+ id +" not found."));
 
         exercise.setName(exerciseForm.name());
         exercise.setDescription(exerciseForm.description());
