@@ -83,7 +83,7 @@ public class MealServiceJpa implements MealService {
         return mealRepo.save(m);
     }
 
-    public Meal createMealAdmin(MyUser user,MealForm form){
+    public Meal createMealTrainer(MyUser user, MealForm form){
         Optional<MyUser> createdFor = userRepository.findById(Long.parseLong(form.getUserId()));
         Meal m = new Meal(user,form,createdFor.get());
         m.setSuggestion(true);

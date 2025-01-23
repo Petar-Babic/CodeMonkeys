@@ -98,7 +98,11 @@ export function AdminWorkoutPlanForm({
       userId: workoutPlan?.userId || 0,
       image: workoutPlan?.image || "",
       description: workoutPlan?.description || "",
-      workouts: workoutPlan?.workouts || [],
+      workouts:
+        workoutPlan?.workouts.map((workout, index) => ({
+          ...workout,
+          order: workout.order || index + 1,
+        })) || [],
     },
   });
 
@@ -108,7 +112,11 @@ export function AdminWorkoutPlanForm({
       userId: workoutPlan?.userId || 0,
       image: workoutPlan?.image || "",
       description: workoutPlan?.description || "",
-      workouts: workoutPlan?.workouts || [],
+      workouts:
+        workoutPlan?.workouts.map((workout, index) => ({
+          ...workout,
+          order: workout.order || index + 1,
+        })) || [],
     });
 
     if (workoutPlan?.image) {
@@ -187,9 +195,9 @@ export function AdminWorkoutPlanForm({
     console.log("data in handleCreateWorkout", data);
     append({
       ...data,
+      order: fields.length + 1,
       exercises: data.exercises.map((exercise) => ({
         ...exercise,
-
         order: exercise.order || 0,
         exerciseId: Number(exercise.exerciseId),
         sets: exercise.sets || 0,
@@ -207,9 +215,10 @@ export function AdminWorkoutPlanForm({
     const index = fields.findIndex((workout) => workout.id === data.id);
     if (index !== -1) {
       update(index, {
+        ...fields[index],
         id: data.id,
         name: data.name || fields[index].name,
-        order: data.order || fields[index].order,
+        order: data.order || fields[index].order || index + 1,
         exercises:
           data?.exercises?.map((exercise) => ({
             ...exercise,
@@ -312,10 +321,17 @@ export function AdminWorkoutPlanForm({
                   <Button
                     type="button"
                     onClick={() => {
+                      console.log("Workout being edited:", {
+                        id: workout.id,
+                        name: workout.name,
+                        order: workout.order,
+                        exercises: workout.exercises,
+                      });
+
                       setEditingWorkout({
                         id: workout.id || "",
                         name: workout.name,
-                        order: workout.order,
+                        order: workout.order || 1,
                         description: "",
                         workoutPlanId: Number(workoutPlan?.id),
                         exercises: workout.exercises.map((exercise) => {
@@ -373,7 +389,7 @@ export function AdminWorkoutPlanForm({
         <FormField
           control={form.control}
           name="image"
-          render={({ field: { value, onChange, ...field } }) => (
+          render={({ field: { ref, name, onBlur } }) => (
             <FormItem>
               <FormLabel>Image</FormLabel>
               <FormControl>
@@ -382,7 +398,9 @@ export function AdminWorkoutPlanForm({
                     type="file"
                     accept="image/*"
                     onChange={handleImageChange}
-                    {...field}
+                    ref={ref}
+                    name={name}
+                    onBlur={onBlur}
                   />
                   {previewUrl && (
                     <div className="mt-4">
@@ -448,6 +466,16 @@ export function AdminWorkoutPlanForm({
           </DrawerContent>
         </Drawer>
       </form>
+
+      {/* // ispisi form.state.errors */}
+      <div className="text-red-500">
+        <h2>Errors</h2>
+        {JSON.stringify(form.formState.errors)}
+      </div>
+      <div className="text-red-500">
+        <h2>Values</h2>
+        {JSON.stringify(form.getValues())}
+      </div>
     </Form>
   );
 }

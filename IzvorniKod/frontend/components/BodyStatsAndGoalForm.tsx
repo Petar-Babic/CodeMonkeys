@@ -29,6 +29,7 @@ import { BodyStatsAndGoalDataType } from "@/types/bodyStatsAndGoal";
 import { ActivityLevel, Gender } from "@/types/user";
 import StepProgress from "./StepProgress";
 import { useAppContext } from "@/contexts/AppContext";
+import { usePathname } from "next/navigation";
 
 const activityLevels = [
   {
@@ -131,16 +132,17 @@ export default function BodyStatsAndGoalForm() {
   const [direction, setDirection] = useState<"forward" | "backward">("forward");
   const [isLoadingNutritionalPlan, setIsLoadingNutritionalPlan] =
     useState(false);
+  const pathname = usePathname();
 
   useEffect(() => {
     const isExistingPlan = async () => {
       const isExistingPlan = await getNutritionPlan();
-      if (isExistingPlan) {
+      if (isExistingPlan && pathname !== "/workouts") {
         router.push("/workouts");
       }
     };
     isExistingPlan();
-  }, []);
+  }, [getNutritionPlan, router, pathname]);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -153,9 +155,10 @@ export default function BodyStatsAndGoalForm() {
       goalWeight: "85",
       isGoalWeightImperial: false,
       activityLevel: "moderate",
-      protein: 0,
-      carbs: 0,
-      fat: 0,
+      timelineWeeks: 12,
+      protein: 100,
+      carbs: 100,
+      fat: 100,
     },
   });
 
@@ -193,20 +196,42 @@ export default function BodyStatsAndGoalForm() {
   }
 
   useEffect(() => {
-    const weight = parseFloat(form.getValues("weight"));
-    const goalWeight = parseFloat(form.getValues("goalWeight"));
-    const timelineWeeks = form.getValues("timelineWeeks");
-    const activityLevel = form.getValues("activityLevel");
-    const gender = form.getValues("gender");
-    const height = parseFloat(form.getValues("height"));
-    const isWeightImperial = form.getValues("isWeightImperial");
-    const isGoalWeightImperial = form.getValues("isGoalWeightImperial");
-    const isHeightImperial = form.getValues("isHeightImperial");
+    if (!form) return;
+
+    const watchedValues = {
+      weight: form.watch("weight"),
+      goalWeight: form.watch("goalWeight"),
+      timelineWeeks: form.watch("timelineWeeks"),
+      activityLevel: form.watch("activityLevel"),
+      gender: form.watch("gender"),
+      height: form.watch("height"),
+      isWeightImperial: form.watch("isWeightImperial"),
+      isGoalWeightImperial: form.watch("isGoalWeightImperial"),
+      isHeightImperial: form.watch("isHeightImperial"),
+    };
+
+    const {
+      weight,
+      goalWeight,
+      timelineWeeks,
+      activityLevel,
+      gender,
+      height,
+      isWeightImperial,
+      isGoalWeightImperial,
+      isHeightImperial,
+    } = watchedValues;
 
     if (weight && goalWeight && timelineWeeks && activityLevel && height) {
-      const weightInKg = convertToKg(weight, isWeightImperial);
-      const goalWeightInKg = convertToKg(goalWeight, isGoalWeightImperial);
-      const heightInCm = isHeightImperial ? height * 2.54 : height;
+      const weightInKg = convertToKg(parseFloat(weight), isWeightImperial);
+      const goalWeightInKg = convertToKg(
+        parseFloat(goalWeight),
+        isGoalWeightImperial
+      );
+      const heightInCm = isHeightImperial
+        ? parseFloat(height) * 2.54
+        : parseFloat(height);
+
       const calories = calculateRequiredCalories(
         weightInKg,
         goalWeightInKg,
@@ -215,37 +240,35 @@ export default function BodyStatsAndGoalForm() {
         gender,
         heightInCm
       );
+
       setCalculatedCalories(calories);
 
       // Set initial macronutrient values
-      const initialProtein = Math.round((calories * 0.3) / 4); // 30% of calories from protein
-      const initialFat = Math.round((calories * 0.3) / 9); // 30% of calories from fat
-      const initialCarbs = Math.round((calories * 0.4) / 4); // 40% of calories from carbs
+      const initialProtein = Math.round((calories * 0.3) / 4);
+      const initialFat = Math.round((calories * 0.3) / 9);
+      const initialCarbs = Math.round((calories * 0.4) / 4);
 
       form.setValue("protein", initialProtein);
       form.setValue("fat", initialFat);
       form.setValue("carbs", initialCarbs);
     }
-  }, [
-    form.watch("weight"),
-    form.watch("goalWeight"),
-    form.watch("timelineWeeks"),
-    form.watch("activityLevel"),
-    form.watch("gender"),
-    form.watch("height"),
-    form.watch("isWeightImperial"),
-    form.watch("isGoalWeightImperial"),
-    form.watch("isHeightImperial"),
-  ]);
+  }, [form]);
 
   useEffect(() => {
-    const protein = form.getValues("protein");
-    const carbs = form.getValues("carbs");
-    const fat = form.getValues("fat");
+    if (!form) return;
 
-    const totalCals = protein * 4 + carbs * 4 + fat * 9;
+    const watchedMacros = {
+      protein: form.watch("protein"),
+      carbs: form.watch("carbs"),
+      fat: form.watch("fat"),
+    };
+
+    const totalCals =
+      watchedMacros.protein * 4 +
+      watchedMacros.carbs * 4 +
+      watchedMacros.fat * 9;
     setTotalCalories(totalCals);
-  }, [form.watch("protein"), form.watch("carbs"), form.watch("fat")]);
+  }, [form]);
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoadingNutritionalPlan(true);
@@ -279,7 +302,25 @@ export default function BodyStatsAndGoalForm() {
       };
 
       await bodyStatsAndGoal(data);
-      router.push("/workouts");
+
+      let attempts = 0;
+      let planExists = false;
+
+      while (attempts < 3 && !planExists) {
+        planExists = await getNutritionPlan();
+        if (!planExists) {
+          await new Promise((resolve) => setTimeout(resolve, 500));
+        }
+        attempts++;
+      }
+
+      if (planExists) {
+        router.push("/workouts");
+      } else {
+        console.error(
+          "Failed to verify nutrition plan creation after multiple attempts"
+        );
+      }
     } catch (error) {
       router.push("/sign-in");
       console.error("Body stats and goal error:", error);

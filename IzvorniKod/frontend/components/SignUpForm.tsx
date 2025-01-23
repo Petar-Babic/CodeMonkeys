@@ -19,7 +19,7 @@ import { ArrowRight, Loader2, Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
 import {
   FaGoogle,
-  FaFacebook,
+  // FaFacebook,
   // FaApple
 } from "react-icons/fa";
 import { useAuthContext } from "@/contexts/AuthContext";
@@ -139,7 +139,7 @@ export function SignUpForm() {
                   </>
                 )}
               </Button>
-              <Button
+              {/* <Button
                 variant="outlineWhite"
                 type="button"
                 onClick={() => handleSocialLogin("Facebook", 2)}
@@ -153,7 +153,7 @@ export function SignUpForm() {
                     Sign up with Facebook
                   </>
                 )}
-              </Button>
+              </Button> */}
               {/* <Button
                 variant="outlineWhite"
                 type="button"

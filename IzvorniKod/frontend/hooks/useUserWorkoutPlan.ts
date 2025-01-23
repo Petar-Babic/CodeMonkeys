@@ -6,26 +6,9 @@ import {
   WorkoutPlanWithWorkouts,
   UpdateWorkoutPlanInput,
 } from "@/types/workoutPlan";
-import { userWorkoutPlans as initialUserWorkoutPlans } from "@/data/userWorkoutPlan";
 import { useAuthContext } from "@/contexts/AuthContext";
 import { exercises } from "@/data/exercise";
 import { backendUrl } from "@/data/backendUrl";
-
-const getUserWorkoutPlanAPI = async (
-  userId: string
-): Promise<WorkoutPlanWithWorkouts | undefined> => {
-  // Simulate API delay
-  await new Promise((resolve) => setTimeout(resolve, 1000));
-
-  // Find the user workout plan for the given user
-  const userWorkoutPlan = initialUserWorkoutPlans.find(
-    (plan) => plan.userId === userId
-  );
-
-  console.log("User workout plan found:", userWorkoutPlan);
-
-  return userWorkoutPlan;
-};
 
 export function useUserWorkoutPlan() {
   const [isLoadingUserWorkoutPlan, setIsLoadingUserWorkoutPlan] =
@@ -111,25 +94,6 @@ export function useUserWorkoutPlan() {
     [userId]
   );
 
-  const getUserWorkoutPlan = useCallback(async (userId: string) => {
-    setIsLoadingUserWorkoutPlan(true);
-    setError(null);
-    try {
-      const plan = await getUserWorkoutPlanAPI(userId);
-      if (plan) {
-        setUserWorkoutPlan(plan);
-      }
-      return true;
-    } catch (err) {
-      setError(
-        err instanceof Error ? err.message : "An unknown error occurred"
-      );
-      throw err;
-    } finally {
-      setIsLoadingUserWorkoutPlan(false);
-    }
-  }, []);
-
   const updateUserWorkoutPlan = useCallback(
     async (data: UpdateWorkoutPlanInput) => {
       setIsLoadingUserWorkoutPlan(true);
@@ -197,7 +161,6 @@ export function useUserWorkoutPlan() {
     setUserWorkoutPlan,
     createUserWorkoutPlan,
     userWorkoutPlan,
-    getUserWorkoutPlan,
     updateUserWorkoutPlan,
   } as UseUserWorkoutPlanType;
 }

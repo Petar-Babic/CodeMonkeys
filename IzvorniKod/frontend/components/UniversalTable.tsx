@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/table";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
-import { ArrowUpDown, ArrowDown, ArrowUp, Search } from "lucide-react";
+import { ArrowUpDown, ArrowDown, ArrowUp } from "lucide-react";
 import debounce from "lodash/debounce";
 
 interface Column<T> {

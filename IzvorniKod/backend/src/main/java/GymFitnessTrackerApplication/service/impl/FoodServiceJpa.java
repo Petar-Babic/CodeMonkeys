@@ -41,7 +41,7 @@ public class FoodServiceJpa implements FoodService{
     }
 
     @Override
-    public Food updateFood(String id,FoodForm form){
+    public Food updateFood(String id,FoodForm form,MyUser user){
         Optional<Food> f = foodRepo.findById(Long.parseLong(id));
         if(f.isEmpty()) throw new NoExistingFoodException("No food item with ID : "+id);
         Food food = f.get();
@@ -60,6 +60,9 @@ public class FoodServiceJpa implements FoodService{
             food.setProtein(form.getProtein());
         if(form.getUnit() != null)
             food.setUnit(form.getUnit());
+
+        if(user.getRole().equals(Role.ADMIN)) food.setApproved(form.isApproved());
+        else food.setApproved(false);
 
         return foodRepo.save(food);
     }

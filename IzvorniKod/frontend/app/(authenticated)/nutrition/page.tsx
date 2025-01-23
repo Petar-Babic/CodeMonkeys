@@ -271,7 +271,6 @@ const NutritionPage = () => {
 
   useEffect(() => {
     const percentages = calculatePercentages();
-
     setData((prevData) => ({
       ...prevData,
       datasets: [
@@ -812,10 +811,9 @@ const NutritionPage = () => {
                     <li>Protein: ~50–60 g/day (10–15% of daily calories)</li>
                   </ul>
                   <p className="mt-2">
-                    Before setting goals, it&apos;s important to consult a doctor and
-                    undergo a blood test to ensure your targets are realistic
-                    and safe, and not potentially harmful.
-                    <br />
+                    Before setting goals, it&apos;s important to consult a
+                    doctor and undergo a blood test to ensure your targets are
+                    realistic and safe, and not potentially harmful.
                   </p>
                 </div>
               </div>

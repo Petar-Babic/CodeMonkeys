@@ -7,8 +7,6 @@ import { useAppContext } from "@/contexts/AppContext";
 import { WorkoutWithPlannedExercise } from "@/types/workout";
 
 export default function WorkoutPage() {
-  // Mock workouts data
-
   const { userWorkoutPlan, exercises } = useAppContext();
 
   const workouts: WorkoutWithPlannedExercise[] =
@@ -21,7 +19,7 @@ export default function WorkoutPage() {
     })) || [];
 
   return (
-    <div className="w-full bg-white h-full flex-col items-center pb-10 flex xl:flex-row relative max-xl:pt-14">
+    <div className="w-full bg-white h-full flex-col flex xl:flex-row relative max-xl:pt-14">
       <h1 className="text-4xl font-bold text-white mt-16 text-center">
         Choose today&apos;s workout
       </h1>

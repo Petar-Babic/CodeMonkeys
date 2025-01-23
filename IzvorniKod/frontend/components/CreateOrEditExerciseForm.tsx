@@ -6,7 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { useExercise } from "@/hooks/useExercise";
 import { useMuscleGroup } from "@/hooks/useMuscleGroup";
-import { ExerciseBase, CreateExerciseInput } from "@/types/exercise";
+import { ExerciseBase } from "@/types/exercise";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -19,13 +19,6 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Checkbox } from "./ui/checkbox";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { CheckCircledIcon, CrossCircledIcon } from "@radix-ui/react-icons";
@@ -35,16 +28,11 @@ const formSchema = z.object({
     message: "Exercise name must be at least 2 characters.",
   }),
   description: z.string().optional(),
-  gifUrl: z
-    .string()
-    .url({ message: "Invalid URL" })
-    .optional()
-    .or(z.literal("")),
-  categoryId: z.string(),
-  primaryMuscleGroupId: z
-    .array(z.string())
+  gif: z.string().url({ message: "Invalid URL" }).optional().or(z.literal("")),
+  primaryMuscleGroupsIds: z
+    .array(z.number())
     .min(1, "Select at least one primary muscle group"),
-  secondaryMuscleGroupIds: z.array(z.string()),
+  secondaryMuscleGroupsIds: z.array(z.number()),
 });
 
 type FormData = z.infer<typeof formSchema>;
@@ -71,10 +59,9 @@ export function CreateOrEditExerciseForm({
     defaultValues: {
       name: exercise?.name || "",
       description: exercise?.description || "",
-      gifUrl: exercise?.gifUrl || "",
-      categoryId: exercise?.categoryId || "",
-      primaryMuscleGroupId: exercise?.primaryMuscleGroupId || [],
-      secondaryMuscleGroupIds: exercise?.secondaryMuscleGroupIds || [],
+      gif: exercise?.gif || "",
+      primaryMuscleGroupsIds: exercise?.primaryMuscleGroupsIds || [],
+      secondaryMuscleGroupsIds: exercise?.secondaryMuscleGroupsIds || [],
     },
   });
 
@@ -87,13 +74,19 @@ export function CreateOrEditExerciseForm({
     setFormMessage(null);
     try {
       if (exercise) {
-        await updateExercise(exercise.id, data);
+        await updateExercise(exercise.id, {
+          ...data,
+          id: exercise.id,
+        });
         setFormMessage({
           type: "success",
           message: "Exercise updated successfully",
         });
       } else {
-        await createExercise(data as CreateExerciseInput);
+        await createExercise({
+          ...data,
+          isApproved: false,
+        });
         setFormMessage({
           type: "success",
           message: "Exercise created successfully",
@@ -163,7 +156,7 @@ export function CreateOrEditExerciseForm({
 
         <FormField
           control={form.control}
-          name="gifUrl"
+          name="gif"
           render={({ field }) => (
             <FormItem>
               <FormLabel>GIF URL</FormLabel>
@@ -180,30 +173,7 @@ export function CreateOrEditExerciseForm({
 
         <FormField
           control={form.control}
-          name="categoryId"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Category</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select a category" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  <SelectItem value="strength">Strength</SelectItem>
-                  <SelectItem value="cardio">Cardio</SelectItem>
-                  <SelectItem value="flexibility">Flexibility</SelectItem>
-                </SelectContent>
-              </Select>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
-          name="primaryMuscleGroupId"
+          name="primaryMuscleGroupsIds"
           render={() => (
             <FormItem>
               <FormLabel>Primary Muscle Groups</FormLabel>
@@ -212,7 +182,7 @@ export function CreateOrEditExerciseForm({
                   <FormField
                     key={muscleGroup.id}
                     control={form.control}
-                    name="primaryMuscleGroupId"
+                    name="primaryMuscleGroupsIds"
                     render={({ field }) => {
                       return (
                         <FormItem
@@ -222,18 +192,15 @@ export function CreateOrEditExerciseForm({
                           <FormControl>
                             <Checkbox
                               checked={field.value?.includes(muscleGroup.id)}
-                              onCheckedChange={(
-                                checked: boolean | "indeterminate"
-                              ) => {
-                                return checked === true
+                              onCheckedChange={(checked) => {
+                                return checked
                                   ? field.onChange([
                                       ...field.value,
                                       muscleGroup.id,
                                     ])
                                   : field.onChange(
                                       field.value?.filter(
-                                        (value: string) =>
-                                          value !== muscleGroup.id
+                                        (value) => value !== muscleGroup.id
                                       )
                                     );
                               }}
@@ -255,7 +222,7 @@ export function CreateOrEditExerciseForm({
 
         <FormField
           control={form.control}
-          name="secondaryMuscleGroupIds"
+          name="secondaryMuscleGroupsIds"
           render={() => (
             <FormItem>
               <FormLabel>Secondary Muscle Groups</FormLabel>
@@ -264,7 +231,7 @@ export function CreateOrEditExerciseForm({
                   <FormField
                     key={muscleGroup.id}
                     control={form.control}
-                    name="secondaryMuscleGroupIds"
+                    name="secondaryMuscleGroupsIds"
                     render={({ field }) => {
                       return (
                         <FormItem

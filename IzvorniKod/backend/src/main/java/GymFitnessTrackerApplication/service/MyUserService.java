@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.InputStream;
+import java.util.HashMap;
 import java.util.List;
 
 public interface  MyUserService     {
@@ -35,4 +36,10 @@ public interface  MyUserService     {
     void userToAdmin(MyUser user,Long id);
 
     List<MyUser> getTrainedBy(MyUser user);
+
+    List<MyUser> getTrainers();
+
+    HashMap<MyUser,Integer> numberOfClients(List<MyUser> trainers);
+
+    void chooseTrainer(MyUser user,Long id);
 }

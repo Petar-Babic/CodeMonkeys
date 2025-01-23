@@ -15,5 +15,5 @@ public interface FoodService {
 
     List<Food> foods();
 
-    Food updateFood(String id,FoodForm form);
+    Food updateFood(String id,FoodForm form,MyUser user);
 }

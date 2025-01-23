@@ -1,7 +1,5 @@
 import React from "react";
 import Image from "next/image";
-// import params and if the page body-stats-and-goals dontr shwo this
-// loading screen
 
 export default function LoadingAppScreen() {
   return (

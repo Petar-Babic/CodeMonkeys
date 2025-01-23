@@ -47,7 +47,7 @@ export const useExercise = () => {
 
       console.log("updateData", updateData);
 
-      const res = await fetch(`${backendUrl}/api/exercises/${id}`, {
+      await fetch(`${backendUrl}/api/exercises/${id}`, {
         method: "PUT",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -55,14 +55,10 @@ export const useExercise = () => {
         },
         body: JSON.stringify(updateData),
       });
-      const data = await res.json();
-      if (!res.ok) {
-        throw new Error(data.message || "Error updating exercise");
-      }
-      console.log("data", data);
+
       setExercises((prevExercises) =>
         prevExercises.map((exercise) =>
-          exercise.id === id ? { ...exercise, ...data } : exercise
+          exercise.id === id ? { ...exercise, ...updateData } : exercise
         )
       );
     },

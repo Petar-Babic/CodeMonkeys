@@ -28,6 +28,10 @@ const getWorkoutSessionAPI = async (
     (workout) => workout.id === workoutSession.workoutId
   );
 
+  if (!workout) {
+    throw new Error("Workout not found");
+  }
+
   return { ...workoutSession, exercises: allExercises, workout };
 };
 

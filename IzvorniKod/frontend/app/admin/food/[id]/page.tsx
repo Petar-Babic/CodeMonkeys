@@ -9,8 +9,10 @@ const getFoodAPI = async (id: number): Promise<FoodBase | undefined> => {
   return foods.find((food) => food.id === id);
 };
 
-export default async function FoodPage({ params }: { params: { id: string } }) {
-  const id = Number(params.id);
+export default async function FoodPage(props: {
+  params: Promise<{ id: number }>;
+}) {
+  const { id } = await props.params;
   const food = await getFoodAPI(id);
 
   if (!food) {
