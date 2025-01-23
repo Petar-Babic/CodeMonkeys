@@ -14,6 +14,8 @@ public interface SleepService {
 
     List<SleepLog> getUserLogs(MyUser user);
 
+    List<SleepLog> getAllUserLogs(MyUser user);
+
     Optional<SleepLog> getSpecificLog(MyUser user,String id);
 
     void deleteLog(MyUser user,String id);

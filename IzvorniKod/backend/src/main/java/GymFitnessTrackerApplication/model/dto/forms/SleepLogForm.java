@@ -1,10 +1,12 @@
 package GymFitnessTrackerApplication.model.dto.forms;
 
 import GymFitnessTrackerApplication.service.SleepService;
+import com.fasterxml.jackson.annotation.JsonInclude;
 
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class SleepLogForm {
 
     ZonedDateTime date;
