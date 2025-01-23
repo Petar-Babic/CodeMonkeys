@@ -1,5 +1,6 @@
 package GymFitnessTrackerApplication.service.impl;
 
+import GymFitnessTrackerApplication.exception.ForbiddenActionException;
 import GymFitnessTrackerApplication.model.dao.ExerciseRepo;
 import GymFitnessTrackerApplication.model.dao.MuscleGroupRepo;
 import GymFitnessTrackerApplication.model.dao.PlannedExerciseRepo;
@@ -121,20 +122,26 @@ public class ExerciseServiceJpa implements ExerciseService {
                 muscleGroup.addSecondaryToExercises(newExercise);
             });
         }
-
+        if(user.getRole().equals(Role.ADMIN))
+            newExercise.setApproved(true);
         Exercise savedExercise = exerciseRepo.save(newExercise);
         return generateExerciseResponse(savedExercise);
     }
 
+    //mouzda napraviti da prima ExerciseResponse, a ne form jer mi trebaju id-evi svega
     @Override
-    public ExerciseResponse updateExercise(Long id, ExerciseForm exerciseForm) {
+    public ExerciseResponse updateExercise(Long id, ExerciseForm exerciseForm, MyUser user) {
         Exercise exercise = exerciseRepo.findById(id)
                 .orElseThrow(() -> new NonExistantEntityException("Exercise with "+ id +" not found."));
+        if(exercise.getCreatedByUser()!=user) {
+            throw new ForbiddenActionException("You have no permission to update this exercise.");
+        }
 
         exercise.setName(exerciseForm.name());
         exercise.setDescription(exerciseForm.description());
         exercise.setGif(exerciseForm.gif());
 
+        //nije dovoljno -> postoji tablica relacije
         exercise.getPrimaryMuscleGroup().clear();
         exercise.getSecondaryMuscleGroup().clear();
 
@@ -161,14 +168,14 @@ public class ExerciseServiceJpa implements ExerciseService {
     }
 
     @Override
-    public void deleteExercise(Long exerciseId) {
+    public void deleteExercise(Long exerciseId, MyUser user) {
         Exercise exercise = exerciseRepo.findById(exerciseId).
                 orElseThrow(() -> new NonExistantEntityException("Exercise with "+exerciseId+" not found"));
-        //String fileName = exercise.getGif();
-        //deleteFile(fileName);
+        if(exercise.getCreatedByUser()!=user || !user.getRole().equals(Role.ADMIN)) {
+            throw new ForbiddenActionException("You have no permission to delete this exercise.");
+        }
         exerciseRepo.delete(exercise);
     }
-    //prepravi s excpetion-om
     @Override
     public ExerciseResponse getExerciseById(Long id) {
         Exercise exercise = exerciseRepo.findById(id)
@@ -185,18 +192,13 @@ public class ExerciseServiceJpa implements ExerciseService {
     }
 
 
+
+
     public String uploadFile(MultipartFile file) throws AmazonClientException {
         String fileName = "img_" + System.currentTimeMillis();
         File fFile = convertMultipartFileToFile(file);
         s3Client.putObject(new PutObjectRequest(bucketName, fileName, fFile));
         return getURLToFile(fileName);
-    }
-
-
-
-    //vjv obrisi
-    public void deleteFile(String fileName) {
-        s3Client.deleteObject(bucketName, fileName);
     }
 
     public String getURLToFile(String fileName) {

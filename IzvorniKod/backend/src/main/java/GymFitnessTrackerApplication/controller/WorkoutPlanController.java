@@ -76,18 +76,20 @@ public class WorkoutPlanController {
     }
 
     @PutMapping("workout-plans/{id}")
-    public ResponseEntity<?> updateWorkoutPlan(@PathVariable Long id, @RequestBody WorkoutPlanForm workoutPlanForm) {
-        WorkoutPlanResponse updatedWorkoutPlan = workoutPlanService.updateWorkoutPlan(id, workoutPlanForm);
+    public ResponseEntity<?> updateWorkoutPlan(@RequestHeader("Authorization") String token, @PathVariable Long id, @RequestBody WorkoutPlanForm workoutPlanForm) {
+        String email = jwtService.extractEmail(token.trim().substring(7));
+        MyUser user = (MyUser) myUserService.getMyUser(email);
+        WorkoutPlanResponse updatedWorkoutPlan = workoutPlanService.updateWorkoutPlan(id, workoutPlanForm, user);
         return ResponseEntity.status(HttpStatus.OK).body(updatedWorkoutPlan);
     }
 
     // TODO: Add endpoint for deleting workout plan for admin
-    // @DeleteMapping("/workout-plans/{id}")
-    // MNatija, ovo je napravio Korda
-    // mjenjaj sta oces samo treba biti ova funkcionalnost
+
     @DeleteMapping("/workout-plans/{id}")
-    public ResponseEntity<?> deleteWorkoutPlan(@PathVariable Long id){
-        workoutPlanService.deleteWorkoutPlan(id);
+    public ResponseEntity<?> deleteWorkoutPlan(@RequestHeader("Authorization") String token, @PathVariable Long id){
+        String email = jwtService.extractEmail(token.trim().substring(7));
+        MyUser user = (MyUser) myUserService.getMyUser(email);
+        workoutPlanService.deleteWorkoutPlan(id, user);
         return ResponseEntity.status(HttpStatus.OK).body("Workout plan successfully deleted.");
     }
 
@@ -104,10 +106,11 @@ public class WorkoutPlanController {
     }
 
 
-    // ovo je napravio Korda
-    // mjenjaj sta oces samo treba biti ova funkcionalnost 
     @GetMapping("/workout-plans/{id}")
-    public ResponseEntity<?> getWorkoutPlanById(@PathVariable Long id){
+    public ResponseEntity<?> getWorkoutPlanById(@RequestHeader("Authorization") String token, @PathVariable Long id){
+        String email = jwtService.extractEmail(token.trim().substring(7));
+        MyUser user = (MyUser) myUserService.getMyUser(email);
+        //mozda dodati da ako user trazi neciji NEpublic workout plan da ne moze vidjeti
         WorkoutPlanResponse workoutPlan = workoutPlanService.getWorkoutPlanById(id);
         return ResponseEntity.status(HttpStatus.OK).body(workoutPlan);
     }

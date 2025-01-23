@@ -78,4 +78,24 @@ public class WorkoutSession {
     public Workout getWorkout() {
         return workout;
     }
+
+    public void setDate(Date date) {
+        this.date = date;
+    }
+
+    public void setUser(MyUser user) {
+        this.user = user;
+    }
+
+    public void setUserReview(Review userReview) {
+        this.userReview = userReview;
+    }
+
+    public void setPerformedExercises(Set<PerformedExercises> performedExercises) {
+        this.performedExercises = performedExercises;
+    }
+
+    public void setWorkout(Workout workout) {
+        this.workout = workout;
+    }
 }

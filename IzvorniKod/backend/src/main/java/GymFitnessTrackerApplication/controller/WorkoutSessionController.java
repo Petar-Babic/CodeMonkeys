@@ -1,9 +1,7 @@
 package GymFitnessTrackerApplication.controller;
 
 import GymFitnessTrackerApplication.model.domain.MyUser;
-import GymFitnessTrackerApplication.model.dto.forms.WorkoutPlanForm;
 import GymFitnessTrackerApplication.model.dto.forms.WorkoutSessionForm;
-import GymFitnessTrackerApplication.model.dto.response.WorkoutPlanResponse;
 import GymFitnessTrackerApplication.model.dto.response.WorkoutSessionResponse;
 import GymFitnessTrackerApplication.service.JwtService;
 import GymFitnessTrackerApplication.service.MyUserService;
@@ -34,11 +32,34 @@ public class WorkoutSessionController {
                                                   @RequestBody WorkoutSessionForm workoutSessionForm) {
         String email = jwtService.extractEmail(token.trim().substring(7));
         MyUser user = (MyUser) myUserService.getMyUser(email);
-        workoutSessionService.createWorkoutSession(workoutSessionForm, user);
-        return ResponseEntity.status(HttpStatus.OK).body("Workout session successfully created..");
+        WorkoutSessionResponse wsr = workoutSessionService.createWorkoutSession(workoutSessionForm, user);
+        return ResponseEntity.status(HttpStatus.OK).body(wsr);
     }
 
-    @GetMapping("workout-session")
+    @PutMapping("/workout-session/{id}")
+    public ResponseEntity<?> updateWorkoutSession(@RequestHeader("Authorization") String token,@PathVariable Long id,
+                                                  @RequestBody WorkoutSessionResponse workoutSessionResponse){
+        String email = jwtService.extractEmail(token.trim().substring(7));
+        MyUser user = (MyUser) myUserService.getMyUser(email);
+        WorkoutSessionResponse wsr = workoutSessionService.updateWorkoutSession(id, workoutSessionResponse, user);
+        return ResponseEntity.status(HttpStatus.OK).body(wsr);
+    }
+
+    @DeleteMapping("/workout-session/{id}")
+    public ResponseEntity<?> deleteWorkoutSession(@RequestHeader("Authorization") String token, @PathVariable Long id){
+        String email = jwtService.extractEmail(token.trim().substring(7));
+        MyUser user = (MyUser) myUserService.getMyUser(email);
+        workoutSessionService.deleteWorkoutSession(id, user);
+        return ResponseEntity.status(HttpStatus.OK).body("Workout session successfully deleted.");
+    }
+
+    @GetMapping("/workout-sessions/{id}")
+    public ResponseEntity<?> getWorkoutSession(@PathVariable Long id){
+        WorkoutSessionResponse wsr = workoutSessionService.getWorkoutSession(id);
+        return ResponseEntity.status(HttpStatus.OK).body(wsr);
+    }
+
+    @GetMapping("/workout-sessions")
     public ResponseEntity<?> getWorkoutSession(@RequestHeader("Authorization") String token,
                                                @RequestParam("startDate") String startDate,
                                                @RequestParam("endDate") String endDate) throws Exception {
@@ -53,7 +74,7 @@ public class WorkoutSessionController {
         return ResponseEntity.status(HttpStatus.OK).body(wsr);
     }
 
-    @GetMapping("workout-sessions-user")
+    @GetMapping("/workout-sessions-user")
     public ResponseEntity<?> getUserWorkoutSessions(@RequestHeader("Authorization") String token){
         String email = jwtService.extractEmail(token.trim().substring(7));
         MyUser user = (MyUser) myUserService.getMyUser(email);
@@ -61,9 +82,4 @@ public class WorkoutSessionController {
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
-    @GetMapping("workout-sessions/{id}")
-    public ResponseEntity<?> getWorkoutSession(@PathVariable Long id){
-        WorkoutSessionResponse wsr = workoutSessionService.getWorkoutSession(id);
-        return ResponseEntity.status(HttpStatus.OK).body(wsr);
-    }
 }

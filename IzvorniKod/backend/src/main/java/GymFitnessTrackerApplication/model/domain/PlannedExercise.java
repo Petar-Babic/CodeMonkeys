@@ -59,4 +59,12 @@ public class PlannedExercise {
     public Exercise getExercise() {
         return exercise;
     }
+
+    public Workout getWorkout() {
+        return workout;
+    }
+
+    public Set<PerformedExercises> getPerformedExercises() {
+        return performedExercises;
+    }
 }

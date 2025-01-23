@@ -15,8 +15,8 @@ import java.util.Set;
 
 public interface WorkoutPlanService {
     public WorkoutPlanResponse createNewWorkoutPlan(WorkoutPlanForm workoutPlanform);
-    public void deleteWorkoutPlan(Long workoutPlanId);
-    public WorkoutPlanResponse updateWorkoutPlan(Long id, WorkoutPlanForm workoutPlanForm);
+    public void deleteWorkoutPlan(Long workoutPlanId, MyUser user);
+    public WorkoutPlanResponse updateWorkoutPlan(Long id, WorkoutPlanForm workoutPlanForm, MyUser user);
     public WorkoutPlanResponse getWorkoutPlanById(Long workoutPlanId);
     public Set<WorkoutPlanResponse> listAllWorkoutPlans();
     public Set<WorkoutPlanResponse> getUserCreatedWorkoutPlans(String userEmail);

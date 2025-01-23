@@ -34,14 +34,19 @@ public class ExerciseController {
     }
 
     @DeleteMapping("/exercises/{id}")
-    public ResponseEntity<?> deleteExercise(@PathVariable Long id){
-        exerciseService.deleteExercise(id);
+    public ResponseEntity<?> deleteExercise(@RequestHeader("Authorization") String token, @PathVariable Long id){
+        String email = jwtService.extractEmail(token.trim().substring(7));
+        MyUser user = (MyUser) myUserService.getMyUser(email);
+        exerciseService.deleteExercise(id, user);
         return ResponseEntity.status(HttpStatus.OK).body("Exercise successfully deleted.");
     }
 
     @PutMapping("/exercises/{id}")
-    public ResponseEntity<?> updateExercise(@PathVariable Long id, @RequestBody ExerciseForm exerciseForm){
-        ExerciseResponse response =  exerciseService.updateExercise(id, exerciseForm);
+    public ResponseEntity<?> updateExercise(@RequestHeader("Authorization") String token,
+                                            @PathVariable Long id, @RequestBody ExerciseForm exerciseForm){
+        String email = jwtService.extractEmail(token.trim().substring(7));
+        MyUser user = (MyUser) myUserService.getMyUser(email);
+        ExerciseResponse response =  exerciseService.updateExercise(id, exerciseForm, user);
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 

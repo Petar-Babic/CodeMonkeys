@@ -24,11 +24,7 @@ public class AdminController {
     private WorkoutPlanService workoutPlanService;
     @Autowired
     private ExerciseService exerciseService;
-
-    @GetMapping("/")
-    public ResponseEntity<?> welcome() {
-        return ResponseEntity.ok("Welcome to GymFitnessTracker Application ");
-    }
+    
 
     @GetMapping("/workout-plans")
     public ResponseEntity<?> allWorkoutPlans() {

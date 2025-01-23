@@ -1,5 +1,6 @@
 package GymFitnessTrackerApplication.service.impl;
 
+import GymFitnessTrackerApplication.exception.ForbiddenActionException;
 import GymFitnessTrackerApplication.exception.NonExistantEntityException;
 import GymFitnessTrackerApplication.model.dao.ExerciseRepo;
 import GymFitnessTrackerApplication.model.dao.MuscleGroupRepo;
@@ -18,7 +19,6 @@ import com.amazonaws.AmazonClientException;
 import com.amazonaws.HttpMethod;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.PutObjectRequest;
-import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -66,7 +66,7 @@ public class WorkoutPlanServiceJpa implements WorkoutPlanService {
             Workout newWorkout = new Workout(workout.name(),workout.description(), workout.order(), newWorkoutPlan);
             for(PlannedExerciseDTO PlExercise : workout.exercises()){
                 Exercise exercise = exerciseRepo.findById(PlExercise.exerciseId())
-                        .orElseThrow(() -> new NonExistantEntityException("Exercise wiht id " + PlExercise.exerciseId() +" not found."));
+                        .orElseThrow(() -> new NonExistantEntityException("Exercise with id " + PlExercise.exerciseId() +" not found."));
                 PlannedExercise newPlannedExercise = new PlannedExercise(PlExercise.sets(), PlExercise.reps(),
                         PlExercise.rpe(), PlExercise.order(), exercise, newWorkout);
 
@@ -80,14 +80,24 @@ public class WorkoutPlanServiceJpa implements WorkoutPlanService {
     }
 
     @Override
-    public void deleteWorkoutPlan(Long workoutPlanId) {
-        workoutPlanRepo.deleteById(workoutPlanId);
+    public void deleteWorkoutPlan(Long workoutPlanId, MyUser user) {
+        WorkoutPlan workoutPlan = workoutPlanRepo.findById(workoutPlanId)
+                .orElseThrow(()-> new NonExistantEntityException("Workout with id " + workoutPlanId + " not found."));
+        if(workoutPlan.getOwner()!=user || (workoutPlan.getOwner()==null && user.getRole().equals(Role.ADMIN))) {
+            throw new ForbiddenActionException("You have no permission to delete this workout plan.");
+        }
+        workoutPlanRepo.delete(workoutPlan);
     }
 
+    //treba popravit da ne obrise stare workoute nego ih samo prepravi
+    //mouzda napraviti da prima ExerciseResponse, a ne form jer mi trebaju id-evi svega
     @Override
-    public WorkoutPlanResponse updateWorkoutPlan(Long id, WorkoutPlanForm workoutPlanForm) {
+    public WorkoutPlanResponse updateWorkoutPlan(Long id, WorkoutPlanForm workoutPlanForm, MyUser user) {
         WorkoutPlan workoutPlan = workoutPlanRepo.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Workout plan with id "+ id + " not found"));
+                .orElseThrow(() -> new NonExistantEntityException("Workout plan with id "+ id + " not found"));
+        if(workoutPlan.getOwner()!=user) {
+            throw new ForbiddenActionException("You have no permission to update this workout plan.");
+        }
 
         workoutPlan.setName(workoutPlanForm.name());
         workoutPlan.setDescription(workoutPlanForm.description());
@@ -157,11 +167,11 @@ public class WorkoutPlanServiceJpa implements WorkoutPlanService {
         return generateWorkoutPlanResponse(workoutPlan);
     }
 
-    //zasto ovo????? -> moze se pozvati samo
+    //zasto ovo?
     @Override
     public WorkoutPlanResponse getPublicWorkoutPlanById(Long workoutPlanId) {
         WorkoutPlan workoutPlan = workoutPlanRepo.findById(workoutPlanId)
-                .orElseThrow(()-> new EntityNotFoundException("Workout plan with id " + workoutPlanId + " not found."));
+                .orElseThrow(()-> new NonExistantEntityException("Workout plan with id " + workoutPlanId + " not found."));
         return generateWorkoutPlanResponse(workoutPlan);
     }
 

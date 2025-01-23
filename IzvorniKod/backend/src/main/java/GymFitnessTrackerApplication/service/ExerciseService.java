@@ -12,8 +12,8 @@ public interface ExerciseService {
     public List<ExerciseResponse> listAllExercises();
     public List<ExerciseResponse> listAllExercisesCreatedByUser(MyUser user);
     public ExerciseResponse createExercise(MyUser user, ExerciseForm exerciseForm);
-    public ExerciseResponse updateExercise(Long id, ExerciseForm exerciseForm);
-    public void deleteExercise(Long exerciseId);
+    public ExerciseResponse updateExercise(Long id, ExerciseForm exerciseForm, MyUser user);
+    public void deleteExercise(Long exerciseId, MyUser user);
     public ExerciseResponse getExerciseById(Long id);
     public List<ExerciseResponse> listAllApprovedExercises();
     public Set<PerformedExerciseResponse> listExerciseHistoryForUser(MyUser user, Long exerciseId);

@@ -8,8 +8,8 @@ import java.util.Date;
 import java.util.Set;
 
 public interface WorkoutSessionService {
-    public void createWorkoutSession(WorkoutSessionForm workoutSessionForm, MyUser user);
-    public void updateWorkoutSession(WorkoutSessionForm workoutSessionForm, MyUser user);
+    public WorkoutSessionResponse createWorkoutSession(WorkoutSessionForm workoutSessionForm, MyUser user);
+    public WorkoutSessionResponse updateWorkoutSession(Long workoutSessionId, WorkoutSessionResponse workoutSessionResponse, MyUser user);
     public void deleteWorkoutSession(Long workoutSessionId, MyUser user);
     public WorkoutSessionResponse getWorkoutSession(Long workoutSessionId);
     public Set<WorkoutSessionResponse> getWorkoutSessionsBetweenDates(MyUser user, Date starDate, Date endDate);
