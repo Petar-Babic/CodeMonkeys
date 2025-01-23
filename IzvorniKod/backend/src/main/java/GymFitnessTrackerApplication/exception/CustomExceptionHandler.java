@@ -123,8 +123,8 @@ public class CustomExceptionHandler {
         return new ResponseEntity<>(ex.getMessage(),HttpStatus.NOT_FOUND);
     }
 
-    @ExceptionHandler(EntityNotFoundException.class)
-    public ResponseEntity<String> handleEntityNotFound(EntityNotFoundException ex){
+    @ExceptionHandler(NonExistantEntityException.class)
+    public ResponseEntity<String> handleEntityNotFound(NonExistantEntityException ex){
         return new ResponseEntity<>(ex.getMessage(),HttpStatus.NOT_FOUND);
     }
 
