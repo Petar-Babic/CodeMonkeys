@@ -1,5 +1,8 @@
 import { ExerciseBase } from "./exercise";
-import { PerformedExerciseWithPerformedSet } from "./performedExercise";
+import {
+  CreatePerformedExerciseWithPerformedSetInput,
+  PerformedExerciseWithPerformedSet,
+} from "./performedExercise";
 import { ReviewBase } from "./review";
 import { WorkoutBase } from "./workout";
 
@@ -20,7 +23,9 @@ export type WorkoutSessionWithReview = WorkoutSessionBase & {
 export type CreateWorkoutSessionInput = Omit<
   WorkoutSessionBase,
   "id" | "createdAt" | "updatedAt"
->;
+> & {
+  performedExercises: CreatePerformedExerciseWithPerformedSetInput[];
+};
 
 export type UpdateWorkoutSessionInput = Partial<
   Omit<WorkoutSessionBase, "createdAt" | "updatedAt">

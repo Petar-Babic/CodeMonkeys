@@ -34,7 +34,7 @@ import { WorkoutPlanBase, WorkoutPlanWithWorkouts } from "@/types/workoutPlan";
 import { UserBase } from "@/types/user";
 import {
   useWorkoutSession,
-  UseWorkoutSessionType,
+  UseWorkoutSessionContextType,
 } from "@/hooks/useWorkoutSession";
 import { useFood, UseFoodContextType } from "@/hooks/useFood";
 import { FoodBase } from "@/types/food";
@@ -45,7 +45,7 @@ type AppContextType = UseUserContextType &
   UseExerciseContextType &
   UseWorkoutPlanContextType &
   UseMuscleGroupContextType &
-  UseWorkoutSessionType &
+  UseWorkoutSessionContextType &
   UseFoodContextType &
   UseUserWorkoutPlanType & {
     isLoading: boolean;

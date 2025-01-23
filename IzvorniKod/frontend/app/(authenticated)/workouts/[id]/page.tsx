@@ -1,9 +1,10 @@
 "use client";
 
 import React, { useState } from "react";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import WorkoutNowExerciseCard from "@/components/WorkoutNowExerciseCard";
 import ExerciseInProgress from "@/components/ExerciseInProgress";
+import { useAppContext } from "@/contexts/AppContext";
 
 type Exercise = {
   id: number;
@@ -12,21 +13,30 @@ type Exercise = {
   reps: number;
 };
 
-const selectedWorkout = {
-  id: 1,
-  name: "Full Body Workout",
-  exercises: [
-    { id: 1, name: "Push-up", sets: 3, reps: 12 },
-    { id: 2, name: "Squat", sets: 3, reps: 15 },
-  ],
-};
-
 export default function WorkoutNowPage() {
   const router = useRouter();
   const [activeExercise, setActiveExercise] = useState<Exercise | null>(null);
   const [completedExercises, setCompletedExercises] = useState<{
     [key: number]: number[];
   }>({});
+  const pathname = usePathname();
+
+  const workoutId = pathname.split("/")[2];
+
+  console.log(pathname);
+  console.log(workoutId);
+
+  const { userWorkoutPlan } = useAppContext();
+
+  const selectedWorkout = userWorkoutPlan?.workouts.find(
+    (workout) => workout.id === parseInt(workoutId)
+  );
+
+  console.log(selectedWorkout);
+
+  if (!selectedWorkout) {
+    return <div>Workout not found</div>;
+  }
 
   const handleComplete = (sets: { weight: number; rpe: number }[]) => {
     if (activeExercise) {

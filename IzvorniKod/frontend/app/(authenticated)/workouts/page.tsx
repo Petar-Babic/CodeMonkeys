@@ -7,8 +7,6 @@ import { useAppContext } from "@/contexts/AppContext";
 import { WorkoutWithPlannedExercise } from "@/types/workout";
 
 export default function WorkoutPage() {
-  // Mock workouts data
-
   const { userWorkoutPlan, exercises } = useAppContext();
 
   const workouts: WorkoutWithPlannedExercise[] =

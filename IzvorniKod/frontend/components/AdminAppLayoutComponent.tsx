@@ -8,7 +8,6 @@ import { WorkoutPlanWithWorkouts } from "@/types/workoutPlan";
 import { WorkoutPlanBase } from "@/types/workoutPlan";
 import { backendUrl } from "@/data/backendUrl";
 import { UserBase } from "@/types/user";
-import Link from "next/link";
 import { Toaster } from "sonner";
 import { FoodBase } from "@/types/food";
 import { authOptions } from "@/app/lib/auth";

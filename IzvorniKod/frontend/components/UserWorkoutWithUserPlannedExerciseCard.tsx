@@ -13,7 +13,7 @@ export default function UserWorkoutWithUserPlannedExerciseCard({
 
   return (
     <Link
-      href={`/workout-now`}
+      href={`/workouts/${workout.id}`}
       className="w-full bg-white flex flex-col relative p-3 shadow-md rounded-md"
     >
       <h5 className="text-sm font-semibold mb-2">{workout.name} </h5>{" "}
