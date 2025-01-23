@@ -57,6 +57,8 @@ const getInitialData = async (
     console.error("Error fetching nutrition plan:", error);
   }
 
+  console.log("nutritionPlan", nutritionPlan);
+
   let muscleGroups: MuscleGroupBase[] = [];
   try {
     const response = await fetch(`${backendUrl}/api/all-muscle-groups`, {
@@ -99,15 +101,31 @@ const getInitialData = async (
 
   console.log("workoutPlansCreatedByUser", workoutPlansCreatedByUser);
 
-  let exercises: ExerciseBase[] = [];
+  let exercisesCreatedByUser: ExerciseBase[] = [];
   try {
-    const response = await fetch(`${backendUrl}/api/all-exercises`, {
+    const response = await fetch(
+      `${backendUrl}/api/all-exercises/created-by-user`,
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+        credentials: "include",
+      }
+    );
+    exercisesCreatedByUser = await response.json();
+  } catch (error) {
+    console.error("Error fetching exercises:", error);
+  }
+
+  let exercisesPublic: ExerciseBase[] = [];
+  try {
+    const response = await fetch(`${backendUrl}/api/all-exercises/public`, {
       headers: {
         Authorization: `Bearer ${accessToken}`,
       },
       credentials: "include",
     });
-    exercises = await response.json();
+    exercisesPublic = await response.json();
   } catch (error) {
     console.error("Error fetching exercises:", error);
   }
@@ -127,7 +145,7 @@ const getInitialData = async (
 
   return {
     muscleGroups,
-    exercises,
+    exercises: [...exercisesCreatedByUser, ...exercisesPublic],
     nutritionPlan,
     userWorkoutPlan:
       workoutPlansCreatedByUser.length > 0

@@ -11,6 +11,8 @@ import { UserBase } from "@/types/user";
 import Link from "next/link";
 import { Toaster } from "sonner";
 import { FoodBase } from "@/types/food";
+import { authOptions } from "@/app/lib/auth";
+import { getServerSession } from "next-auth";
 
 const getInitialData = async (
   userId: number,
@@ -21,11 +23,8 @@ const getInitialData = async (
   userWorkoutPlan: WorkoutPlanWithWorkouts | null;
   workoutPlans: WorkoutPlanBase[];
   accessToken: string;
-  user: UserBase | null;
   foods: FoodBase[];
 }> => {
-  let user = null;
-
   let muscleGroups: MuscleGroupBase[] = [];
   try {
     const response = await fetch(`${backendUrl}/api/all-muscle-groups`, {
@@ -41,22 +40,9 @@ const getInitialData = async (
 
   console.log("muscleGroups", muscleGroups);
 
-  try {
-    user = await fetch(`${backendUrl}/api/user/profile`, {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-      credentials: "include",
-    }).then((response) => response.json());
-
-    console.log("GET /api/user/profile", user);
-  } catch (error) {
-    console.error("Error fetching user:", error);
-  }
-
   let exercises: ExerciseBase[] = [];
   try {
-    const response = await fetch(`${backendUrl}/api/all-exercises`, {
+    const response = await fetch(`${backendUrl}/api/admin/all-exercises`, {
       headers: {
         Authorization: `Bearer ${accessToken}`,
       },
@@ -82,7 +68,7 @@ const getInitialData = async (
 
   let workoutPlans: WorkoutPlanBase[] = [];
   try {
-    const response = await fetch(`${backendUrl}/api/workout-plans/all`, {
+    const response = await fetch(`${backendUrl}/api/admin/workout-plans`, {
       headers: {
         Authorization: `Bearer ${accessToken}`,
       },
@@ -99,7 +85,6 @@ const getInitialData = async (
     userWorkoutPlan: null,
     workoutPlans,
     accessToken,
-    user,
     foods,
   };
 };
@@ -115,24 +100,13 @@ export default async function AdminAppLayoutComponent({
 }>) {
   const initialData = await getInitialData(userId, accessToken);
 
-  if (!initialData.user) {
-    return (
-      <div className="flex flex-col items-center justify-center h-screen bg-black">
-        <Toaster />
-        <Link
-          href="/sign-in"
-          className="bg-white text-2xl font-bold hover:text-gray-300 transition-colors duration-300 p-2 rounded-md w-1/2 text-center"
-        >
-          Login
-        </Link>
-      </div>
-    );
-  }
+  const session = await getServerSession(authOptions);
+  const user = session?.user as UserBase;
 
   const safeInitialData = {
     ...initialData,
-    user: initialData.user,
     role: "ADMIN",
+    user,
   } as const;
 
   return (
