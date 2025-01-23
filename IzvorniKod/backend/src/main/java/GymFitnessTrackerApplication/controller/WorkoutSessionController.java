@@ -60,4 +60,10 @@ public class WorkoutSessionController {
         Set<WorkoutSessionResponse> response = workoutSessionService.getWorkoutSessionsForUser(user);
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
+
+    @GetMapping("workout-sessions/{id}")
+    public ResponseEntity<?> getWorkoutSession(@PathVariable Long id){
+        WorkoutSessionResponse wsr = workoutSessionService.getWorkoutSession(id);
+        return ResponseEntity.status(HttpStatus.OK).body(wsr);
+    }
 }

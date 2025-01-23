@@ -1,4 +1,4 @@
 package GymFitnessTrackerApplication.model.dto.workoutDTOs;
 
-public record PerformedSetDTO (Integer reps, Float weight, Integer rpe) {
+public record PerformedSetDTO (Long id, Integer reps, Integer rpe, Float weight) {
 }

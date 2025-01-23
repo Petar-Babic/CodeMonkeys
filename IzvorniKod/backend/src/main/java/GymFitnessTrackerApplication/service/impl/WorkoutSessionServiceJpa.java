@@ -1,6 +1,7 @@
 package GymFitnessTrackerApplication.service.impl;
 
 import GymFitnessTrackerApplication.exception.InvalidInputException;
+import GymFitnessTrackerApplication.exception.NonExistantEntityException;
 import GymFitnessTrackerApplication.model.dao.PlannedExerciseRepo;
 import GymFitnessTrackerApplication.model.dao.WorkoutRepo;
 import GymFitnessTrackerApplication.model.dao.WorkoutSessionRepo;
@@ -66,7 +67,14 @@ public class WorkoutSessionServiceJpa implements WorkoutSessionService {
 
     @Override
     public void deleteWorkoutSession(Long workoutSessionId, MyUser user) {
+        //usput obrisati performedExercises, preformedset
+    }
 
+    @Override
+    public WorkoutSessionResponse getWorkoutSession(Long workoutSessionId) {
+        WorkoutSession workoutSession = workoutSessionRepo.findById(workoutSessionId)
+                .orElseThrow(()-> new NonExistantEntityException("Workout session with id "+ workoutSessionId + "not found."));
+        return generateWorkoutSessionResponse(workoutSession);
     }
 
     @Override
@@ -92,7 +100,7 @@ public class WorkoutSessionServiceJpa implements WorkoutSessionService {
         for(PerformedExercises pe : workoutSession.getPerformedExercises()){
             PerformedExerciseDTO peDTO = new PerformedExerciseDTO(pe.getPlannedExercise().getId());
             for(PerformedSet ps : pe.getPerformedSets()){
-                PerformedSetDTO psDTO = new PerformedSetDTO(ps.getReps(), ps.getWeight(), ps.getRpe());
+                PerformedSetDTO psDTO = new PerformedSetDTO(ps.getId(), ps.getReps(), ps.getRpe(), ps.getWeight());
                 peDTO.addPerformedSet(psDTO);
             }
             wsr.addPerformedExercise(peDTO);

@@ -3,6 +3,7 @@ package GymFitnessTrackerApplication.controller;
 import GymFitnessTrackerApplication.model.domain.MyUser;
 import GymFitnessTrackerApplication.model.dto.forms.ExerciseForm;
 import GymFitnessTrackerApplication.model.dto.response.ExerciseResponse;
+import GymFitnessTrackerApplication.model.dto.response.PerformedExerciseResponse;
 import GymFitnessTrackerApplication.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Set;
 
 @Controller
 @RequestMapping("/api")
@@ -66,4 +68,11 @@ public class ExerciseController {
 
     //GET /exercises/history/{id}
     //vratiti kada je sve osoba obavila vjezbu
+    @GetMapping("exercises/history/{id}")
+    public ResponseEntity<?> getExercisesHistory(@RequestHeader("Authorization") String token, @PathVariable Long id){
+        String email = jwtService.extractEmail(token.trim().substring(7));
+        MyUser user = (MyUser) myUserService.getMyUser(email);
+        Set<PerformedExerciseResponse> response = exerciseService.listExerciseHistoryForUser(user, id);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
 }

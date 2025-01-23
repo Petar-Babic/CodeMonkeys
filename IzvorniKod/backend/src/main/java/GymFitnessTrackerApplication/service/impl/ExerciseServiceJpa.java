@@ -2,9 +2,12 @@ package GymFitnessTrackerApplication.service.impl;
 
 import GymFitnessTrackerApplication.model.dao.ExerciseRepo;
 import GymFitnessTrackerApplication.model.dao.MuscleGroupRepo;
+import GymFitnessTrackerApplication.model.dao.PlannedExerciseRepo;
 import GymFitnessTrackerApplication.model.domain.*;
 import GymFitnessTrackerApplication.model.dto.forms.ExerciseForm;
 import GymFitnessTrackerApplication.model.dto.response.*;
+import GymFitnessTrackerApplication.model.dto.workoutDTOs.PerfExerciseRepoDTO;
+import GymFitnessTrackerApplication.model.dto.workoutDTOs.PerformedSetDTO;
 import GymFitnessTrackerApplication.service.ExerciseService;
 import com.amazonaws.AmazonClientException;
 import GymFitnessTrackerApplication.exception.NonExistantEntityException;
@@ -34,6 +37,8 @@ public class ExerciseServiceJpa implements ExerciseService {
     private AmazonS3 s3Client;
     @Value("${cloud.aws.s3.bucket}")
     private String bucketName;
+    @Autowired
+    private PlannedExerciseRepo plannedExerciseRepo;
 
     @Override
     public List<ExerciseResponse> listAllExercises() {
@@ -53,6 +58,24 @@ public class ExerciseServiceJpa implements ExerciseService {
         for(Exercise exercise : exercises){
             ExerciseResponse exerciseResponse = generateExerciseResponse(exercise);
             result.add(exerciseResponse);
+        }
+        return result;
+    }
+
+    @Override
+    public Set<PerformedExerciseResponse> listExerciseHistoryForUser(MyUser user, Long exerciseId) {
+        Exercise exercise = exerciseRepo.findById(exerciseId)
+                .orElseThrow(()-> new NonExistantEntityException("Exercise with id " + exerciseId + " not found"));
+        List<PerfExerciseRepoDTO> repoObjects = plannedExerciseRepo.findPerformedExerciseHistory(user, exercise);
+        Set<PerformedExerciseResponse> result = new HashSet<>();
+        for(PerfExerciseRepoDTO repoObject : repoObjects){
+            Set<PerformedSetDTO> performedSetDTOS = new HashSet<>();
+            for(PerformedSet performedSet : repoObject.performedExercise().getPerformedSets()){
+                PerformedSetDTO performedSetDTO = new PerformedSetDTO(performedSet.getId(),performedSet.getReps(), performedSet.getRpe(), performedSet.getWeight());
+                performedSetDTOS.add(performedSetDTO);
+            }
+            PerformedExerciseResponse performedExerciseResponse = new PerformedExerciseResponse(repoObject.performedExercise().getId(), repoObject.date(), performedSetDTOS);
+            result.add(performedExerciseResponse);
         }
         return result;
     }
