@@ -136,6 +136,11 @@ public class CustomExceptionHandler {
         return new ResponseEntity<>(ex.getMessage(),HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(ForbiddenActionException.class)
+    public ResponseEntity<String> handleEntityNotFound(ForbiddenActionException ex){
+        return new ResponseEntity<>(ex.getMessage(),HttpStatus.FORBIDDEN);
+    }
+
     /*
 
     tehnicki implementacija refresh tokena moze biti napravljena pomocu hvatanja IoException i gledanja statusa pa slanja

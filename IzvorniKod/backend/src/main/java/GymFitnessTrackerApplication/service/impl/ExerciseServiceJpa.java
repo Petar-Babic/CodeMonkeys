@@ -180,7 +180,10 @@ public class ExerciseServiceJpa implements ExerciseService {
     public void deleteExercise(Long exerciseId, MyUser user) {
         Exercise exercise = exerciseRepo.findById(exerciseId).
                 orElseThrow(() -> new NonExistantEntityException("Exercise with "+exerciseId+" not found"));
-        if(exercise.getCreatedByUser()!=user || !user.getRole().equals(Role.ADMIN)) {
+        System.out.println("role:" + user.getRole());
+        System.out.println("role admin:" + !user.getRole().equals(Role.ADMIN));
+
+        if(!exercise.getCreatedByUser().equals(user) && !user.getRole().equals(Role.ADMIN)) {
             throw new ForbiddenActionException("You have no permission to delete this exercise.");
         }
         for (MuscleGroup muscleGroup : exercise.getPrimaryMuscleGroup()) {
@@ -192,6 +195,7 @@ public class ExerciseServiceJpa implements ExerciseService {
 
         exercise.getPrimaryMuscleGroup().clear();
         exercise.getSecondaryMuscleGroup().clear();
+        exercise.getPlannedExercises().clear();
 
         exerciseRepo.delete(exercise);
     }
