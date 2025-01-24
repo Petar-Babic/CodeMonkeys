@@ -1,7 +1,7 @@
 export type WorkoutReviewBase = {
-  id: string;
-  workoutSessionId: string;
-  userId: string;
+  id: number;
+  workoutSessionId: number;
+  userId: number;
   rating: number;
   comment?: string;
   createdAt: Date;
@@ -15,4 +15,4 @@ export type CreateWorkoutReviewInput = Omit<
 
 export type UpdateWorkoutReviewInput = Partial<
   Omit<WorkoutReviewBase, "createdAt" | "updatedAt">
-> & { id: string };
+> & { id: number };

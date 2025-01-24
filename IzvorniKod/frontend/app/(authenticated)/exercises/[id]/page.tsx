@@ -3,18 +3,20 @@
 
 import React, { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
-import { muscleGroups } from "@/data/muscleGroup";
-import { exercises } from "@/data/exercise";
 import MuscleGroupDetail from "@/components/MuscleGroupDetail";
 import SearchBar from "@/components/SearchBar";
 import ExerciseList from "@/components/ExerciseList";
 import ExerciseModal from "@/components/ExerciseWindow";
 import AddExerciseModal from "@/components/AddExercise";
+import { useAppContext } from "@/contexts/AppContext";
 
 export default function MuscleGroupPage() {
   const pathname = usePathname();
   const id = pathname?.split("/").pop();
-  const group = muscleGroups.find((group) => group.id === id);
+
+  const { muscleGroups, exercises } = useAppContext();
+
+  const group = muscleGroups.find((group) => group.id === Number(id));
 
   const [searchQuery, setSearchQuery] = useState("");
   const [filteredExercises, setFilteredExercises] = useState(exercises);
@@ -26,12 +28,14 @@ export default function MuscleGroupPage() {
     if (group) {
       const filtered = exercises.filter(
         (exercise) =>
-          exercise.primaryMuscleGroupId.includes(group.id) &&
+          exercise.primaryMuscleGroupsIds &&
+          exercise.primaryMuscleGroupsIds.length > 0 &&
+          exercise.primaryMuscleGroupsIds.includes(group.id) &&
           exercise.name.toLowerCase().includes(searchQuery.toLowerCase())
       );
       setFilteredExercises(filtered);
     }
-  }, [searchQuery, group]);
+  }, [searchQuery, group, exercises]);
 
   const openModal = (exercise: any) => {
     setSelectedExercise(exercise);

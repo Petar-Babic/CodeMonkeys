@@ -1,20 +1,17 @@
 // User Types
 export type UserBase = {
-  id: string;
+  id: number;
   name: string;
   email: string;
   emailVerified?: Date;
   image?: string;
   role: Role;
-  height?: number;
-  weight?: number;
   gender?: Gender;
-  activityLevel?: ActivityLevel;
-  currentNutritionPlanId?: string;
-  trainerId?: string;
-  workoutPlanId?: string;
-  createdAt: Date;
-  updatedAt: Date;
+  currentNutritionPlanId?: number;
+  trainerId?: number;
+  workoutPlanId?: number;
+  bodyMeasurementIds: number[];
+  goalBodyMeasurementIds: number[];
 };
 
 export type CreateUserInput = Omit<

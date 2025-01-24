@@ -1,15 +1,12 @@
 export type NutritionPlanBase = {
-  id: string;
-  userId: string;
-  trainerId?: string;
+  id: number;
+  userId: number;
   calories: number;
   protein: number;
   carbs: number;
   fat: number;
   startDate: Date;
   endDate?: Date;
-  createdAt: Date;
-  updatedAt: Date;
 };
 
 export type CreateNutritionPlanInput = Omit<
@@ -19,4 +16,4 @@ export type CreateNutritionPlanInput = Omit<
 
 export type UpdateNutritionPlanInput = Partial<
   Omit<NutritionPlanBase, "createdAt" | "updatedAt">
-> & { id: string };
+> & { id: number };

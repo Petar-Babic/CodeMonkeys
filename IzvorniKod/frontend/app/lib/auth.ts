@@ -10,32 +10,48 @@ import { backendUrl } from "@/data/backendUrl";
 declare module "next-auth" {
   interface Session extends SessionWithRelations {
     accessToken: string;
+    refreshToken?: string;
     user: {
-      id: string;
+      id: number;
       name: string;
       email: string;
       role: string;
       provider?: string;
       image?: string;
+      users?: {
+        userId: number;
+        image: string;
+        name: string;
+      }[];
     };
   }
 
   interface User {
-    id: string;
+    id: number;
     name: string;
     email: string;
     role: string;
     accessToken?: string;
     provider?: string;
+    users?: {
+      userId: number;
+      image: string;
+      name: string;
+    }[];
   }
 }
 
 declare module "next-auth/jwt" {
   interface JWT {
-    id: string;
+    id: number;
     role: string;
     accessToken?: string;
     provider?: string;
+    users?: {
+      userId: number;
+      image: string;
+      name: string;
+    }[];
   }
 }
 
@@ -69,7 +85,10 @@ export const authOptions: NextAuthOptions = {
           }
 
           const data = await response.json();
-          console.log(data);
+          console.log("data", data);
+
+          // i will delete this later
+          // i just want to test the Post/ api/auth/refresh
 
           return {
             id: data.id,
@@ -77,6 +96,8 @@ export const authOptions: NextAuthOptions = {
             name: data.name,
             role: data.role,
             accessToken: data.token,
+            image: data.image,
+            users: data.users,
           };
         } catch (error) {
           console.error("Authentication error:", error);
@@ -127,6 +148,7 @@ export const authOptions: NextAuthOptions = {
             email: profile.email,
             name: profile.name,
             image: user?.image,
+            users: user?.users,
           };
 
           const response = await fetch(`${backendUrl}/api/auth/oauth`, {
@@ -160,20 +182,25 @@ export const authOptions: NextAuthOptions = {
       }
       return true;
     },
-    async jwt({ token, user, account }) {
+    async jwt({ token, user, account, trigger, session }) {
       if (user) {
-        token.id = user.id;
+        token.id = Number(user.id);
         token.email = user.email;
         token.name = user.name;
         token.role = user.role;
         token.accessToken = user.accessToken;
         token.provider = account?.provider;
+        token.users = user.users;
+      }
+      if (trigger === "update") {
+        return {
+          ...token,
+          accessToken: session?.user,
+        };
       }
       return token;
     },
     async session({ session, token }) {
-      console.log(session);
-
       session.user = {
         id: token.id,
         email: token.email as string,
@@ -181,6 +208,7 @@ export const authOptions: NextAuthOptions = {
         role: token.role,
         provider: token.provider,
         image: session.user.image,
+        users: token.users,
       } as Session["user"];
 
       session.accessToken = token.accessToken || "";

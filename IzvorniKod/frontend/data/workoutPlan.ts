@@ -1,55 +1,44 @@
-import { WorkoutPlanBase } from "@/types/workoutPlan";
+import { WorkoutPlanBase, WorkoutPlanWithWorkouts } from "@/types/workoutPlan";
 
 export const workoutPlans: WorkoutPlanBase[] = [
   {
-    id: "1",
+    id: 1,
     name: "Beginner Full Body Workout",
     description: "A full body workout routine for beginners",
     image: "/main-image-gym.webp",
-    userId: "user1",
-    createdById: "user-",
-    createdAt: new Date("2023-01-01"),
-    updatedAt: new Date("2023-01-01"),
+    createdById: 1,
+    userId: 1,
   },
   {
-    id: "2",
+    id: 2,
     name: "Advanced Upper Body Split",
     description: "An intense upper body workout for advanced lifters",
     image: "/main-image-gym.webp",
-    userId: "user-",
-    trainerId: "trainer1",
-    createdById: "trainer1",
-    createdAt: new Date("2023-02-15"),
-    updatedAt: new Date("2023-02-15"),
+    createdById: 1,
   },
   {
-    id: "3",
+    id: 3,
     name: "Cardio and Core Blast",
     description: "A high-intensity cardio and core workout",
     image: "/main-image-gym.webp",
-    userId: "user3",
-    createdById: "user3",
-    createdAt: new Date("2023-03-10"),
-    updatedAt: new Date("2023-03-10"),
+    createdById: 1,
   },
+
   {
-    id: "4",
+    id: 4,
     name: "Leg Day Destroyer",
     description: "An intense lower body workout focusing on legs",
     image: "/main-image-gym.webp",
-    userId: "user2",
-    createdById: "trainer2",
-    createdAt: new Date("2023-04-05"),
-    updatedAt: new Date("2023-04-05"),
+    createdById: 1,
   },
+
   {
-    id: "5",
+    id: 5,
     name: "Yoga for Flexibility",
     description: "A yoga routine designed to improve flexibility",
     image: "/main-image-gym.webp",
-    userId: "user4",
-    createdById: "user-",
-    createdAt: new Date("2023-05-20"),
-    updatedAt: new Date("2023-05-20"),
+    createdById: 1,
   },
 ];
+
+export const workoutPlansWithWorkouts: WorkoutPlanWithWorkouts[] = [];

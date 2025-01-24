@@ -2,10 +2,16 @@ import { UserBase } from "./user";
 
 // Session Types
 export type SessionBase = {
-  id: string;
+  id: number;
   accessToken?: string;
-  userId: string;
+  userId: number;
+  refreshToken?: string;
   expires: Date;
+  users?: {
+    userId: number;
+    name: string;
+    image: string;
+  }[];
 };
 
 export type SessionWithRelations = SessionBase & {
@@ -15,5 +21,5 @@ export type SessionWithRelations = SessionBase & {
 export type CreateSessionInput = Omit<SessionBase, "id">;
 
 export type UpdateSessionInput = Partial<Omit<SessionBase, "userId">> & {
-  id: string;
+  id: number;
 };

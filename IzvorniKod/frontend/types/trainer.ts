@@ -1,15 +1,6 @@
 export type TrainerBase = {
-  id: string;
-  userId: string;
-  createdAt: Date;
-  updatedAt: Date;
+  userId: number;
+  name: string;
+  image: string;
+  numberOfClients: number;
 };
-
-export type CreateTrainerInput = Omit<
-  TrainerBase,
-  "id" | "createdAt" | "updatedAt"
->;
-
-export type UpdateTrainerInput = Partial<
-  Omit<TrainerBase, "createdAt" | "updatedAt">
-> & { id: string };

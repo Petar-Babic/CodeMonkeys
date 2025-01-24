@@ -2,8 +2,8 @@ import { AccountBase } from "@/types/account";
 
 export const accounts: AccountBase[] = [
   {
-    id: "account1",
-    userId: "user1",
+    id: 1,
+    userId: 1,
     type: "oauth",
     provider: "google",
     providerAccountId: "google123",
@@ -16,8 +16,8 @@ export const accounts: AccountBase[] = [
     session_state: "session_state_1",
   },
   {
-    id: "account2",
-    userId: "user2",
+    id: 2,
+    userId: 2,
     type: "oauth",
     provider: "facebook",
     providerAccountId: "facebook456",
@@ -30,8 +30,8 @@ export const accounts: AccountBase[] = [
     session_state: null,
   },
   {
-    id: "account3",
-    userId: "user3",
+    id: 3,
+    userId: 3,
     type: "oauth",
     provider: "apple",
     providerAccountId: "apple789",
@@ -44,8 +44,8 @@ export const accounts: AccountBase[] = [
     session_state: null,
   },
   {
-    id: "account4",
-    userId: "trainer1",
+    id: 4,
+    userId: 4,
     type: "oauth",
     provider: "google",
     providerAccountId: "google321",
@@ -58,8 +58,8 @@ export const accounts: AccountBase[] = [
     session_state: "session_state_4",
   },
   {
-    id: "account5",
-    userId: "admin1",
+    id: 5,
+    userId: 5,
     type: "oauth",
     provider: "github",
     providerAccountId: "github654",

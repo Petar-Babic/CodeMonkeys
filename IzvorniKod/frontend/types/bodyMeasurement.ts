@@ -1,12 +1,12 @@
 export type BodyMeasurementBase = {
-  id: string;
-  userId: string;
-  date: Date;
+  id: number;
   chest?: number;
   waist?: number;
   hips?: number;
   thighs?: number;
   biceps?: number;
+  weight?: number;
+  height?: number;
   createdAt: Date;
   updatedAt: Date;
 };
@@ -18,4 +18,4 @@ export type CreateBodyMeasurementInput = Omit<
 
 export type UpdateBodyMeasurementInput = Partial<
   Omit<BodyMeasurementBase, "createdAt" | "updatedAt">
-> & { id: string };
+> & { id: number };

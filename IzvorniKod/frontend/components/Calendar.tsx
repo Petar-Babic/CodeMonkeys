@@ -84,7 +84,7 @@ export default function Calendar({ events }: CalendarProps) {
                 <Link
                   key={eventIndex}
                   href={event.href}
-                  className={`block text-sm p-1 mt-1 rounded truncate ${
+                  className={`block text-xs p-1 mt-1 rounded truncate ${
                     isPastDay
                       ? "bg-gray-200 hover:bg-gray-300"
                       : "bg-blue-100 hover:bg-blue-200"

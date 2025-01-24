@@ -1,7 +1,7 @@
 package GymFitnessTrackerApplication.service;
 
-import GymFitnessTrackerApplication.dao.MyUserRepository;
-import GymFitnessTrackerApplication.domain.MyUser;
+import GymFitnessTrackerApplication.model.dao.MyUserRepository;
+import GymFitnessTrackerApplication.model.domain.MyUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;

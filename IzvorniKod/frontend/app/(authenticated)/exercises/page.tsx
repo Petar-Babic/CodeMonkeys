@@ -1,30 +1,12 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import { muscleGroups as predefinedMuscleGroups } from "@/data/muscleGroup";
+import React from "react";
 import ExerciseCategory from "@/components/ExerciseMuscleGroups";
 import PageTitle from "@/components/PageTitle";
-import { MuscleGroupBase } from "@/types/muscleGroup";
-
-const simulateFetchData = () => {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve(predefinedMuscleGroups);
-    }, 1000);
-  });
-};
+import { useAppContext } from "@/contexts/AppContext";
 
 export default function ExercisesPage() {
-  const [muscleGroups, setMuscleGroups] = useState<MuscleGroupBase[]>([]);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      const data = (await simulateFetchData()) as MuscleGroupBase[];
-      setMuscleGroups(data);
-    };
-
-    fetchData();
-  }, []);
+  const { muscleGroups } = useAppContext();
 
   return (
     <div className="p-4">
@@ -35,7 +17,7 @@ export default function ExercisesPage() {
             key={group.id}
             id={group.id}
             name={group.name}
-            image={group.image}
+            image={`/api/upload/${group.image}`}
           />
         ))}
       </ul>

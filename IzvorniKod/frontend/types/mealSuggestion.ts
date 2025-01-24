@@ -1,6 +1,6 @@
 export type MealSuggestionBase = {
-  id: string;
-  nutritionPlanId: string;
+  id: number;
+  nutritionPlanId: number;
   name: string;
   description: string;
   calories: number;
@@ -18,4 +18,4 @@ export type CreateMealSuggestionInput = Omit<
 
 export type UpdateMealSuggestionInput = Partial<
   Omit<MealSuggestionBase, "createdAt" | "updatedAt">
-> & { id: string };
+> & { id: number };

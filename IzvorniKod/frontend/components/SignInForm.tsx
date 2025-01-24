@@ -19,10 +19,10 @@ import { ArrowRight, Loader2, Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
 import {
   FaGoogle,
-  FaFacebook,
+  // FaFacebook,
   //  FaApple
 } from "react-icons/fa";
-import { SignInResponse } from "next-auth/react";
+import { getSession, SignInResponse } from "next-auth/react";
 import { useAuthContext } from "@/contexts/AuthContext";
 
 const formSchema = z.object({
@@ -64,7 +64,16 @@ export function SignInForm() {
         return;
       }
 
-      router.push("/workouts");
+      const session = await getSession();
+      console.log("session", session);
+
+      if (session?.user?.role === "ADMIN") {
+        router.push("/admin/exercises");
+      } else if (session?.user?.role === "TRAINER") {
+        router.push("/pick-client");
+      } else {
+        router.push("/workouts");
+      }
     } catch (error) {
       console.error("Login failed:", error);
       setError("An error occurred. Please try again.");
@@ -87,7 +96,16 @@ export function SignInForm() {
         return;
       }
 
-      router.push("/workouts");
+      const session = await getSession();
+      console.log("session", session);
+
+      if (session?.user?.role === "ADMIN") {
+        router.push("/admin");
+      } else if (session?.user?.role === "TRAINER") {
+        router.push("/pick-client");
+      } else {
+        router.push("/workouts");
+      }
     } catch (error) {
       console.error(`${provider} login failed:`, error);
     } finally {
@@ -96,7 +114,7 @@ export function SignInForm() {
   };
 
   return (
-    <div className="flex flex-col bg-black/80 max-xl:pt-[2rem] max-xl:justify-start items-center h-screen justify-center overflow-auto w-full 2xl:w-2/5 xl:w-2/5 lg:w-1/2 md:w-full px-8 sm:px-24 xl:px-28 2xl:px-[10%] relative">
+    <div className="flex flex-col bg-black/80 max-xl:pt-[2rem] max-xl:justify-start items-center h-screen justify-center overflow-auto w-full 2xl:w-2/5 xl:w-2/5 md:w-full px-8 sm:px-24 xl:px-28 2xl:px-[10%] relative">
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
@@ -106,7 +124,7 @@ export function SignInForm() {
             <h1 className="text-3xl font-semibold mb-4 text-white">Sign In</h1>
             <p className="text-gray-300 text-sm mb-6">
               You can choose to sign in with your email, with your Google
-              account, Apple ID or Facebook account.
+              account.
             </p>
             <div className="flex flex-col space-y-3">
               <Button
@@ -125,7 +143,7 @@ export function SignInForm() {
                   </>
                 )}
               </Button>
-              <Button
+              {/* <Button
                 type="button"
                 variant="outlineWhite"
                 className="w-full flex text-white items-center justify-center"
@@ -140,7 +158,7 @@ export function SignInForm() {
                     Sign in with Facebook
                   </>
                 )}
-              </Button>
+              </Button> */}
               {/* <Button
                 type="button"
                 variant="outlineWhite"

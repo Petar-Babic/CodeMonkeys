@@ -1,7 +1,7 @@
 import { ActivityLevel, Gender } from "./user";
 
 export type BodyStatsAndGoalDataType = {
-  userId: string;
+  userId: number;
   height: number;
   weight: number;
   goalWeight: number;

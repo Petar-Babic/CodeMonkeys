@@ -20,31 +20,26 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ChooseExercisesDrawer } from "./ChooseExercisesDrawer";
 import {
-  UserWorkoutWithUserPlannedExercise,
-  UserWorkoutWithUserPlannedExerciseUpdateInput,
-} from "@/types/userWorkout";
+  WorkoutWithPlannedExercisesBase,
+  WorkoutWithPlannedExerciseBaseUpdateInput,
+} from "@/types/workout";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AlertCircle, Loader2 } from "lucide-react";
 
 const formSchema = z.object({
+  id: z.number().optional(),
   name: z.string().min(1, "Name is required"),
-  order: z.number().min(1, "Order must be at least 1"),
+  order: z.coerce.number().min(1, "Order must be at least 1"),
   exercises: z
     .array(
       z.object({
-        id: z.string().optional(),
-        exerciseId: z.string().min(1, "Exercise is required"),
-        sets: z.number().min(1, "Sets must be at least 1"),
-        reps: z.number().min(1, "Reps must be at least 1"),
-        rpe: z.number().optional(),
-        order: z.number().min(1, "Order must be at least 1"),
-        exercise: z.object({
-          id: z.string(),
-          name: z.string(),
-          description: z.string().optional(),
-          createdAt: z.date(),
-          updatedAt: z.date(),
-        }),
+        id: z.number().optional(),
+        workoutId: z.number().optional(),
+        exerciseId: z.number(),
+        sets: z.coerce.number().min(1, "Sets must be at least 1"),
+        reps: z.coerce.number().min(1, "Reps must be at least 1"),
+        rpe: z.coerce.number().optional(),
+        order: z.coerce.number().min(1, "Order must be at least 1"),
       })
     )
     .min(1, "At least one exercise is required"),
@@ -53,10 +48,11 @@ const formSchema = z.object({
 type FormValues = z.infer<typeof formSchema>;
 
 interface EditUserWorkoutFormProps {
-  workout: UserWorkoutWithUserPlannedExercise;
-  onSubmit: (
-    data: UserWorkoutWithUserPlannedExerciseUpdateInput
-  ) => Promise<void>;
+  workout: Omit<
+    WorkoutWithPlannedExercisesBase,
+    "description" | "workoutPlanId"
+  >;
+  onSubmit: (data: WorkoutWithPlannedExerciseBaseUpdateInput) => Promise<void>;
 }
 
 export function EditUserWorkoutForm({
@@ -71,16 +67,17 @@ export function EditUserWorkoutForm({
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
+      id: workout.id,
       name: workout.name,
-      order: workout.order,
+      order: workout.order || 1,
       exercises: workout.exercises.map((exercise) => ({
         id: exercise.id,
-        exercise: exercise.exercise,
-        exerciseId: exercise.exercise.id,
+        exerciseId: exercise.exerciseId,
         sets: exercise.sets,
         reps: exercise.reps,
         rpe: exercise.rpe,
         order: exercise.order,
+        workoutId: workout.id,
       })),
     },
   });
@@ -94,23 +91,20 @@ export function EditUserWorkoutForm({
     setIsSubmitting(true);
     setSubmitError(null);
     try {
-      const formattedData: UserWorkoutWithUserPlannedExerciseUpdateInput = {
+      const formattedData: WorkoutWithPlannedExerciseBaseUpdateInput = {
         id: workout.id,
         name: values.name,
-        userWorkoutPlanId: workout.userWorkoutPlanId,
         order: values.order,
         exercises: values.exercises.map((exercise) => ({
           ...exercise,
-          id: exercise.id || "",
+          id: exercise.id || 0,
+          exerciseId: exercise.exerciseId,
           order: exercise.order,
           sets: exercise.sets,
           reps: exercise.reps,
-          rpe: exercise.rpe,
-          exercise: exercises.find(
-            (e) => e.id === exercise.exerciseId
-          ) as ExerciseBase,
-          userWorkoutId: workout.id,
-          updatedAt: new Date(),
+          rpe: exercise.rpe || 0,
+          workoutId: workout.id,
+          exercise: exercises.find((e) => e.id === exercise.exerciseId)!,
         })),
       };
       await onSubmit(formattedData);
@@ -136,10 +130,8 @@ export function EditUserWorkoutForm({
           reps: 1,
           rpe: 1,
           order: fields.length + 1,
-          exercise: {
-            ...exercise,
-            description: exercise.description || "",
-          },
+          workoutId: workout.id,
+          exercise: exercise,
         };
       }
     });
@@ -148,7 +140,7 @@ export function EditUserWorkoutForm({
 
   const getInitialSelectedExercises = () => {
     return exercises.filter((exercise) =>
-      workout.exercises.some((e) => e.exercise.id === exercise.id)
+      workout.exercises.some((e) => e.exerciseId === exercise.id)
     );
   };
 
@@ -156,9 +148,26 @@ export function EditUserWorkoutForm({
     console.log("form.formState.errors", form.formState.errors);
   }, [form.formState.errors]);
 
+  useEffect(() => {
+    console.log("Workout object in EditUserWorkoutForm:", workout);
+    form.reset({
+      name: workout.name,
+      order: workout.order || 1,
+      exercises: workout.exercises.map((exercise) => ({
+        id: exercise.id,
+        exerciseId: exercise.exerciseId,
+        exercise: exercises.find((e) => e.id === exercise.exerciseId)!,
+        sets: exercise.sets,
+        reps: exercise.reps,
+        rpe: exercise.rpe,
+        order: exercise.order,
+      })),
+    });
+  }, [workout, exercises, form]);
+
   return (
     <Form {...form}>
-      <div className="space-y-8">
+      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-8">
         {submitError && (
           <Alert variant="destructive">
             <AlertCircle className="h-4 w-4" />
@@ -327,7 +336,7 @@ export function EditUserWorkoutForm({
           onExercisesSelected={handleExercisesSelected}
           initialSelectedExercises={getInitialSelectedExercises()}
         />
-      </div>
+      </form>
     </Form>
   );
 }

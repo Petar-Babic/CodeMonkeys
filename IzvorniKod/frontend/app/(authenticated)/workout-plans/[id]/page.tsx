@@ -1,36 +1,35 @@
 import React from "react";
-import { workoutPlans } from "@/data/workoutPlan";
-import { workoutsWithExercises } from "@/data/workout";
 import { WorkoutPlanWithWorkouts } from "@/types/workoutPlan";
 import Image from "next/image";
 import ApplyWorkoutPlanToUserButton from "@/components/ApplyWorkoutPlanToUserButton";
+import WorkoutsFromPublicWorkoutPlan from "@/components/WorkoutsFromPublicWorkoutPlan";
+import { authOptions } from "@/app/lib/auth";
+import { getServerSession } from "next-auth";
+import { backendUrl } from "@/data/backendUrl";
 
 const getWorkoutPlanWithWorkoutsAPI = async (
-  id: string
+  id: number
 ): Promise<WorkoutPlanWithWorkouts | undefined> => {
-  // Simulate API delay
-  await new Promise((resolve) => setTimeout(resolve, 1000));
+  let workoutPlan: WorkoutPlanWithWorkouts | undefined;
 
-  // Find the workout plan
-  const workoutPlan = workoutPlans.find((plan) => plan.id === id);
+  const session = await getServerSession(authOptions);
 
-  // Find the workouts for the workout plan
-  const workoutPlanWorkouts = workoutsWithExercises.filter(
-    (workout) => workout.workoutPlanId === id
-  );
-
-  if (!workoutPlan) {
-    return undefined;
+  try {
+    const res = await fetch(`${backendUrl}/api/workout-plans/${id}`, {
+      headers: {
+        Authorization: `Bearer ${session?.accessToken}`,
+      },
+    });
+    workoutPlan = await res.json();
+  } catch (error) {
+    console.error("Error fetching workout plan:", error);
   }
 
-  return {
-    ...workoutPlan,
-    workouts: workoutPlanWorkouts,
-  };
+  return workoutPlan;
 };
 
 export default async function WorkoutPlanPage(props: {
-  params: Promise<{ id: string }>;
+  params: Promise<{ id: number }>;
 }) {
   const { id } = await props.params;
 
@@ -45,7 +44,7 @@ export default async function WorkoutPlanPage(props: {
       {workoutPlan?.image && (
         <div className="w-full h-[25rem] xl:h-[30rem] relative bg-black  border   overflow-hidden block">
           <Image
-            src={workoutPlan.image}
+            src={`/api/upload/${workoutPlan.image}`}
             alt={workoutPlan.name}
             priority
             quality={85}
@@ -73,16 +72,12 @@ export default async function WorkoutPlanPage(props: {
             <p className="text-sm text-gray-600">{workout.description}</p>
             <h6 className="text-xs text-gray-600">Exercises:</h6>
             <ul className="list-disc ml-4 mt-1">
-              {workout.exercises.map((exercise) => (
-                <li className="text-xs" key={exercise.id}>
-                  {exercise.exercise.name}
-                </li>
-              ))}
+              <WorkoutsFromPublicWorkoutPlan workouts={workoutPlan.workouts} />
             </ul>
           </div>
         ))}
       </div>
-      <ApplyWorkoutPlanToUserButton workoutPlanId={workoutPlan.id} />
+      <ApplyWorkoutPlanToUserButton workoutPlan={workoutPlan} />
     </div>
   );
 }

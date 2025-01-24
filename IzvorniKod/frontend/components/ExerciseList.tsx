@@ -4,9 +4,9 @@ export default function ExerciseList({
   exercises,
   openModal,
 }: {
-  exercises: { id: string; name: string; description: string }[];
+  exercises: { id: number; name: string; description: string }[];
   openModal: (exercise: {
-    id: string;
+    id: number;
     name: string;
     description: string;
   }) => void;

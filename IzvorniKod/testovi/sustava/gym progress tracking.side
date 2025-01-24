@@ -1,0 +1,1575 @@
+{
+  "id": "2ad5d583-bd2d-44c4-bdd9-0f7719f0f189",
+  "version": "2.0",
+  "name": "gym progress tracking",
+  "url": "https://gymprogress.lukakordic.me/admin",
+  "tests": [{
+    "id": "e258e08d-04ed-4256-8732-1f29897ccccc",
+    "name": "Login: correct username and password",
+    "commands": [{
+      "id": "85a28195-fe47-4323-b119-bdfc12cca60d",
+      "comment": "",
+      "command": "open",
+      "target": "/",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "f0e190a2-b258-4f4e-8777-c0fbe722d17e",
+      "comment": "",
+      "command": "setWindowSize",
+      "target": "703x821",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "6d3b49ec-bf05-4e92-bbb7-3f129e03733a",
+      "comment": "",
+      "command": "click",
+      "target": "css=span",
+      "targets": [
+        ["css=span", "css:finder"],
+        ["xpath=//span", "xpath:position"],
+        ["xpath=//span[contains(.,'Go to the app')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "d12ae3f2-6e57-427f-9b97-2e8dbf7c38c8",
+      "comment": "",
+      "command": "type",
+      "target": "id=:r0:-form-item",
+      "targets": [
+        ["id=:r0:-form-item", "id"],
+        ["name=email", "name"],
+        ["css=#\\3Ar0\\3A-form-item", "css:finder"],
+        ["xpath=//input[@id=':r0:-form-item']", "xpath:attributes"],
+        ["xpath=//input", "xpath:position"]
+      ],
+      "value": "kcfakduswvbjevmoqz@hthlm.com"
+    }, {
+      "id": "e49cde73-63d7-47d8-b5a4-869b59976c3a",
+      "comment": "",
+      "command": "type",
+      "target": "name=password",
+      "targets": [
+        ["name=password", "name"],
+        ["css=.h-11:nth-child(1)", "css:finder"],
+        ["xpath=//input[@name='password']", "xpath:attributes"],
+        ["xpath=//div[@id=':r1:-form-item']/input", "xpath:idRelative"],
+        ["xpath=//div[3]/div/input", "xpath:position"]
+      ],
+      "value": "kcfakduswvbjevmoqz@hthlm.com"
+    }, {
+      "id": "7e47bb85-5b64-4cc2-9377-6bac727ddcb0",
+      "comment": "",
+      "command": "click",
+      "target": "css=.inline-flex",
+      "targets": [
+        ["css=.inline-flex", "css:finder"],
+        ["xpath=//button[@type='submit']", "xpath:attributes"],
+        ["xpath=//form/button", "xpath:position"],
+        ["xpath=//button[contains(.,'Sign In')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }]
+  }, {
+    "id": "6015f8e6-9a41-4feb-9a45-652e0f7e8ee5",
+    "name": "Login: correct username, but wrong password",
+    "commands": [{
+      "id": "3272e297-31fb-43bc-8360-c8bde2b36513",
+      "comment": "",
+      "command": "open",
+      "target": "/",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "41ea15d4-ddde-4c40-80c8-c8cf9ae504a1",
+      "comment": "",
+      "command": "setWindowSize",
+      "target": "703x821",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "275abbac-9eff-41be-a17f-c4fa8014b878",
+      "comment": "",
+      "command": "click",
+      "target": "css=span",
+      "targets": [
+        ["css=span", "css:finder"],
+        ["xpath=//span", "xpath:position"],
+        ["xpath=//span[contains(.,'Go to the app')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "c459ab9b-5b3a-4d64-856b-3e0e2d8cda5b",
+      "comment": "",
+      "command": "mouseOver",
+      "target": "css=span",
+      "targets": [
+        ["css=span", "css:finder"],
+        ["xpath=//span", "xpath:position"],
+        ["xpath=//span[contains(.,'Go to the app')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "c5a33dff-6238-4db4-9bb3-3ae960a3b798",
+      "comment": "",
+      "command": "type",
+      "target": "id=:r0:-form-item",
+      "targets": [
+        ["id=:r0:-form-item", "id"],
+        ["name=email", "name"],
+        ["css=#\\3Ar0\\3A-form-item", "css:finder"],
+        ["xpath=//input[@id=':r0:-form-item']", "xpath:attributes"],
+        ["xpath=//input", "xpath:position"]
+      ],
+      "value": "kcfakduswvbjevmoqz@hthlm.com"
+    }, {
+      "id": "c04559a0-1972-4731-a02c-1ee3fe644a0a",
+      "comment": "",
+      "command": "type",
+      "target": "name=password",
+      "targets": [
+        ["name=password", "name"],
+        ["css=.h-11:nth-child(1)", "css:finder"],
+        ["xpath=//input[@name='password']", "xpath:attributes"],
+        ["xpath=//div[@id=':r1:-form-item']/input", "xpath:idRelative"],
+        ["xpath=//div[3]/div/input", "xpath:position"]
+      ],
+      "value": "kcfakduswvbjevmoqz"
+    }, {
+      "id": "85bb8330-9c59-4090-91e3-94da4af6652d",
+      "comment": "",
+      "command": "click",
+      "target": "css=.inline-flex",
+      "targets": [
+        ["css=.inline-flex", "css:finder"],
+        ["xpath=//button[@type='submit']", "xpath:attributes"],
+        ["xpath=//form/button", "xpath:position"],
+        ["xpath=//button[contains(.,'Sign In')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }]
+  }, {
+    "id": "8ff02bf7-fee9-47b0-b107-dfcb11042fbf",
+    "name": "Login: wrong username, but existing password",
+    "commands": [{
+      "id": "876c794a-ab22-47ea-a444-e95180f49f54",
+      "comment": "",
+      "command": "open",
+      "target": "/",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "e5953a6e-9cc4-4f82-a3af-38ce45d39088",
+      "comment": "",
+      "command": "setWindowSize",
+      "target": "703x821",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "b3f733d4-58fe-45ad-b4ce-1677a3e405c5",
+      "comment": "",
+      "command": "click",
+      "target": "css=span",
+      "targets": [
+        ["css=span", "css:finder"],
+        ["xpath=//span", "xpath:position"],
+        ["xpath=//span[contains(.,'Go to the app')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "5ee85d56-43f6-49e3-b054-4c7a15fb6b6e",
+      "comment": "",
+      "command": "type",
+      "target": "id=:r0:-form-item",
+      "targets": [
+        ["id=:r0:-form-item", "id"],
+        ["name=email", "name"],
+        ["css=#\\3Ar0\\3A-form-item", "css:finder"],
+        ["xpath=//input[@id=':r0:-form-item']", "xpath:attributes"],
+        ["xpath=//input", "xpath:position"]
+      ],
+      "value": "poaisdqwelkč"
+    }, {
+      "id": "5f7baa6b-3755-45f7-b484-656309f830b0",
+      "comment": "",
+      "command": "type",
+      "target": "name=password",
+      "targets": [
+        ["name=password", "name"],
+        ["css=.h-11:nth-child(1)", "css:finder"],
+        ["xpath=//input[@name='password']", "xpath:attributes"],
+        ["xpath=//div[@id=':r1:-form-item']/input", "xpath:idRelative"],
+        ["xpath=//div[3]/div/input", "xpath:position"]
+      ],
+      "value": "qedgncccshgttwgfxj@poplk.com"
+    }, {
+      "id": "12fc1dd7-f465-43e2-90d0-a7e7a6874186",
+      "comment": "",
+      "command": "click",
+      "target": "css=.inline-flex > span",
+      "targets": [
+        ["css=.inline-flex > span", "css:finder"],
+        ["xpath=//button/span", "xpath:position"],
+        ["xpath=//span[contains(.,'Sign In')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }]
+  }, {
+    "id": "799325bf-23ab-4173-9403-11394e2df885",
+    "name": "Login: SQL-injcetion",
+    "commands": [{
+      "id": "065732fc-b3c5-4c67-8d22-cefe904af7b5",
+      "comment": "",
+      "command": "open",
+      "target": "/",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "949c8c68-b975-421e-a64e-538799a1c4ef",
+      "comment": "",
+      "command": "setWindowSize",
+      "target": "703x821",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "e1b16d37-fd54-4dea-8900-a032e42954c9",
+      "comment": "",
+      "command": "click",
+      "target": "css=span",
+      "targets": [
+        ["css=span", "css:finder"],
+        ["xpath=//span", "xpath:position"],
+        ["xpath=//span[contains(.,'Go to the app')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "6d200988-328b-4b2f-858e-dee385ca648e",
+      "comment": "",
+      "command": "click",
+      "target": "id=:r0:-form-item",
+      "targets": [
+        ["id=:r0:-form-item", "id"],
+        ["name=email", "name"],
+        ["css=#\\3Ar0\\3A-form-item", "css:finder"],
+        ["xpath=//input[@id=':r0:-form-item']", "xpath:attributes"],
+        ["xpath=//input", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "9119aaa6-b61f-41bd-ba1b-ce10a01bcb07",
+      "comment": "",
+      "command": "type",
+      "target": "id=:r0:-form-item",
+      "targets": [
+        ["id=:r0:-form-item", "id"],
+        ["name=email", "name"],
+        ["css=#\\3Ar0\\3A-form-item", "css:finder"],
+        ["xpath=//input[@id=':r0:-form-item']", "xpath:attributes"],
+        ["xpath=//input", "xpath:position"]
+      ],
+      "value": "' OR '1'='1' --"
+    }, {
+      "id": "e2ae7dd3-b9b9-44b7-b927-3dddb1678838",
+      "comment": "",
+      "command": "click",
+      "target": "name=password",
+      "targets": [
+        ["name=password", "name"],
+        ["css=.h-11:nth-child(1)", "css:finder"],
+        ["xpath=//input[@name='password']", "xpath:attributes"],
+        ["xpath=//div[@id=':r1:-form-item']/input", "xpath:idRelative"],
+        ["xpath=//div[3]/div/input", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "f21d6c36-3288-463d-a5d7-2de5f3e8879c",
+      "comment": "",
+      "command": "type",
+      "target": "name=password",
+      "targets": [
+        ["name=password", "name"],
+        ["css=.h-11:nth-child(1)", "css:finder"],
+        ["xpath=//input[@name='password']", "xpath:attributes"],
+        ["xpath=//div[@id=':r1:-form-item']/input", "xpath:idRelative"],
+        ["xpath=//div[3]/div/input", "xpath:position"]
+      ],
+      "value": "' OR '1'='1' --"
+    }, {
+      "id": "b5315711-31cd-4d8c-98c1-78343c31d2e1",
+      "comment": "",
+      "command": "click",
+      "target": "css=.inline-flex",
+      "targets": [
+        ["css=.inline-flex", "css:finder"],
+        ["xpath=//button[@type='submit']", "xpath:attributes"],
+        ["xpath=//form/button", "xpath:position"],
+        ["xpath=//button[contains(.,'Sign In')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }]
+  }, {
+    "id": "23ac9cbf-2ddb-402e-8f94-e1e1158928db",
+    "name": "Login: wrong username and password",
+    "commands": [{
+      "id": "0dbbad50-6639-4d57-b26d-2f3be79d3832",
+      "comment": "",
+      "command": "open",
+      "target": "/",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "bac715ce-88da-4d43-bb7c-4c19ac367b43",
+      "comment": "",
+      "command": "setWindowSize",
+      "target": "1609x1106",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "93af6034-a081-4834-8413-f47eb5205137",
+      "comment": "",
+      "command": "click",
+      "target": "css=.max-xl\\3Apt-\\[4rem\\]",
+      "targets": [
+        ["css=.max-xl\\3Apt-\\[4rem\\]", "css:finder"],
+        ["xpath=//div[2]", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "4c0ac276-ef6a-47bd-89e4-06c59c0774de",
+      "comment": "",
+      "command": "click",
+      "target": "linkText=Go to the app",
+      "targets": [
+        ["linkText=Go to the app", "linkText"],
+        ["css=.bg-white", "css:finder"],
+        ["xpath=//a[contains(@href, '/workouts')]", "xpath:href"],
+        ["xpath=//a", "xpath:position"],
+        ["xpath=//a[contains(.,'Go to the app')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "f9f4f102-4725-4843-9be9-a07393b42bd0",
+      "comment": "",
+      "command": "click",
+      "target": "id=:r0:-form-item",
+      "targets": [
+        ["id=:r0:-form-item", "id"],
+        ["name=email", "name"],
+        ["css=#\\3Ar0\\3A-form-item", "css:finder"],
+        ["xpath=//input[@id=':r0:-form-item']", "xpath:attributes"],
+        ["xpath=//input", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "e677e2b6-a7a9-49ae-b8bf-fce27e0ac246",
+      "comment": "",
+      "command": "type",
+      "target": "id=:r0:-form-item",
+      "targets": [
+        ["id=:r0:-form-item", "id"],
+        ["name=email", "name"],
+        ["css=#\\3Ar0\\3A-form-item", "css:finder"],
+        ["xpath=//input[@id=':r0:-form-item']", "xpath:attributes"],
+        ["xpath=//input", "xpath:position"]
+      ],
+      "value": "špoqwelaskd"
+    }, {
+      "id": "32360256-7aee-43a6-895c-f01fcbe864ae",
+      "comment": "",
+      "command": "type",
+      "target": "name=password",
+      "targets": [
+        ["name=password", "name"],
+        ["css=.h-11:nth-child(1)", "css:finder"],
+        ["xpath=//input[@name='password']", "xpath:attributes"],
+        ["xpath=//div[@id=':r1:-form-item']/input", "xpath:idRelative"],
+        ["xpath=//div[3]/div/input", "xpath:position"]
+      ],
+      "value": "špqowdas"
+    }, {
+      "id": "4513a6e4-d3a2-4f9f-b7d5-e5c485836dcf",
+      "comment": "",
+      "command": "sendKeys",
+      "target": "name=password",
+      "targets": [
+        ["name=password", "name"],
+        ["css=.h-11:nth-child(1)", "css:finder"],
+        ["xpath=//input[@name='password']", "xpath:attributes"],
+        ["xpath=//div[@id=':r1:-form-item']/input", "xpath:idRelative"],
+        ["xpath=//div[3]/div/input", "xpath:position"]
+      ],
+      "value": "${KEY_ENTER}"
+    }, {
+      "id": "52348072-d6e6-463b-b0ca-f4ca3721e58d",
+      "comment": "",
+      "command": "close",
+      "target": "",
+      "targets": [],
+      "value": ""
+    }]
+  }, {
+    "id": "629093e9-2f2d-4ed7-8a9a-dbf8a876d589",
+    "name": "Start a workout",
+    "commands": [{
+      "id": "94fd96c7-39f1-450c-b7f8-87f06fdb5efc",
+      "comment": "",
+      "command": "open",
+      "target": "/",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "e2e269de-cf29-45a6-bc16-ea79b075bfe8",
+      "comment": "",
+      "command": "setWindowSize",
+      "target": "1609x1106",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "b07dce39-ab6b-4608-97d2-9b695cc9db55",
+      "comment": "",
+      "command": "click",
+      "target": "linkText=Go to the app",
+      "targets": [
+        ["linkText=Go to the app", "linkText"],
+        ["css=.bg-white", "css:finder"],
+        ["xpath=//a[contains(@href, '/workouts')]", "xpath:href"],
+        ["xpath=//a", "xpath:position"],
+        ["xpath=//a[contains(.,'Go to the app')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "e6af599e-924b-4e9a-b728-839029e69d19",
+      "comment": "",
+      "command": "click",
+      "target": "css=.h-9",
+      "targets": [
+        ["css=.h-9", "css:finder"],
+        ["xpath=//a/button", "xpath:position"],
+        ["xpath=//button[contains(.,'Start workout')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "57139376-12a1-4eb6-80c5-8b3d76108e3c",
+      "comment": "",
+      "command": "close",
+      "target": "",
+      "targets": [],
+      "value": ""
+    }]
+  }, {
+    "id": "ca6c5d3c-9f5d-4039-8079-a757598c108c",
+    "name": "Dodavanje treninga",
+    "commands": [{
+      "id": "c9ff3b08-1d31-4f69-87f1-c033b3beb693",
+      "comment": "",
+      "command": "open",
+      "target": "/",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "52ae16b2-1aa7-47de-999e-95c0c16bdc85",
+      "comment": "",
+      "command": "setWindowSize",
+      "target": "1609x1106",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "5377b4e2-f695-487c-8699-c9dbe98ab33f",
+      "comment": "",
+      "command": "click",
+      "target": "css=span",
+      "targets": [
+        ["css=span", "css:finder"],
+        ["xpath=//span", "xpath:position"],
+        ["xpath=//span[contains(.,'Go to the app')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "d83fa4dc-2a82-478e-9b5e-9ac71a6f5039",
+      "comment": "",
+      "command": "mouseOver",
+      "target": "linkText=Workout Plans",
+      "targets": [
+        ["linkText=Workout Plans", "linkText"],
+        ["css=.flex-col > .inline-flex:nth-child(1)", "css:finder"],
+        ["xpath=//a[contains(@href, '/workout-plans')]", "xpath:href"],
+        ["xpath=//a", "xpath:position"],
+        ["xpath=//a[contains(.,'Workout Plans')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "6c01304f-0662-4a96-b178-ed23f0c1ddeb",
+      "comment": "",
+      "command": "click",
+      "target": "linkText=Workout Plans",
+      "targets": [
+        ["linkText=Workout Plans", "linkText"],
+        ["css=.flex-col > .inline-flex:nth-child(1)", "css:finder"],
+        ["xpath=//a[contains(@href, '/workout-plans')]", "xpath:href"],
+        ["xpath=//a", "xpath:position"],
+        ["xpath=//a[contains(.,'Workout Plans')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "2844b818-7607-40f4-aed6-2bbb5721bf18",
+      "comment": "",
+      "command": "mouseOut",
+      "target": "linkText=Workout Plans",
+      "targets": [
+        ["linkText=Workout Plans", "linkText"],
+        ["css=.flex-col > .bg-black", "css:finder"],
+        ["xpath=//a[contains(@href, '/workout-plans')]", "xpath:href"],
+        ["xpath=//a", "xpath:position"],
+        ["xpath=//a[contains(.,'Workout Plans')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "002fc4e7-c323-460c-b271-9ffe5df6bab2",
+      "comment": "",
+      "command": "click",
+      "target": "css=.bg-white:nth-child(1) > span",
+      "targets": [
+        ["css=.bg-white:nth-child(1) > span", "css:finder"],
+        ["xpath=//a/button/span", "xpath:position"],
+        ["xpath=//span[contains(.,'Edit your workout plan')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "f8ffb20b-8af8-4672-904c-8d3f89fa4ea9",
+      "comment": "",
+      "command": "click",
+      "target": "css=.bg-black:nth-child(2)",
+      "targets": [
+        ["css=.bg-black:nth-child(2)", "css:finder"],
+        ["xpath=(//button[@type='button'])[2]", "xpath:attributes"],
+        ["xpath=//div/button", "xpath:position"],
+        ["xpath=//button[contains(.,'Add Workout')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "6813b16d-de3b-4b53-b62c-b550fcb6c71e",
+      "comment": "",
+      "command": "mouseOver",
+      "target": "css=.bg-black:nth-child(2)",
+      "targets": [
+        ["css=.bg-black:nth-child(2)", "css:finder"],
+        ["xpath=(//button[@type='button'])[2]", "xpath:attributes"],
+        ["xpath=//div/button", "xpath:position"],
+        ["xpath=//button[contains(.,'Add Workout')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "e4da2346-8226-4984-a3b9-f29d21bc54f2",
+      "comment": "",
+      "command": "mouseOut",
+      "target": "css=.bg-black:nth-child(2)",
+      "targets": [
+        ["css=.bg-black:nth-child(2)", "css:finder"],
+        ["xpath=(//button[@type='button'])[2]", "xpath:attributes"],
+        ["xpath=//div/button", "xpath:position"],
+        ["xpath=//button[contains(.,'Add Workout')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "768217ca-f8e2-428a-86fd-78d92c5790c9",
+      "comment": "",
+      "command": "click",
+      "target": "id=:ri:-form-item",
+      "targets": [
+        ["id=:ri:-form-item", "id"],
+        ["css=#\\3Ari\\3A-form-item", "css:finder"],
+        ["xpath=//input[@id=':ri:-form-item']", "xpath:attributes"],
+        ["xpath=//div[@id='radix-:rf:']/div[3]/form/div/input", "xpath:idRelative"],
+        ["xpath=//div[3]/form/div/input", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "3b046776-f689-4fda-b1c0-46eb30ff94da",
+      "comment": "",
+      "command": "type",
+      "target": "id=:ri:-form-item",
+      "targets": [
+        ["id=:ri:-form-item", "id"],
+        ["css=#\\3Ari\\3A-form-item", "css:finder"],
+        ["xpath=//input[@id=':ri:-form-item']", "xpath:attributes"],
+        ["xpath=//div[@id='radix-:rf:']/div[3]/form/div/input", "xpath:idRelative"],
+        ["xpath=//div[3]/form/div/input", "xpath:position"]
+      ],
+      "value": "test 2"
+    }, {
+      "id": "29947527-6509-448d-88ed-ab4796c268ab",
+      "comment": "",
+      "command": "click",
+      "target": "css=.bg-black:nth-child(3)",
+      "targets": [
+        ["css=.bg-black:nth-child(3)", "css:finder"],
+        ["xpath=(//button[@type='button'])[5]", "xpath:attributes"],
+        ["xpath=//div[@id='radix-:rf:']/div[3]/form/button", "xpath:idRelative"],
+        ["xpath=//div[3]/form/button", "xpath:position"],
+        ["xpath=//button[contains(.,'Choose Exercises')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "05a5f10d-40dd-4c15-a0eb-eaca923acd4d",
+      "comment": "",
+      "command": "mouseOver",
+      "target": "css=.bg-black:nth-child(3)",
+      "targets": [
+        ["css=.bg-black:nth-child(3)", "css:finder"],
+        ["xpath=(//button[@type='button'])[5]", "xpath:attributes"],
+        ["xpath=//div[@id='radix-:rf:']/div[3]/form/button", "xpath:idRelative"],
+        ["xpath=//div[3]/form/button", "xpath:position"],
+        ["xpath=//button[contains(.,'Choose Exercises')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "2c114986-3ab1-47e6-8b13-512d575c2fd7",
+      "comment": "",
+      "command": "mouseOut",
+      "target": "css=.bg-black:nth-child(3)",
+      "targets": [
+        ["css=.bg-black:nth-child(3)", "css:finder"],
+        ["xpath=(//button[@type='button'])[5]", "xpath:attributes"],
+        ["xpath=//div[@id='radix-:rf:']/div[3]/form/button", "xpath:idRelative"],
+        ["xpath=//div[3]/form/button", "xpath:position"],
+        ["xpath=//button[contains(.,'Choose Exercises')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "0f51dd0e-33e2-4a03-942c-0d60ea41131a",
+      "comment": "",
+      "command": "click",
+      "target": "css=.items-center:nth-child(4) > .text-sm",
+      "targets": [
+        ["css=.items-center:nth-child(4) > .text-sm", "css:finder"],
+        ["xpath=//div[@id='radix-:rk:']/div[3]/div[2]/div[4]/label", "xpath:idRelative"],
+        ["xpath=//div[2]/div[4]/label", "xpath:position"],
+        ["xpath=//label[contains(.,'Barbell Squat')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "3380abcd-e39d-403e-9200-18ffb4d3c7c2",
+      "comment": "",
+      "command": "click",
+      "target": "css=.mt-auto > .bg-black",
+      "targets": [
+        ["css=.mt-auto > .bg-black", "css:finder"],
+        ["xpath=//div[@id='radix-:rk:']/div[4]/button", "xpath:idRelative"],
+        ["xpath=//div[5]/div[4]/button", "xpath:position"],
+        ["xpath=//button[contains(.,'Update Exercises')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "ccf2fa6e-306b-4ca9-8259-51bc453c05ac",
+      "comment": "",
+      "command": "mouseOut",
+      "target": "css=.mt-auto > .bg-black",
+      "targets": [
+        ["css=.mt-auto > .bg-black", "css:finder"],
+        ["xpath=//div[@id='radix-:rk:']/div[4]/button", "xpath:idRelative"],
+        ["xpath=//div[5]/div[4]/button", "xpath:position"],
+        ["xpath=//button[contains(.,'Update Exercises')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "cdd3c8c7-c5d7-4015-a065-4b82d14b6d39",
+      "comment": "",
+      "command": "click",
+      "target": "css=.p-4 .inline-flex:nth-child(5)",
+      "targets": [
+        ["css=.p-4 .inline-flex:nth-child(5)", "css:finder"],
+        ["xpath=(//button[@type='button'])[7]", "xpath:attributes"],
+        ["xpath=//div[@id='radix-:rf:']/div[3]/form/button[2]", "xpath:idRelative"],
+        ["xpath=//form/button[2]", "xpath:position"],
+        ["xpath=//button[contains(.,'Create Workout')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "78f1595a-e4d3-4b51-a30a-2892259c1581",
+      "comment": "",
+      "command": "click",
+      "target": "css=.bg-black:nth-child(5)",
+      "targets": [
+        ["css=.bg-black:nth-child(5)", "css:finder"],
+        ["xpath=//button[@type='submit']", "xpath:attributes"],
+        ["xpath=//form/button", "xpath:position"],
+        ["xpath=//button[contains(.,'Update Plan')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "32564c78-24c9-4da7-a9da-f766074ffb84",
+      "comment": "",
+      "command": "mouseOver",
+      "target": "css=.bg-black:nth-child(5)",
+      "targets": [
+        ["css=.bg-black:nth-child(5)", "css:finder"],
+        ["xpath=//button[@type='submit']", "xpath:attributes"],
+        ["xpath=//form/button", "xpath:position"],
+        ["xpath=//button[contains(.,'Update Plan')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "1f8986c9-fac9-4043-ac3a-e9533eaf6192",
+      "comment": "",
+      "command": "mouseOut",
+      "target": "css=.bg-black:nth-child(5)",
+      "targets": [
+        ["css=.bg-black:nth-child(5)", "css:finder"],
+        ["xpath=//button[@type='submit']", "xpath:attributes"],
+        ["xpath=//form/button", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "bf7b5549-a6a5-4dcb-bdb0-a6630dc79e0b",
+      "comment": "",
+      "command": "close",
+      "target": "",
+      "targets": [],
+      "value": ""
+    }]
+  }, {
+    "id": "2e5f5ade-e06b-44d0-b0a3-fba3b01908ad",
+    "name": "Provjera cookiesa",
+    "commands": [{
+      "id": "3e986447-537a-4364-892e-08be7f34894d",
+      "comment": "",
+      "command": "open",
+      "target": "/",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "e041d847-410c-465d-905d-bdccf96a4c74",
+      "comment": "",
+      "command": "setWindowSize",
+      "target": "1609x1106",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "216857ab-27d6-4aea-b7d2-7e85e038a9da",
+      "comment": "",
+      "command": "click",
+      "target": "linkText=Go to the app",
+      "targets": [
+        ["linkText=Go to the app", "linkText"],
+        ["css=.bg-white", "css:finder"],
+        ["xpath=//a[contains(@href, '/workouts')]", "xpath:href"],
+        ["xpath=//a", "xpath:position"],
+        ["xpath=//a[contains(.,'Go to the app')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "9c412cc7-48cc-45ef-96bd-9d3974dc7db6",
+      "comment": "",
+      "command": "close",
+      "target": "",
+      "targets": [],
+      "value": ""
+    }]
+  }, {
+    "id": "0b6d9523-4bd7-40bc-9bad-85ff0ae9a061",
+    "name": "Add new meal",
+    "commands": [{
+      "id": "8520d942-c666-4edf-9dd5-d3d2476ae742",
+      "comment": "",
+      "command": "mouseOver",
+      "target": "linkText=Workout Plans",
+      "targets": [
+        ["linkText=Workout Plans", "linkText"],
+        ["css=.flex-col > .inline-flex:nth-child(2)", "css:finder"],
+        ["xpath=//a[contains(@href, '/admin/workout-plans')]", "xpath:href"],
+        ["xpath=//a[2]", "xpath:position"],
+        ["xpath=//a[contains(.,'Workout Plans')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "4d221fa2-22c4-4381-aefe-c1a133d15297",
+      "comment": "",
+      "command": "mouseOut",
+      "target": "linkText=Workout Plans",
+      "targets": [
+        ["linkText=Workout Plans", "linkText"],
+        ["css=.flex-col > .inline-flex:nth-child(2)", "css:finder"],
+        ["xpath=//a[contains(@href, '/admin/workout-plans')]", "xpath:href"],
+        ["xpath=//a[2]", "xpath:position"],
+        ["xpath=//a[contains(.,'Workout Plans')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "0cbe8140-030b-449a-90ea-699513876cfd",
+      "comment": "",
+      "command": "mouseOver",
+      "target": "linkText=Workout Plans",
+      "targets": [
+        ["linkText=Workout Plans", "linkText"],
+        ["css=.flex-col > .inline-flex:nth-child(2)", "css:finder"],
+        ["xpath=//a[contains(@href, '/admin/workout-plans')]", "xpath:href"],
+        ["xpath=//a[2]", "xpath:position"],
+        ["xpath=//a[contains(.,'Workout Plans')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "530330e7-2301-43c4-9335-670805201da4",
+      "comment": "",
+      "command": "click",
+      "target": "linkText=Workout Plans",
+      "targets": [
+        ["linkText=Workout Plans", "linkText"],
+        ["css=.flex-col > .inline-flex:nth-child(2)", "css:finder"],
+        ["xpath=//a[contains(@href, '/admin/workout-plans')]", "xpath:href"],
+        ["xpath=//a[2]", "xpath:position"],
+        ["xpath=//a[contains(.,'Workout Plans')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "8f395d3a-625e-4ae4-8210-3522147597c5",
+      "comment": "",
+      "command": "mouseOut",
+      "target": "linkText=Workout Plans",
+      "targets": [
+        ["linkText=Workout Plans", "linkText"],
+        ["css=.flex-col > .bg-black", "css:finder"],
+        ["xpath=//a[contains(@href, '/admin/workout-plans')]", "xpath:href"],
+        ["xpath=//a[2]", "xpath:position"],
+        ["xpath=//a[contains(.,'Workout Plans')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "80a38587-08f9-47fd-9c6e-480604f6d0bc",
+      "comment": "",
+      "command": "click",
+      "target": "css=.bg-black:nth-child(1)",
+      "targets": [
+        ["css=.bg-black:nth-child(1)", "css:finder"],
+        ["xpath=//a/button", "xpath:position"],
+        ["xpath=//button[contains(.,'Dodaj novi trening plan')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "712e9ad2-43b9-43f8-8deb-23997bb8d0e1",
+      "comment": "",
+      "command": "click",
+      "target": "id=:r2:-form-item",
+      "targets": [
+        ["id=:r2:-form-item", "id"],
+        ["name=name", "name"],
+        ["css=#\\3Ar2\\3A-form-item", "css:finder"],
+        ["xpath=//input[@id=':r2:-form-item']", "xpath:attributes"],
+        ["xpath=//input", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "8c3ff4b2-941d-4d37-81fe-bdba558ff78f",
+      "comment": "",
+      "command": "type",
+      "target": "id=:r2:-form-item",
+      "targets": [
+        ["id=:r2:-form-item", "id"],
+        ["name=name", "name"],
+        ["css=#\\3Ar2\\3A-form-item", "css:finder"],
+        ["xpath=//input[@id=':r2:-form-item']", "xpath:attributes"],
+        ["xpath=//input", "xpath:position"]
+      ],
+      "value": "tetst"
+    }, {
+      "id": "c1f6138e-c922-4569-abf4-9d6d0c022be0",
+      "comment": "",
+      "command": "type",
+      "target": "id=:r3:-form-item",
+      "targets": [
+        ["id=:r3:-form-item", "id"],
+        ["css=#\\3Ar3\\3A-form-item", "css:finder"],
+        ["xpath=//input[@id=':r3:-form-item']", "xpath:attributes"],
+        ["xpath=//div[2]/input", "xpath:position"]
+      ],
+      "value": "test"
+    }, {
+      "id": "bfbf4afd-e470-4d26-9bd7-c2d450a143fe",
+      "comment": "",
+      "command": "click",
+      "target": "id=:r4:-form-item",
+      "targets": [
+        ["id=:r4:-form-item", "id"],
+        ["name=userId", "name"],
+        ["css=#\\3Ar4\\3A-form-item", "css:finder"],
+        ["xpath=//input[@id=':r4:-form-item']", "xpath:attributes"],
+        ["xpath=//div[4]/input", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "6a7cfac8-720f-4c5a-80ca-df52984093f2",
+      "comment": "",
+      "command": "type",
+      "target": "id=:r4:-form-item",
+      "targets": [
+        ["id=:r4:-form-item", "id"],
+        ["name=userId", "name"],
+        ["css=#\\3Ar4\\3A-form-item", "css:finder"],
+        ["xpath=//input[@id=':r4:-form-item']", "xpath:attributes"],
+        ["xpath=//div[4]/input", "xpath:position"]
+      ],
+      "value": "1"
+    }, {
+      "id": "add1376d-5382-43c0-9f15-5b3cde004bfe",
+      "comment": "",
+      "command": "click",
+      "target": "css=.h-9:nth-child(2)",
+      "targets": [
+        ["css=.h-9:nth-child(2)", "css:finder"],
+        ["xpath=(//button[@type='button'])[2]", "xpath:attributes"],
+        ["xpath=//div/button", "xpath:position"],
+        ["xpath=//button[contains(.,'Add Workout')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "fe2eb8cc-e8c4-439f-8940-f33765b21fc3",
+      "comment": "",
+      "command": "mouseOver",
+      "target": "css=.h-9:nth-child(2)",
+      "targets": [
+        ["css=.h-9:nth-child(2)", "css:finder"],
+        ["xpath=(//button[@type='button'])[2]", "xpath:attributes"],
+        ["xpath=//div/button", "xpath:position"],
+        ["xpath=//button[contains(.,'Add Workout')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "9efcd146-60f9-4110-8a5a-2758f4df7aa8",
+      "comment": "",
+      "command": "mouseOut",
+      "target": "css=.h-9:nth-child(2)",
+      "targets": [
+        ["css=.h-9:nth-child(2)", "css:finder"],
+        ["xpath=(//button[@type='button'])[2]", "xpath:attributes"],
+        ["xpath=//div/button", "xpath:position"],
+        ["xpath=//button[contains(.,'Add Workout')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "8b6af12b-5adf-4c37-b808-b8868ab6b2f3",
+      "comment": "",
+      "command": "click",
+      "target": "css=.bg-black:nth-child(5)",
+      "targets": [
+        ["css=.bg-black:nth-child(5)", "css:finder"],
+        ["xpath=(//button[@type='button'])[4]", "xpath:attributes"],
+        ["xpath=//div[@id='radix-:r6:']/div[3]/form/button[2]", "xpath:idRelative"],
+        ["xpath=//button[2]", "xpath:position"],
+        ["xpath=//button[contains(.,'Create Workout')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "d2db6a43-8265-4afd-9e5e-3a2547fd4316",
+      "comment": "",
+      "command": "mouseOver",
+      "target": "css=.bg-black:nth-child(5)",
+      "targets": [
+        ["css=.bg-black:nth-child(5)", "css:finder"],
+        ["xpath=(//button[@type='button'])[4]", "xpath:attributes"],
+        ["xpath=//div[@id='radix-:r6:']/div[3]/form/button[2]", "xpath:idRelative"],
+        ["xpath=//button[2]", "xpath:position"],
+        ["xpath=//button[contains(.,'Create Workout')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "928f9330-16fb-4a05-87b0-08438ae2b631",
+      "comment": "",
+      "command": "type",
+      "target": "id=:r9:-form-item",
+      "targets": [
+        ["id=:r9:-form-item", "id"],
+        ["css=#\\3Ar9\\3A-form-item", "css:finder"],
+        ["xpath=//input[@id=':r9:-form-item']", "xpath:attributes"],
+        ["xpath=//div[@id='radix-:r6:']/div[3]/form/div/input", "xpath:idRelative"],
+        ["xpath=//div[3]/form/div/input", "xpath:position"]
+      ],
+      "value": "test"
+    }, {
+      "id": "aca7d09b-6a3d-4b92-bf81-246737e7213b",
+      "comment": "",
+      "command": "click",
+      "target": "css=.bg-black:nth-child(5)",
+      "targets": [
+        ["css=.bg-black:nth-child(5)", "css:finder"],
+        ["xpath=(//button[@type='button'])[4]", "xpath:attributes"],
+        ["xpath=//div[@id='radix-:r6:']/div[3]/form/button[2]", "xpath:idRelative"],
+        ["xpath=//button[2]", "xpath:position"],
+        ["xpath=//button[contains(.,'Create Workout')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "c9f34739-9512-496b-8e8f-47dbf7a1c7a2",
+      "comment": "",
+      "command": "mouseOut",
+      "target": "css=.bg-black:nth-child(5)",
+      "targets": [
+        ["css=.bg-black:nth-child(5)", "css:finder"],
+        ["xpath=(//button[@type='button'])[6]", "xpath:attributes"],
+        ["xpath=//div[@id='radix-:r6:']/div[3]/form/button[2]", "xpath:idRelative"],
+        ["xpath=//form/button[2]", "xpath:position"],
+        ["xpath=//button[contains(.,'Create Workout')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "c3f55074-b277-4561-9a52-f14460666be1",
+      "comment": "",
+      "command": "close",
+      "target": "",
+      "targets": [],
+      "value": ""
+    }]
+  }, {
+    "id": "fbef738d-bbaf-4e85-a050-c1a6b5bbbce7",
+    "name": "Admin adding food",
+    "commands": [{
+      "id": "b20bd04f-59c8-4b46-96b3-8411fd9f94b3",
+      "comment": "",
+      "command": "open",
+      "target": "https://gymprogress.lukakordic.me/admin",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "78e1aee0-3efc-481d-b15a-04ffd2dc1edb",
+      "comment": "",
+      "command": "setWindowSize",
+      "target": "1437x916",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "b8efac27-7db2-4cbf-a188-aa05bad381b0",
+      "comment": "",
+      "command": "mouseOver",
+      "target": "linkText=Food",
+      "targets": [
+        ["linkText=Food", "linkText"],
+        ["css=.flex-col > .inline-flex:nth-child(3)", "css:finder"],
+        ["xpath=//a[contains(@href, '/admin/food')]", "xpath:href"],
+        ["xpath=//a[3]", "xpath:position"],
+        ["xpath=//a[contains(.,'Food')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "ecaf8edf-5956-4d5b-bd0d-2decf2eed08d",
+      "comment": "",
+      "command": "click",
+      "target": "linkText=Food",
+      "targets": [
+        ["linkText=Food", "linkText"],
+        ["css=.flex-col > .inline-flex:nth-child(3)", "css:finder"],
+        ["xpath=//a[contains(@href, '/admin/food')]", "xpath:href"],
+        ["xpath=//a[3]", "xpath:position"],
+        ["xpath=//a[contains(.,'Food')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "809bf6cf-e351-436c-bf6e-f2fc7fccf3ee",
+      "comment": "",
+      "command": "mouseOut",
+      "target": "linkText=Food",
+      "targets": [
+        ["linkText=Food", "linkText"],
+        ["css=.flex-col > .bg-black", "css:finder"],
+        ["xpath=//a[contains(@href, '/admin/food')]", "xpath:href"],
+        ["xpath=//a[3]", "xpath:position"],
+        ["xpath=//a[contains(.,'Food')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "c60284e7-551f-4cce-9cf4-b1aea193824b",
+      "comment": "",
+      "command": "click",
+      "target": "css=.bg-black:nth-child(1)",
+      "targets": [
+        ["css=.bg-black:nth-child(1)", "css:finder"],
+        ["xpath=//a/button", "xpath:position"],
+        ["xpath=//button[contains(.,'Dodaj novu hranu')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "acb545bf-f298-4526-9e18-5fe8acd0ba62",
+      "comment": "",
+      "command": "click",
+      "target": "id=:r2:-form-item",
+      "targets": [
+        ["id=:r2:-form-item", "id"],
+        ["name=name", "name"],
+        ["css=#\\3Ar2\\3A-form-item", "css:finder"],
+        ["xpath=//input[@id=':r2:-form-item']", "xpath:attributes"],
+        ["xpath=//input", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "e04eaea6-15b4-4b37-bde8-8bd078cec299",
+      "comment": "",
+      "command": "type",
+      "target": "id=:r2:-form-item",
+      "targets": [
+        ["id=:r2:-form-item", "id"],
+        ["name=name", "name"],
+        ["css=#\\3Ar2\\3A-form-item", "css:finder"],
+        ["xpath=//input[@id=':r2:-form-item']", "xpath:attributes"],
+        ["xpath=//input", "xpath:position"]
+      ],
+      "value": "Test"
+    }, {
+      "id": "83b1fb1d-658f-48c7-aee9-4ab858869cf9",
+      "comment": "",
+      "command": "click",
+      "target": "id=:r3:-form-item",
+      "targets": [
+        ["id=:r3:-form-item", "id"],
+        ["name=calories", "name"],
+        ["css=#\\3Ar3\\3A-form-item", "css:finder"],
+        ["xpath=//input[@id=':r3:-form-item']", "xpath:attributes"],
+        ["xpath=//div[2]/input", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "71fd4c51-98b7-487d-87d0-eb05c600ecbf",
+      "comment": "",
+      "command": "type",
+      "target": "id=:r3:-form-item",
+      "targets": [
+        ["id=:r3:-form-item", "id"],
+        ["name=calories", "name"],
+        ["css=#\\3Ar3\\3A-form-item", "css:finder"],
+        ["xpath=//input[@id=':r3:-form-item']", "xpath:attributes"],
+        ["xpath=//div[2]/input", "xpath:position"]
+      ],
+      "value": "0100"
+    }, {
+      "id": "a1b8ba13-d3cc-4546-9289-890d448ee76d",
+      "comment": "",
+      "command": "click",
+      "target": "id=:r4:-form-item",
+      "targets": [
+        ["id=:r4:-form-item", "id"],
+        ["name=protein", "name"],
+        ["css=#\\3Ar4\\3A-form-item", "css:finder"],
+        ["xpath=//input[@id=':r4:-form-item']", "xpath:attributes"],
+        ["xpath=//div[3]/input", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "f3262f3c-9660-45c1-8c7c-356a3d8c19d1",
+      "comment": "",
+      "command": "click",
+      "target": "id=:r4:-form-item",
+      "targets": [
+        ["id=:r4:-form-item", "id"],
+        ["name=protein", "name"],
+        ["css=#\\3Ar4\\3A-form-item", "css:finder"],
+        ["xpath=//input[@id=':r4:-form-item']", "xpath:attributes"],
+        ["xpath=//div[3]/input", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "4302ad94-2eb2-4128-bbdd-51210484e83b",
+      "comment": "",
+      "command": "doubleClick",
+      "target": "id=:r4:-form-item",
+      "targets": [
+        ["id=:r4:-form-item", "id"],
+        ["name=protein", "name"],
+        ["css=#\\3Ar4\\3A-form-item", "css:finder"],
+        ["xpath=//input[@id=':r4:-form-item']", "xpath:attributes"],
+        ["xpath=//div[3]/input", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "53346863-7789-4b2b-b42b-fdaedf423c92",
+      "comment": "",
+      "command": "type",
+      "target": "id=:r4:-form-item",
+      "targets": [
+        ["id=:r4:-form-item", "id"],
+        ["name=protein", "name"],
+        ["css=#\\3Ar4\\3A-form-item", "css:finder"],
+        ["xpath=//input[@id=':r4:-form-item']", "xpath:attributes"],
+        ["xpath=//div[3]/input", "xpath:position"]
+      ],
+      "value": "200"
+    }, {
+      "id": "97ada63f-c621-43ff-ac14-06a9235573a7",
+      "comment": "",
+      "command": "type",
+      "target": "id=:r5:-form-item",
+      "targets": [
+        ["id=:r5:-form-item", "id"],
+        ["name=carbs", "name"],
+        ["css=#\\3Ar5\\3A-form-item", "css:finder"],
+        ["xpath=//input[@id=':r5:-form-item']", "xpath:attributes"],
+        ["xpath=//div[4]/input", "xpath:position"]
+      ],
+      "value": "300"
+    }, {
+      "id": "e915bb12-7ec0-4443-8253-1fa2a20ce6fa",
+      "comment": "",
+      "command": "type",
+      "target": "id=:r6:-form-item",
+      "targets": [
+        ["id=:r6:-form-item", "id"],
+        ["name=fat", "name"],
+        ["css=#\\3Ar6\\3A-form-item", "css:finder"],
+        ["xpath=//input[@id=':r6:-form-item']", "xpath:attributes"],
+        ["xpath=//div[5]/input", "xpath:position"]
+      ],
+      "value": "400"
+    }, {
+      "id": "ed979caf-4dca-4c96-976d-108aa35a6979",
+      "comment": "",
+      "command": "type",
+      "target": "id=:r7:-form-item",
+      "targets": [
+        ["id=:r7:-form-item", "id"],
+        ["name=unit", "name"],
+        ["css=#\\3Ar7\\3A-form-item", "css:finder"],
+        ["xpath=//input[@id=':r7:-form-item']", "xpath:attributes"],
+        ["xpath=//div[6]/input", "xpath:position"]
+      ],
+      "value": "gram"
+    }, {
+      "id": "cad3bafe-2d5d-41d9-a0e6-95cdbcc6bb77",
+      "comment": "",
+      "command": "type",
+      "target": "id=:r8:-form-item",
+      "targets": [
+        ["id=:r8:-form-item", "id"],
+        ["name=defaultNumber", "name"],
+        ["css=#\\3Ar8\\3A-form-item", "css:finder"],
+        ["xpath=//input[@id=':r8:-form-item']", "xpath:attributes"],
+        ["xpath=//div[7]/input", "xpath:position"]
+      ],
+      "value": "2"
+    }, {
+      "id": "77b4f7dc-c387-44bf-a87e-56260d1913f3",
+      "comment": "",
+      "command": "click",
+      "target": "css=.h-9",
+      "targets": [
+        ["css=.h-9", "css:finder"],
+        ["xpath=//button[@type='submit']", "xpath:attributes"],
+        ["xpath=//form/button", "xpath:position"],
+        ["xpath=//button[contains(.,'Dodaj')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "cce7f0e0-3ea1-4588-92a1-293f1bfb374a",
+      "comment": "",
+      "command": "mouseOver",
+      "target": "css=.h-9",
+      "targets": [
+        ["css=.h-9", "css:finder"],
+        ["xpath=//button[@type='submit']", "xpath:attributes"],
+        ["xpath=//form/button", "xpath:position"],
+        ["xpath=//button[contains(.,'Dodaj')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "5c30d2d5-afb1-40ee-a560-38b5be8dbcdf",
+      "comment": "",
+      "command": "mouseOut",
+      "target": "css=.h-9",
+      "targets": [
+        ["css=.h-9", "css:finder"],
+        ["xpath=//button[@type='submit']", "xpath:attributes"],
+        ["xpath=//form/button", "xpath:position"],
+        ["xpath=//button[contains(.,'Dodaj')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "91ea3a80-2b66-4da9-8abd-e6c6ea91bf54",
+      "comment": "",
+      "command": "click",
+      "target": "css=.h-9",
+      "targets": [
+        ["css=.h-9", "css:finder"],
+        ["xpath=//button[@type='submit']", "xpath:attributes"],
+        ["xpath=//form/button", "xpath:position"],
+        ["xpath=//button[contains(.,'Dodaj')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "f98b50a2-61a1-41a3-a9f1-f934ef5343b5",
+      "comment": "",
+      "command": "mouseOver",
+      "target": "css=.h-9",
+      "targets": [
+        ["css=.h-9", "css:finder"],
+        ["xpath=//button[@type='submit']", "xpath:attributes"],
+        ["xpath=//form/button", "xpath:position"],
+        ["xpath=//button[contains(.,'Dodaj')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "1e2b4b85-edb4-43ad-b61f-a335120e99f7",
+      "comment": "",
+      "command": "mouseOut",
+      "target": "css=.h-9",
+      "targets": [
+        ["css=.h-9", "css:finder"],
+        ["xpath=//button[@type='submit']", "xpath:attributes"],
+        ["xpath=//form/button", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "d5b86af3-d393-4151-95c1-5e642b06b5ef",
+      "comment": "",
+      "command": "mouseOver",
+      "target": "linkText=Admin",
+      "targets": [
+        ["linkText=Admin", "linkText"],
+        ["css=.flex-col > .inline-flex:nth-child(1)", "css:finder"],
+        ["xpath=//a[contains(@href, '/admin')]", "xpath:href"],
+        ["xpath=//a", "xpath:position"],
+        ["xpath=//a[contains(.,'Admin')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "621fda20-4a49-4df5-8c2c-3bae22e44472",
+      "comment": "",
+      "command": "mouseOut",
+      "target": "linkText=Admin",
+      "targets": [
+        ["linkText=Admin", "linkText"],
+        ["css=.flex-col > .inline-flex:nth-child(1)", "css:finder"],
+        ["xpath=//a[contains(@href, '/admin')]", "xpath:href"],
+        ["xpath=//a", "xpath:position"],
+        ["xpath=//a[contains(.,'Admin')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "b890c6f1-ca2e-4c66-ab35-2ee0b7ae27b0",
+      "comment": "",
+      "command": "mouseOver",
+      "target": "linkText=Workout Plans",
+      "targets": [
+        ["linkText=Workout Plans", "linkText"],
+        ["css=.flex-col > .inline-flex:nth-child(2)", "css:finder"],
+        ["xpath=//a[contains(@href, '/admin/workout-plans')]", "xpath:href"],
+        ["xpath=//a[2]", "xpath:position"],
+        ["xpath=//a[contains(.,'Workout Plans')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "17d88664-d8c1-4891-a31c-ee63db286bc0",
+      "comment": "",
+      "command": "mouseOut",
+      "target": "linkText=Workout Plans",
+      "targets": [
+        ["linkText=Workout Plans", "linkText"],
+        ["css=.flex-col > .inline-flex:nth-child(2)", "css:finder"],
+        ["xpath=//a[contains(@href, '/admin/workout-plans')]", "xpath:href"],
+        ["xpath=//a[2]", "xpath:position"],
+        ["xpath=//a[contains(.,'Workout Plans')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "55b61185-d73c-4b24-a533-59fc6c409e48",
+      "comment": "",
+      "command": "click",
+      "target": "linkText=Food",
+      "targets": [
+        ["linkText=Food", "linkText"],
+        ["css=.flex-col > .bg-black", "css:finder"],
+        ["xpath=//a[contains(@href, '/admin/food')]", "xpath:href"],
+        ["xpath=//a[3]", "xpath:position"],
+        ["xpath=//a[contains(.,'Food')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "e13f5adf-1b83-4e01-bfd6-56b1937f1836",
+      "comment": "",
+      "command": "close",
+      "target": "",
+      "targets": [],
+      "value": ""
+    }]
+  }, {
+    "id": "72c7f6ea-aad4-43b5-9d2a-7de6beac7a29",
+    "name": "Admin adding a workout plan",
+    "commands": [{
+      "id": "ba1e4136-74d6-46a9-8a79-384e8c9218a2",
+      "comment": "",
+      "command": "open",
+      "target": "https://gymprogress.lukakordic.me/admin",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "b860559b-f2f7-41df-a1cd-87ad34e602f6",
+      "comment": "",
+      "command": "setWindowSize",
+      "target": "1437x916",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "017e09bd-c52b-4987-9cff-7c89e6acc749",
+      "comment": "",
+      "command": "mouseOver",
+      "target": "linkText=Food",
+      "targets": [
+        ["linkText=Food", "linkText"],
+        ["css=.flex-col > .inline-flex:nth-child(3)", "css:finder"],
+        ["xpath=//a[contains(@href, '/admin/food')]", "xpath:href"],
+        ["xpath=//a[3]", "xpath:position"],
+        ["xpath=//a[contains(.,'Food')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "07a22c2d-846d-4a44-9bff-926834cde525",
+      "comment": "",
+      "command": "mouseOut",
+      "target": "linkText=Food",
+      "targets": [
+        ["linkText=Food", "linkText"],
+        ["css=.flex-col > .inline-flex:nth-child(3)", "css:finder"],
+        ["xpath=//a[contains(@href, '/admin/food')]", "xpath:href"],
+        ["xpath=//a[3]", "xpath:position"],
+        ["xpath=//a[contains(.,'Food')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "df9b33b7-da44-4a8a-a940-d36ce03491e8",
+      "comment": "",
+      "command": "mouseOver",
+      "target": "linkText=Workout Plans",
+      "targets": [
+        ["linkText=Workout Plans", "linkText"],
+        ["css=.flex-col > .inline-flex:nth-child(2)", "css:finder"],
+        ["xpath=//a[contains(@href, '/admin/workout-plans')]", "xpath:href"],
+        ["xpath=//a[2]", "xpath:position"],
+        ["xpath=//a[contains(.,'Workout Plans')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "98e5304d-b035-4a89-b709-1dc002ddddb5",
+      "comment": "",
+      "command": "click",
+      "target": "linkText=Workout Plans",
+      "targets": [
+        ["linkText=Workout Plans", "linkText"],
+        ["css=.flex-col > .inline-flex:nth-child(2)", "css:finder"],
+        ["xpath=//a[contains(@href, '/admin/workout-plans')]", "xpath:href"],
+        ["xpath=//a[2]", "xpath:position"],
+        ["xpath=//a[contains(.,'Workout Plans')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "61d55a95-7f3f-4e98-b255-ed48c3817218",
+      "comment": "",
+      "command": "mouseOut",
+      "target": "linkText=Workout Plans",
+      "targets": [
+        ["linkText=Workout Plans", "linkText"],
+        ["css=.flex-col > .bg-black", "css:finder"],
+        ["xpath=//a[contains(@href, '/admin/workout-plans')]", "xpath:href"],
+        ["xpath=//a[2]", "xpath:position"],
+        ["xpath=//a[contains(.,'Workout Plans')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "c93274b2-c1c2-4011-8652-502b941c70c1",
+      "comment": "",
+      "command": "click",
+      "target": "css=.bg-black:nth-child(1)",
+      "targets": [
+        ["css=.bg-black:nth-child(1)", "css:finder"],
+        ["xpath=//a/button", "xpath:position"],
+        ["xpath=//button[contains(.,'Dodaj novi trening plan')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "a4fd7dd0-5526-4f5f-885b-606e02cf226a",
+      "comment": "",
+      "command": "click",
+      "target": "id=:r2:-form-item",
+      "targets": [
+        ["id=:r2:-form-item", "id"],
+        ["name=name", "name"],
+        ["css=#\\3Ar2\\3A-form-item", "css:finder"],
+        ["xpath=//input[@id=':r2:-form-item']", "xpath:attributes"],
+        ["xpath=//input", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "87c74837-6c1b-4a7d-8447-a4a1deb6213d",
+      "comment": "",
+      "command": "type",
+      "target": "id=:r2:-form-item",
+      "targets": [
+        ["id=:r2:-form-item", "id"],
+        ["name=name", "name"],
+        ["css=#\\3Ar2\\3A-form-item", "css:finder"],
+        ["xpath=//input[@id=':r2:-form-item']", "xpath:attributes"],
+        ["xpath=//input", "xpath:position"]
+      ],
+      "value": "test"
+    }, {
+      "id": "caef84f9-f5aa-4a68-a034-f33d85d8cd86",
+      "comment": "",
+      "command": "type",
+      "target": "id=:r3:-form-item",
+      "targets": [
+        ["id=:r3:-form-item", "id"],
+        ["css=#\\3Ar3\\3A-form-item", "css:finder"],
+        ["xpath=//input[@id=':r3:-form-item']", "xpath:attributes"],
+        ["xpath=//div[2]/input", "xpath:position"]
+      ],
+      "value": "test"
+    }, {
+      "id": "aa04ca10-ccec-456c-9d41-29eabaa016db",
+      "comment": "",
+      "command": "click",
+      "target": "id=:r4:-form-item",
+      "targets": [
+        ["id=:r4:-form-item", "id"],
+        ["name=userId", "name"],
+        ["css=#\\3Ar4\\3A-form-item", "css:finder"],
+        ["xpath=//input[@id=':r4:-form-item']", "xpath:attributes"],
+        ["xpath=//div[4]/input", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "23244bf5-f30b-4a9d-ae5d-a10d8c87e7ec",
+      "comment": "",
+      "command": "type",
+      "target": "id=:r4:-form-item",
+      "targets": [
+        ["id=:r4:-form-item", "id"],
+        ["name=userId", "name"],
+        ["css=#\\3Ar4\\3A-form-item", "css:finder"],
+        ["xpath=//input[@id=':r4:-form-item']", "xpath:attributes"],
+        ["xpath=//div[4]/input", "xpath:position"]
+      ],
+      "value": "1"
+    }, {
+      "id": "e367b287-787c-4bff-8afb-abf340f59931",
+      "comment": "",
+      "command": "click",
+      "target": "css=.inline-flex:nth-child(6)",
+      "targets": [
+        ["css=.inline-flex:nth-child(6)", "css:finder"],
+        ["xpath=//button[@type='submit']", "xpath:attributes"],
+        ["xpath=//form/button", "xpath:position"],
+        ["xpath=//button[contains(.,'Create Plan')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "3dbc0d56-1239-4901-88a0-1aa71f3f9867",
+      "comment": "",
+      "command": "close",
+      "target": "",
+      "targets": [],
+      "value": ""
+    }]
+  }],
+  "suites": [{
+    "id": "57a31c27-589d-440e-aff8-5044813c9b62",
+    "name": "Default Suite",
+    "persistSession": false,
+    "parallel": false,
+    "timeout": 300,
+    "tests": []
+  }],
+  "urls": ["https://gymprogress.lukakordic.me/", "https://gymprogress.lukakordic.me/admin"],
+  "plugins": []
+}

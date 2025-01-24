@@ -1,85 +1,118 @@
 package GymFitnessTrackerApplication.controller;
 
 
-import GymFitnessTrackerApplication.domain.MyUser;
-import GymFitnessTrackerApplication.forms.LoginForm;
-import GymFitnessTrackerApplication.forms.OAuthForm;
-import GymFitnessTrackerApplication.forms.SignupForm;
-import GymFitnessTrackerApplication.response.ErrorResponse;
-import GymFitnessTrackerApplication.response.JwtResponse;
-import GymFitnessTrackerApplication.service.JwtService;
-import GymFitnessTrackerApplication.service.MyUserDetailsService;
-import GymFitnessTrackerApplication.service.MyUserService;
-import GymFitnessTrackerApplication.service.UserAlreadyExistsException;
+import GymFitnessTrackerApplication.exception.NonExistantToken;
+import GymFitnessTrackerApplication.model.domain.MyUser;
+import GymFitnessTrackerApplication.model.domain.RefreshToken;
+import GymFitnessTrackerApplication.model.dto.forms.LoginForm;
+import GymFitnessTrackerApplication.model.dto.forms.OAuthForm;
+import GymFitnessTrackerApplication.model.dto.forms.SignupForm;
+import GymFitnessTrackerApplication.model.dto.response.EmailResponse;
+import GymFitnessTrackerApplication.model.dto.response.JwtResponse;
+import GymFitnessTrackerApplication.model.dto.response.JwtResponseTrainer;
+import GymFitnessTrackerApplication.service.*;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+
+import java.util.Arrays;
 
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
 
     @Autowired
-    private MyUserService myUserService;
+    AuthService authService;
+
     @Autowired
-    private JwtService jwtService;
+    RefreshTokenService refreshTokenService;
+
     @Autowired
-    private MyUserDetailsService myUserDetailService;
+    EmailService emailService;
+
     @Autowired
-    PasswordEncoder passwordEncoder;
+    JwtService jwtService;
+
     @Autowired
-    AuthenticationManager authenticationManager;
+    MyUserService myUserService;
 
-    @PostMapping("/oauth")
-    public ResponseEntity<?> authenticateWithOAuth(@RequestBody OAuthForm oAuthForm){
-        try{
-            String email = oAuthForm.email();
-            String name = oAuthForm.name();
-            String image = oAuthForm.image();
+    /*private final WebClient webClient;
 
-            MyUser user = myUserService.getMyUser(email);
-            if(user == null){
-                throw new UsernameNotFoundException("User not found");
-            }
-            //ako postoji vrati token
-            String token = jwtService.generateToken(myUserDetailService.loadUserByUsername(email));
-
-            return ResponseEntity.ok(new JwtResponse(token, user.getId().toString(), name, email));
-
-        }catch (UsernameNotFoundException e){
-            //stvori novog u bazi
-            String email = oAuthForm.email();
-            String name = oAuthForm.name();
-            String image = oAuthForm.image();
-            MyUser newUser = myUserService.createMyUser(oAuthForm);
-            String token = jwtService.generateToken(myUserDetailService.loadUserByUsername(email));
-            return ResponseEntity.ok(new JwtResponse(token, newUser.getId().toString(), name, email));
-        }
-
-        catch ( AuthenticationException ex) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(new ErrorResponse(0, "Invalid email", List.of("Invalid email sent")));
-        } catch (Exception ex) {
-            System.out.println(ex.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new ErrorResponse(0, "Internal Server Error", List.of("An unexpected error occurred")));
-        }
+    public AuthController(WebClient.Builder webClientBuilder) {
+        this.webClient = webClientBuilder.baseUrl("http://localhost:8080").build(); // Adjust as needed
+    }*/
 
 
+    @PostMapping("/login")
+    public ResponseEntity<?> login(@RequestBody LoginForm loginForm, HttpServletResponse res,HttpServletRequest req){
+        JwtResponse odg = authService.loginaj(loginForm);
+        RefreshToken token = refreshTokenService.getToken(loginForm.email(),"mail");
+        res.addCookie(new Cookie("Refresh",token.getToken()));
+        if(odg instanceof JwtResponseTrainer)
+            return ResponseEntity.ok((JwtResponseTrainer) odg);
+        return  ResponseEntity.ok(odg);
     }
 
+    @PostMapping("/signup")
+    public ResponseEntity<?> signup(@RequestBody SignupForm signupForm,HttpServletResponse res){
+        JwtResponse noviUser = authService.signup(signupForm);
+        RefreshToken token= refreshTokenService.createToken(signupForm.getEmail());
+        res.addCookie(new Cookie("Refresh",token.getToken()));
+        emailService.sendHTMLMail(new EmailResponse(signupForm.getEmail(),"Registracija na našu platformu","Hvala vam na prijavi na našu platorfmu :) \n Sad go for those gains ;) \n", "N/A"));
+
+        return ResponseEntity.ok(noviUser);
+    }
+
+    @PostMapping("/refresh")
+    public ResponseEntity<?> refreshToken(HttpServletRequest request){
+        String notFound= "Refresh cookie not found";
+        Cookie[] cookies = request.getCookies();
+
+        if(cookies.length < 1)
+            return ResponseEntity.status(403).body(notFound);
+        String value = null;
+        for (Cookie cookie : cookies) {
+            if ("Refresh".equals(cookie.getName())) {
+                value = cookie.getValue();
+                break;
+            }
+        }
+
+
+       /* String value =  Arrays.stream(request.getCookies())
+                .filter(cookie -> "Refresh".equals(cookie.getName()))
+                .map(Cookie::getValue)
+                .findFirst()
+                .orElse(notFound);*/
+
+        // ako nema tokena
+        // ili ako je dobiveni token ili invalid ili istjekao
+        if(value.equals(notFound) || (!refreshTokenService.isValid(value) || refreshTokenService.Expired(value)))
+            return ResponseEntity.status(403).body(notFound);
+        JwtResponse refreshLogin = authService.refreshLogin(value);
+        return  ResponseEntity.status(200).body(refreshLogin);
+    }
+
+
+   @PostMapping("/oauth")
+    public ResponseEntity<?> authenticateWithOAuth(@RequestBody OAuthForm oAuthForm,HttpServletResponse res){
+        JwtResponse jwt = authService.oauth(oAuthForm);
+        RefreshToken token = refreshTokenService.getToken(oAuthForm.email(),"mail");
+        res.addCookie(new Cookie("Refresh",token.getToken()));
+        return ResponseEntity.status(200).body(jwt);
+    }
+
+  /*  @GetMapping("/send-mail")
+    public ResponseEntity<String> sendMail(@RequestParam String recep)
+    {
+        emailService.sendHTMLMail(new EmailResponse(recep,"Registracija na našu platformu","Hvala vam na prijavi na našu platorfmu :) \n Sad go for those gains ;) \n", "N/A"));
+        return ResponseEntity.ok("Email sent to "+recep);
+    }*/
+    /*
     @PostMapping("/signup")
     public ResponseEntity<?> registerAndGetToken(@RequestBody SignupForm signupForm)   {
         try {
@@ -96,48 +129,37 @@ public class AuthController {
                 return ResponseEntity.ok(new JwtResponse(token, user.getId().toString(), user.getName(), user.getEmail()));
             } else {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                        .body(new ErrorResponse(0, "Invalid credentials", List.of("User with this email already exists")));
+                        .body(new ErrorResponse(0, "User with this email already exists"));
             }
         }catch (UserAlreadyExistsException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(new ErrorResponse(0, "Invalid credentials", List.of("User with this email already exists")));
+                    .body(new ErrorResponse(0, "User with this email already exists"));
         } catch (Exception ex) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new ErrorResponse(0, "Internal Server Error", List.of("An unexpected error occurred")));
+                    .body(new ErrorResponse(0, "Internal Server Error"));
         }
     }
 
-    @PostMapping("/login")
-    public ResponseEntity<?> authenticateAndGetToken(@RequestBody LoginForm loginForm) {
+
+    */
+    
+
+
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout(HttpServletRequest req) throws NonExistantToken{
+        String out = null;
         try {
-            Authentication authentication = authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(loginForm.email(), loginForm.password()));
-
-
-            if (authentication.isAuthenticated()) {
-                MyUser user = myUserService.getMyUser(loginForm.email());
-                String token = jwtService.generateToken(myUserDetailService.loadUserByUsername(loginForm.email()));
-                return ResponseEntity.ok(new JwtResponse(token, user.getId().toString(), user.getName(), user.getEmail()));
-            } else {
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                        .body(new ErrorResponse(0, "Invalid credentials", List.of("Invalid email or password")));
-            }
-        }catch (AuthenticationException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(new ErrorResponse(0, "Invalid credentials", List.of("Invalid email or password")));
-        } catch (Exception ex) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new ErrorResponse(0, "Internal Server Error", List.of("An unexpected error occurred")));
+            out = refreshTokenService.forsakeToken(req);
+        } catch (NonExistantToken e) {
+            throw new NonExistantToken(e.getMessage());
         }
+        return ResponseEntity.ok(out);
     }
 
-    @PostMapping("/api/auth/refresh")
-    public String refreshToken(){
-        return "Osvjezen token";
-    }
 
-    @PostMapping("/api/auth/logout")
-    public String logout(){
-        return "logged out ";
+    @GetMapping("/jwt")
+    public ResponseEntity<?> getJwt(@RequestHeader("Authorization") String token){
+        // return the jwt response
+        return ResponseEntity.status(200).body(jwtService.getJwt(token));
     }
 }

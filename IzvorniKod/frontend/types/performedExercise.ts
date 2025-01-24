@@ -1,11 +1,34 @@
+import {
+  CreatePerformedSetInput,
+  PerformedSetBase,
+  UpdatePerformedSetInput,
+} from "./performedSet";
+
 export type PerformedExerciseBase = {
-  id: string;
-  workoutSessionId: string;
-  exerciseId: string;
+  id: number;
+  workoutSessionId: number;
+  exerciseId: number;
 };
 
-export type CreatePerformedExerciseInput = Omit<PerformedExerciseBase, "id">;
+export type CreatePerformedExerciseInput = Omit<
+  PerformedExerciseWithPerformedSet,
+  "id"
+> & {
+  performedSets: CreatePerformedSetInput[];
+};
 
 export type UpdatePerformedExerciseInput = Partial<PerformedExerciseBase> & {
-  id: string;
+  id: number;
+  performedSets: UpdatePerformedSetInput[];
+};
+
+export type PerformedExerciseWithPerformedSet = PerformedExerciseBase & {
+  performedSets: PerformedSetBase[];
+};
+
+export type CreatePerformedExerciseWithPerformedSetInput = Omit<
+  PerformedExerciseBase,
+  "id"
+> & {
+  performedSets: CreatePerformedSetInput[];
 };

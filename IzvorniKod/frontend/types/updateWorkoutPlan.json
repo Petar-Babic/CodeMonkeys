@@ -1,0 +1,16 @@
+{
+  "name": "Beginner Full Body Workout",
+  "userId": 22,
+  "image": "fbbd1c26-9f35-4d8d-afd4-26aa6f24b3ed.jpg",
+  "description": "asdasdasdasdasd",
+  "workouts": [
+    {
+      "id": "9d0a2e2c-d7ba-4c64-842e-b23231fb9fe0",
+      "name": "Beginner Full Body Workout",
+      "description": "",
+      "workoutPlanId": 505,
+      "exercises": []
+    }
+  ],
+  "id": 505
+}

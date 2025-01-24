@@ -1,13 +1,13 @@
 export type PerformedSetBase = {
-  id: string;
-  performedExerciseId: string;
+  id: number;
+  performedExerciseId: number;
   reps: number;
   weight: number;
-  rpe?: number;
+  rpe: number;
 };
 
 export type CreatePerformedSetInput = Omit<PerformedSetBase, "id">;
 
 export type UpdatePerformedSetInput = Partial<PerformedSetBase> & {
-  id: string;
+  id: number;
 };

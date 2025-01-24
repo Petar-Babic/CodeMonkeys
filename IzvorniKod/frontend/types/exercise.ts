@@ -1,22 +1,16 @@
 export type ExerciseBase = {
-  id: string;
+  id: number;
   name: string;
   description?: string;
-  gifUrl?: string;
-  createdById: string;
+  gif?: string;
+  createdById: number;
   isApproved: boolean;
-  categoryId: string;
-  primaryMuscleGroupId: string[];
-  secondaryMuscleGroupIds: string[];
-  createdAt: Date;
-  updatedAt: Date;
+  primaryMuscleGroupsIds: number[];
+  secondaryMuscleGroupsIds: number[];
 };
 
-export type CreateExerciseInput = Omit<
-  ExerciseBase,
-  "id" | "createdAt" | "updatedAt" | "isApproved"
->;
+export type CreateExerciseInput = Omit<ExerciseBase, "id" | "createdById">;
 
-export type UpdateExerciseInput = Partial<
-  Omit<ExerciseBase, "createdAt" | "updatedAt">
-> & { id: string };
+export type UpdateExerciseInput = Partial<Omit<ExerciseBase, "createdById">> & {
+  id: number;
+};

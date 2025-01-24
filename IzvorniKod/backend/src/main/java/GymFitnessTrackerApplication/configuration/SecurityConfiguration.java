@@ -31,14 +31,18 @@ public class SecurityConfiguration {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
                 .csrf(AbstractHttpConfigurer::disable)
+                .cors(cors -> cors.configure(http))
                 .authorizeHttpRequests(registry -> {
                     registry.requestMatchers("/home","/get", "/api/auth/**").permitAll();
-                    registry.requestMatchers("/admin/**").hasRole("ADMIN"); 
-                    registry.requestMatchers("/user/**").hasRole("USER");
+                    registry.requestMatchers("/api/trainers","/api/sleep-log/**","/api/sleep-log","/api/food","/api/food/**").authenticated();
+                    registry.requestMatchers(("/api/nutrition-plan")).hasAnyRole("ADMIN","USER");
+                    registry.requestMatchers("/admin/**", "/api/admin/**","api/user/admin").hasRole("ADMIN");
+                    registry.requestMatchers("/trainer/**").hasRole("TRAINER");
+                    registry.requestMatchers("/user/**", "/api/user/**").hasRole("USER");
                     registry.anyRequest().authenticated();
-        })
-        .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
-        .build();
+                })
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+                .build();
     }
 
     @Bean

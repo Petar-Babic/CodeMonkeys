@@ -8,13 +8,7 @@ import React, {
   useEffect,
   useCallback,
 } from "react";
-import {
-  SessionProvider,
-  signIn,
-  SignInResponse,
-  signOut,
-  useSession,
-} from "next-auth/react";
+import { signIn, SignInResponse, signOut, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { UserBase } from "@/types/user";
 import { SessionWithRelations } from "@/types/session";
@@ -24,6 +18,7 @@ import {
   AuthContextType,
 } from "@/types/auth";
 import { backendUrl } from "@/data/backendUrl";
+import { SessionProvider } from "next-auth/react";
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -57,18 +52,16 @@ function useAuth(): AuthContextType {
 
   useEffect(() => {
     if (status === "authenticated" && session?.user) {
+      console.log("Session authenticated, setting user:", session.user);
       setUser(session.user as UserBase);
       setIsAuthenticated(true);
     } else {
+      console.log("Session not authenticated, clearing user");
       setUser(null);
       setIsAuthenticated(false);
     }
     setLoading(status === "loading");
   }, [session, status]);
-
-  useEffect(() => {
-    console.log("User:", user);
-  }, [user]);
 
   const login = useCallback(
     async (credentials: LoginCredentials): Promise<SignInResponse> => {
@@ -79,6 +72,8 @@ function useAuth(): AuthContextType {
           email: credentials.email,
           password: credentials.password,
         });
+
+        console.log("result", result);
 
         if (result?.error) {
           throw new Error(result.error);
@@ -141,6 +136,7 @@ function useAuth(): AuthContextType {
     setUser(null);
     setIsAuthenticated(false);
     router.push("/sign-in");
+    localStorage.clear();
   }, [router]);
 
   const getNutritionPlan = useCallback(
@@ -163,6 +159,8 @@ function useAuth(): AuthContextType {
   return {
     user,
     session: session as SessionWithRelations | null,
+    accessToken: session?.accessToken || null,
+    refreshToken: session?.refreshToken || null,
     isAuthenticated,
     login,
     signUp,

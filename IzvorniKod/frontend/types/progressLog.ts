@@ -1,6 +1,6 @@
 export type ProgressLogBase = {
-  id: string;
-  userId: string;
+  id: number;
+  userId: number;
   date: Date;
   weight?: number;
   notes?: string;
@@ -16,4 +16,4 @@ export type CreateProgressLogInput = Omit<
 
 export type UpdateProgressLogInput = Partial<
   Omit<ProgressLogBase, "createdAt" | "updatedAt">
-> & { id: string };
+> & { id: number };

@@ -32,6 +32,12 @@ build/
 ### VS Code ###
 .vscode/
 
+### Environment Variables ###
+.env
+.env.local
+.env.*.local
 
 ### application.properties ###
 src/main/resources/application.properties
+
+/IzvorniKod/backend/src/main/resources/.env

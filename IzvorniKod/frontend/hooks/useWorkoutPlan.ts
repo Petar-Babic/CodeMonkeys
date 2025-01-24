@@ -1,30 +1,56 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import {
   WorkoutPlanBase,
   CreateWorkoutPlanInput,
   UpdateWorkoutPlanInput,
 } from "@/types/workoutPlan";
-import { workoutPlans as predefinedWorkoutPlans } from "@/data/workoutPlan";
+import { useAuthContext } from "@/contexts/AuthContext";
+import { backendUrl } from "@/data/backendUrl";
+import { useFile } from "@/hooks/useFile";
 
 export const useWorkoutPlan = () => {
   const [workoutPlans, setWorkoutPlans] = useState<WorkoutPlanBase[]>([]);
 
-  const [workoutPlansLoading, setWorkoutPlansLoading] = useState(false);
+  const { user } = useAuthContext();
+  const { deleteFile } = useFile();
+
+  const userId = user?.id;
+
+  useEffect(() => {
+    console.log("workoutPlans", workoutPlans);
+  }, [workoutPlans]);
 
   const createWorkoutPlan = useCallback(
     async (input: CreateWorkoutPlanInput): Promise<WorkoutPlanBase> => {
       try {
-        await new Promise((resolve) => setTimeout(resolve, 1000));
+        const accessToken = localStorage.getItem("accessToken");
 
-        // Simulated logic (replace with actual API call)
-        const newWorkoutPlan: WorkoutPlanBase = {
-          id: Date.now().toString(),
-          name: input.name,
-          userId: input.userId,
-          createdById: input.createdById,
-          createdAt: new Date(),
-          updatedAt: new Date(),
+        if (!accessToken) {
+          throw new Error("Access token is not set");
+        }
+
+        const workoutPlanForm = {
+          ...input,
+          createdByUserId: userId,
         };
+
+        console.log("workoutPlanForm", workoutPlanForm);
+
+        const res = await fetch(`${backendUrl}/api/create-workout-plan`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${accessToken}`,
+          },
+          body: JSON.stringify(workoutPlanForm),
+        });
+
+        console.log("res", res);
+
+        const newWorkoutPlan = await res.json();
+
+        console.log("newWorkoutPlan", newWorkoutPlan);
+
         setWorkoutPlans((prevPlans) => [...prevPlans, newWorkoutPlan]);
         return newWorkoutPlan;
       } catch (err) {
@@ -32,30 +58,20 @@ export const useWorkoutPlan = () => {
         throw new Error("Failed to create workout plan");
       }
     },
-    []
+    [userId]
   );
 
   const getWorkoutPlanById = useCallback(
-    (id: string): WorkoutPlanBase | undefined => {
+    (id: number): WorkoutPlanBase | undefined => {
       return workoutPlans.find((plan) => plan.id === id);
     },
     [workoutPlans]
   );
 
-  const getAllWorkoutPlans = useCallback(async (): Promise<
-    WorkoutPlanBase[]
-  > => {
-    setWorkoutPlansLoading(true);
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    const plans = predefinedWorkoutPlans;
-    setWorkoutPlans(plans);
-    console.log("Plans", plans);
-    setWorkoutPlansLoading(false);
-    return plans;
-  }, []);
-
   const updateWorkoutPlan = useCallback(
-    (input: UpdateWorkoutPlanInput): WorkoutPlanBase | undefined => {
+    async (
+      input: UpdateWorkoutPlanInput
+    ): Promise<WorkoutPlanBase | undefined> => {
       let updatedPlan: WorkoutPlanBase | undefined;
 
       setWorkoutPlans((prevPlans) =>
@@ -64,7 +80,6 @@ export const useWorkoutPlan = () => {
             updatedPlan = {
               ...plan,
               ...input,
-              updatedAt: new Date(),
             };
             return updatedPlan;
           }
@@ -72,24 +87,59 @@ export const useWorkoutPlan = () => {
         })
       );
 
+      const accessToken = localStorage.getItem("accessToken");
+
+      if (!accessToken) {
+        throw new Error("Access token is not set");
+      }
+
+      console.log("accessToken", accessToken);
+
+      console.log("updateWorkoutPlan input", input);
+
+      await fetch(`${backendUrl}/api/workout-plans/${input.id}`, {
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+        body: JSON.stringify(input),
+      });
+
       return updatedPlan;
     },
     []
   );
 
-  const deleteWorkoutPlan = useCallback((id: string): void => {
-    setWorkoutPlans((prevPlans) => prevPlans.filter((plan) => plan.id !== id));
-  }, []);
+  const deleteWorkoutPlan = useCallback(
+    async (id: number): Promise<void> => {
+      setWorkoutPlans(workoutPlans.filter((plan) => plan.id !== id));
+
+      const workoutPlan = workoutPlans.find((plan) => plan.id === id);
+      if (workoutPlan && workoutPlan.image) {
+        await deleteFile(workoutPlan.image);
+      }
+
+      const accessToken = localStorage.getItem("accessToken");
+      if (!accessToken) {
+        throw new Error("Access token is not set");
+      }
+      await fetch(`${backendUrl}/api/workout-plans/${id}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+    },
+    [deleteFile, workoutPlans]
+  );
 
   return {
     workoutPlans,
     setWorkoutPlans,
     createWorkoutPlan,
     getWorkoutPlanById,
-    getAllWorkoutPlans,
     updateWorkoutPlan,
     deleteWorkoutPlan,
-    workoutPlansLoading,
   } as UseWorkoutPlanContextType;
 };
 
@@ -99,11 +149,10 @@ export type UseWorkoutPlanContextType = {
   createWorkoutPlan: (
     input: CreateWorkoutPlanInput
   ) => Promise<WorkoutPlanBase>;
-  getWorkoutPlanById: (id: string) => WorkoutPlanBase | undefined;
-  getAllWorkoutPlans: () => Promise<WorkoutPlanBase[]>;
+  getWorkoutPlanById: (id: number) => WorkoutPlanBase | undefined;
   updateWorkoutPlan: (
     input: UpdateWorkoutPlanInput
-  ) => WorkoutPlanBase | undefined;
-  deleteWorkoutPlan: (id: string) => void;
+  ) => Promise<WorkoutPlanBase | undefined>;
+  deleteWorkoutPlan: (id: number) => Promise<void>;
   workoutPlansLoading: boolean;
 };

@@ -24,7 +24,7 @@ interface NavItem {
   icon: LucideIcon;
 }
 
-const navItems: NavItem[] = [
+const navItemsForUser: NavItem[] = [
   {
     title: "Workout Plans",
     href: "/workout-plans",
@@ -52,31 +52,99 @@ const navItems: NavItem[] = [
   },
 ];
 
+const navItemsForAdmin: NavItem[] = [
+  {
+    title: "Workout Plans",
+    href: "/admin/workout-plans",
+    icon: NotebookText,
+  },
+  {
+    title: "Food",
+    href: "/admin/food",
+    icon: Utensils,
+  },
+  {
+    title: "Muscle Groups",
+    href: "/admin/muscle-groups",
+    icon: User,
+  },
+  {
+    title: "Exercises",
+    href: "/admin/exercises",
+    icon: LayoutList,
+  },
+];
+
+const navItemsForTrainer: NavItem[] = [
+  {
+    title: "Workout Plans",
+    href: "/workout-plans",
+    icon: NotebookText,
+  },
+  {
+    title: "Exercises",
+    href: "/exercises",
+    icon: LayoutList,
+  },
+  {
+    title: "Workouts",
+    href: "/workouts",
+    icon: Dumbbell,
+  },
+  {
+    title: "Nutrition",
+    href: "/nutrition",
+    icon: Utensils,
+  },
+];
+
 export default function Navigation({
   orientation = "vertical",
+  role,
 }: {
   orientation?: "vertical" | "horizontal";
+  role?: string;
 }) {
   const pathname = usePathname();
+
+  const getNavItems = (role: string | undefined) => {
+    if (role === "ADMIN") {
+      return navItemsForAdmin;
+    }
+    if (role === "TRAINER") {
+      return navItemsForTrainer;
+    }
+    return navItemsForUser;
+  };
+
+  const getVariant = (href: string) => {
+    if (href === "/admin") {
+      return href === pathname ? "default" : "ghost";
+    }
+    return pathname.includes(href) ? "default" : "ghost";
+  };
 
   return (
     <TooltipProvider delayDuration={0}>
       <div
-        className={`flex ${orientation === "vertical"
+        className={`flex ${
+          orientation === "vertical"
             ? "flex-col w-[60px] h-full"
             : "w-full h-[60px]"
-          } items-center bg-background p-3 ${orientation === "vertical" ? "border-r" : "border-t"
-          }`}
+        } items-center bg-background p-3 ${
+          orientation === "vertical" ? "border-r" : "border-t"
+        }`}
       >
         <div
-          className={`flex ${orientation === "vertical" ? "flex-col" : "justify-around w-full"
-            } gap-3`}
+          className={`flex ${
+            orientation === "vertical" ? "flex-col" : "justify-around w-full"
+          } gap-3`}
         >
-          {navItems.map((item) => (
+          {getNavItems(role).map((item) => (
             <Tooltip key={item.href}>
               <TooltipTrigger asChild>
                 <Button
-                  variant={pathname.includes(item?.href) ? "default" : "ghost"}
+                  variant={getVariant(item.href)}
                   size="icon"
                   className="h-10 w-10"
                   asChild

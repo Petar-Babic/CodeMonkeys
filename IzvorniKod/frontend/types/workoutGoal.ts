@@ -1,6 +1,6 @@
 export type WorkoutGoalBase = {
-  id: string;
-  userId: string;
+  id: number;
+  userId: number;
   description: string;
   targetDate: Date;
   achieved: boolean;
@@ -16,4 +16,4 @@ export type CreateWorkoutGoalInput = Omit<
 
 export type UpdateWorkoutGoalInput = Partial<
   Omit<WorkoutGoalBase, "createdAt" | "updatedAt">
-> & { id: string };
+> & { id: number };

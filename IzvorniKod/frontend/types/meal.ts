@@ -1,18 +1,20 @@
+import { CreateFoodMealInput, FoodMealBase } from "./foodMeal";
+
 export type MealBase = {
-  id: string;
-  name: string;
-  calories: number;
-  protein: number;
-  carbs: number;
-  fat: number;
-  userId: string;
-  dailyNutritionLogId: string;
-  createdAt: Date;
-  updatedAt: Date;
+  id: number;
+  suggetedId: number;
+  isSuggestion: boolean;
+  time: string;
+  foodMeals?: FoodMealBase[];
 };
 
-export type CreateMealInput = Omit<MealBase, "id" | "createdAt" | "updatedAt">;
+export type CreateMealInput = Omit<
+  MealBase,
+  "id" | "createdAt" | "updatedAt" | "foodMeals"
+> & {
+  foodMeals: CreateFoodMealInput[];
+};
 
 export type UpdateMealInput = Partial<
-  Omit<MealBase, "createdAt" | "updatedAt">
-> & { id: string };
+  Omit<MealBase, "createdAt" | "updatedAt" | "foodMeals">
+> & { id: number };

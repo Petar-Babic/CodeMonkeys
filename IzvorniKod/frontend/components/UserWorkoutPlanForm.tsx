@@ -33,32 +33,33 @@ import {
 } from "@/components/ui/drawer";
 import CreateUserWorkoutForm from "./CreateUserWorkoutForm";
 import {
-  UserWorkoutWithUserPlannedExercise,
-  UserWorkoutWithUserPlannedExerciseCreateInput,
-  UserWorkoutWithUserPlannedExerciseUpdateInput,
-} from "@/types/userWorkout";
+  WorkoutWithPlannedExerciseBaseCreateInput,
+  WorkoutWithPlannedExerciseBaseUpdateInput,
+  WorkoutWithPlannedExercise,
+} from "@/types/workout";
 import {
-  UserWorkoutPlanWithRelations,
-  UpdateUserWorkoutPlanInput,
-  CreateUserWorkoutPlanInput,
-} from "@/types/userWorkoutPlan";
+  UpdateWorkoutPlanInput,
+  CreateWorkoutPlanInput,
+} from "@/types/workoutPlan";
 import { useAppContext } from "@/contexts/AppContext";
 import { Loader2 } from "lucide-react";
 import { EditUserWorkoutForm } from "./EditUserWorkoutForm";
+import Image from "next/image";
 
 const formSchema = z.object({
   name: z.string().min(1, "Name is required"),
-  workoutPlanId: z.string().optional(),
-  userWorkouts: z
+  image: z.string().optional(),
+  description: z.string().optional(),
+  workouts: z
     .array(
       z.object({
-        id: z.string().optional(),
+        id: z.number().optional(),
         name: z.string().min(1, "Name is required"),
         order: z.number().min(1, "Order must be at least 1"),
         exercises: z.array(
           z.object({
-            id: z.string().optional(),
-            exerciseId: z.string().min(1, "Exercise is required"),
+            id: z.number().optional(),
+            exerciseId: z.number(),
             sets: z.number().min(1, "Sets must be at least 1"),
             reps: z.number().min(1, "Reps must be at least 1"),
             rpe: z.number().optional(),
@@ -76,110 +77,191 @@ export function UserWorkoutPlanForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [editingWorkout, setEditingWorkout] =
-    useState<UserWorkoutWithUserPlannedExercise | null>(null);
+    useState<WorkoutWithPlannedExercise | null>(null);
+  const [selectedImage, setSelectedImage] = useState<File | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const router = useRouter();
-
   const {
-    userWorkoutPlan,
-    updateUserWorkoutPlan,
-    createUserWorkoutPlan,
-  }: {
-    userWorkoutPlan: UserWorkoutPlanWithRelations | null;
-    updateUserWorkoutPlan: (
-      data: UpdateUserWorkoutPlanInput
-    ) => Promise<UserWorkoutPlanWithRelations>;
-    createUserWorkoutPlan: (
-      data: CreateUserWorkoutPlanInput
-    ) => Promise<UserWorkoutPlanWithRelations>;
+    updateUserWorkoutPlan: updateWorkoutPlan,
+    userWorkoutPlan: workoutPlan,
+    createUserWorkoutPlan: createWorkoutPlan,
+    exercises,
+    userData: user,
   } = useAppContext();
+
+  console.log("workoutPlan UserWorkoutPlanForm", workoutPlan);
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: userWorkoutPlan?.name || "",
-      workoutPlanId: userWorkoutPlan?.workoutPlanId || undefined,
-      userWorkouts: userWorkoutPlan?.userWorkouts || [],
+      name: workoutPlan?.name || "",
+      image: workoutPlan?.image || "",
+      description: workoutPlan?.description || "",
+      workouts: workoutPlan?.workouts || [],
     },
   });
 
   useEffect(() => {
     form.reset({
-      name: userWorkoutPlan?.name || "",
-      workoutPlanId: userWorkoutPlan?.workoutPlanId || undefined,
-      userWorkouts: userWorkoutPlan?.userWorkouts || [],
+      name: workoutPlan?.name || "",
+      image: workoutPlan?.image || "",
+      description: workoutPlan?.description || "",
+      workouts: workoutPlan?.workouts || [],
     });
-  }, [userWorkoutPlan, form]);
+
+    if (workoutPlan?.image) {
+      setPreviewUrl(`/api/upload/${workoutPlan.image}`);
+    }
+  }, [workoutPlan, form]);
 
   const { fields, append, remove, update } = useFieldArray({
     control: form.control,
-    name: "userWorkouts",
+    name: "workouts",
   });
 
   const handleSubmit = async (values: FormValues) => {
+    const userId = user?.id;
+    const createdById = user?.id;
+
+    console.log("userId", userId);
+    console.log("createdById", createdById);
+
     setIsSubmitting(true);
     try {
-      const formattedData: UpdateUserWorkoutPlanInput = {
-        ...values,
-        id: userWorkoutPlan?.id || "",
-        userId: userWorkoutPlan?.userId || "",
-        userWorkouts: fields as UserWorkoutWithUserPlannedExercise[],
-      };
+      let imageUrl = values.image;
 
-      if (!userWorkoutPlan) {
-        const data: CreateUserWorkoutPlanInput = {
-          ...values,
-          userWorkouts: fields.map((field) => ({
-            ...field,
-            exercises: field.exercises.map((exercise) => ({
-              ...exercise,
-              exercise: {
-                id: exercise.exerciseId,
-                name: "",
-                createdById: "",
-                isApproved: false,
-                categoryId: "",
-                primaryMuscleGroupId: [""],
-                secondaryMuscleGroupIds: [],
-                equipmentIds: [],
-                createdAt: new Date(),
-                updatedAt: new Date(),
-              }, // Add appropriate exercise details here
-            })),
-          })) as UserWorkoutWithUserPlannedExerciseCreateInput[],
-        };
-
-        await createUserWorkoutPlan(data);
-      } else {
-        // Update the workout plan
-        await updateUserWorkoutPlan(formattedData);
+      if (!userId || !createdById) {
+        throw new Error("User ID or created by ID is not set");
       }
 
-      // Navigate to the workout plans page
+      if (selectedImage) {
+        imageUrl = await handleUploadImage(selectedImage);
+      }
+
+      const formattedData: UpdateWorkoutPlanInput = {
+        ...values,
+        image: imageUrl,
+        id: Number(workoutPlan?.id),
+        workouts: fields.map((field) => ({
+          ...field,
+          description: "",
+          workoutPlanId: Number(workoutPlan?.id),
+          exercises: field.exercises.map((exercise) => ({
+            ...exercise,
+            workoutId: Number(field.id || 0),
+            exercise: exercises.find((e) => e.id === exercise.exerciseId)!,
+          })),
+        })) as WorkoutWithPlannedExercise[],
+      };
+
+      if (!workoutPlan) {
+        const data: CreateWorkoutPlanInput = {
+          ...values,
+          image: imageUrl,
+          workouts: fields.map((field) => ({
+            name: field.name,
+            description: "",
+            order: field.order,
+            exercises: field.exercises.map((exercise) => ({
+              exerciseId: Number(exercise.exerciseId),
+              sets: exercise.sets,
+              reps: exercise.reps,
+              rpe: exercise.rpe || 0,
+              order: exercise.order,
+            })),
+          })),
+        };
+
+        await createWorkoutPlan(data, userId, createdById);
+        console.log("data in create workout plan", data);
+      } else {
+        await updateWorkoutPlan(formattedData, userId, createdById);
+      }
+      router.refresh();
       router.push("/workout-plans");
     } catch (error) {
       console.error("Error submitting form:", error);
-      // Handle error (e.g., show error message to user)
     } finally {
       setIsSubmitting(false);
     }
   };
 
   const handleCreateWorkout = async (
-    data: UserWorkoutWithUserPlannedExerciseCreateInput
+    data: WorkoutWithPlannedExerciseBaseCreateInput
   ) => {
-    append(data);
+    console.log("data in handleCreateWorkout", data);
+    append({
+      ...data,
+      exercises: data.exercises.map((exercise) => ({
+        ...exercise,
+
+        order: exercise.order || 0,
+        exerciseId: Number(exercise.exerciseId),
+        sets: exercise.sets || 0,
+        reps: exercise.reps || 0,
+        rpe: exercise.rpe || 0,
+        exercise: exercises.find((e) => e.id === exercise.exerciseId)!,
+      })),
+    });
     setIsDrawerOpen(false);
   };
 
   const handleUpdateWorkout = async (
-    data: UserWorkoutWithUserPlannedExerciseUpdateInput
+    data: WorkoutWithPlannedExerciseBaseUpdateInput
   ) => {
     const index = fields.findIndex((workout) => workout.id === data.id);
     if (index !== -1) {
-      update(index, data);
+      update(index, {
+        id: data.id,
+        name: data.name || fields[index].name,
+        order: data.order || fields[index].order,
+        exercises:
+          data?.exercises?.map((exercise) => ({
+            ...exercise,
+            order: exercise.order || 0,
+            exerciseId: Number(exercise.exerciseId),
+            sets: exercise.sets || 0,
+            reps: exercise.reps || 0,
+            rpe: exercise.rpe || 0,
+          })) || [],
+      });
     }
     setIsDrawerOpen(false);
     setEditingWorkout(null);
+  };
+
+  const handleUploadImage = async (file: File) => {
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+
+      // Upload slike
+      const uploadResponse = await fetch("/api/upload", {
+        method: "POST",
+        body: formData,
+      });
+      const uploadData = await uploadResponse.json();
+
+      if (!uploadData.success) {
+        throw new Error("Greška pri uploadu slike");
+      }
+
+      // Vraćamo samo fileName koji će se spremiti u bazi
+      return uploadData.fileName;
+    } catch (error) {
+      console.error("Greška pri uploadu slike:", error);
+      return "main-image-gym.webp";
+    }
+  };
+
+  const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      setSelectedImage(file);
+      // Prikazujemo lokalnu preview sliku
+      const objectUrl = URL.createObjectURL(file);
+      setPreviewUrl(objectUrl);
+    }
   };
 
   useEffect(() => {
@@ -197,6 +279,23 @@ export function UserWorkoutPlanForm() {
               <FormLabel>Workout Plan Name</FormLabel>
               <FormControl>
                 <Input placeholder="Enter workout plan name" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="description"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Description (Optional)</FormLabel>
+              <FormControl>
+                <Input
+                  placeholder="Enter workout plan description"
+                  {...field}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -231,9 +330,28 @@ export function UserWorkoutPlanForm() {
                   <Button
                     type="button"
                     onClick={() => {
-                      setEditingWorkout(
-                        workout as UserWorkoutWithUserPlannedExercise
-                      );
+                      setEditingWorkout({
+                        id: workout.id || "",
+                        name: workout.name,
+                        order: workout.order,
+                        description: "",
+                        workoutPlanId: Number(workoutPlan?.id),
+                        exercises: workout.exercises.map((exercise) => {
+                          const foundExercise = exercises.find(
+                            (e) => e.id === exercise.exerciseId
+                          );
+                          return {
+                            id: 0,
+                            workoutId: Number(workout.id || 0),
+                            exerciseId: Number(exercise.exerciseId),
+                            sets: exercise.sets,
+                            reps: exercise.reps,
+                            rpe: exercise.rpe || 0,
+                            order: exercise.order,
+                            exercise: foundExercise!,
+                          };
+                        }),
+                      });
                       setIsDrawerOpen(true);
                     }}
                   >
@@ -251,10 +369,43 @@ export function UserWorkoutPlanForm() {
             ))}
         </div>
 
+        <FormField
+          control={form.control}
+          name="image"
+          render={({ field: { ref, name, onBlur } }) => (
+            <FormItem>
+              <FormLabel>Image</FormLabel>
+              <FormControl>
+                <div className="space-y-4">
+                  <Input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageChange}
+                    ref={ref}
+                    name={name}
+                    onBlur={onBlur}
+                  />
+                  {previewUrl && (
+                    <div className="mt-4">
+                      <Image
+                        src={previewUrl}
+                        alt="Preview"
+                        className="max-w-[200px] h-auto rounded-lg"
+                        width={200}
+                        height={200}
+                      />
+                    </div>
+                  )}
+                </div>
+              </FormControl>
+            </FormItem>
+          )}
+        />
+
         <Button type="submit" disabled={isSubmitting}>
           {isSubmitting ? (
             <Loader2 className="animate-spin mr-2" size={16} />
-          ) : userWorkoutPlan ? (
+          ) : workoutPlan ? (
             "Update Plan"
           ) : (
             "Create Plan"
@@ -286,7 +437,7 @@ export function UserWorkoutPlanForm() {
                   onSubmit={(data) => {
                     handleCreateWorkout(data);
                   }}
-                  userWorkoutPlanId={userWorkoutPlan?.id || ""}
+                  userWorkoutPlanId={Number(workoutPlan?.id)}
                 />
               )}
             </div>

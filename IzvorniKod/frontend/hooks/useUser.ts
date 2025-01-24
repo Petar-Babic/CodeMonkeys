@@ -4,7 +4,7 @@ import { useAuthContext } from "@/contexts/AuthContext";
 import { BodyStatsAndGoalDataType } from "@/types/bodyStatsAndGoal";
 import { UserBase } from "@/types/user";
 import { useState, useCallback, useEffect } from "react";
-import { useNutritionPlan } from "./useNutritionPlan";
+import { backendUrl } from "@/data/backendUrl";
 
 function convertToCm(value: number, isImperial: boolean): number {
   return isImperial ? value * 2.54 : value;
@@ -14,15 +14,28 @@ function convertToKg(value: number, isImperial: boolean): number {
   return isImperial ? value * 0.453592 : value;
 }
 
+function convertActivityLevel(level: string): string {
+  const mapping: { [key: string]: string } = {
+    sedentary: "SEDENTARY",
+    light: "LIGHT",
+    moderate: "MODERATE",
+    active: "ACTIVE",
+    "very-active": "VERY",
+  };
+  return mapping[level] || level;
+}
+
 export function useUser() {
   const { user, setUser } = useAuthContext();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const { createNutritionPlan } = useNutritionPlan();
+  const [userData, setUserData] = useState<UserBase | null>(null);
+  const [trainer, setTrainer] = useState<UserBase | null>(null);
 
   useEffect(() => {
-    console.log("User:", user);
-  }, [user]);
+    console.log("userData", userData);
+    console.log("trainer", trainer);
+  }, [userData, trainer]);
 
   const bodyStatsAndGoal = useCallback(
     async (data: BodyStatsAndGoalDataType) => {
@@ -30,28 +43,44 @@ export function useUser() {
       setIsLoading(true);
       setError(null);
       try {
-        const nutritionPlan = await createNutritionPlan({
-          userId: user.id,
+        const startDate = new Date();
+        const endDate = new Date();
+        endDate.setDate(endDate.getDate() + data.timelineWeeks * 7);
+
+        const requestData = {
+          activityLevel: convertActivityLevel(data.activityLevel),
+          gender: data.gender.toUpperCase(),
+          height: convertToCm(data.height, data.isHeightImperial),
+          weight: convertToKg(data.weight, data.isWeightImperial),
           protein: data.protein,
           carbs: data.carbs,
           fat: data.fat,
           calories: data.calories,
-          startDate: new Date(),
-          // endDate is the current date + values.durations weeks
-          endDate: new Date(
-            new Date().getTime() + data.timelineWeeks * 7 * 24 * 60 * 60 * 1000
-          ),
-        });
+          startDate: startDate.toISOString().split("T")[0],
+          endDate: endDate.toISOString().split("T")[0],
+        };
 
-        console.log("Nutrition plan:", nutritionPlan);
+        const token = localStorage.getItem("accessToken");
 
-        // const updatedUser = { ...user };
-        // updatedUser.height = convertToCm(data.height, data.isHeightImperial);
-        // updatedUser.weight = convertToKg(data.weight, data.isWeightImperial);
-        // updatedUser.activityLevel = data.activityLevel;
-        // updatedUser.gender = data.gender;
-        // updatedUser.currentNutritionPlanId = nutritionPlan.id;
-        // updatedUser.updatedAt = new Date();
+        if (!token) {
+          // Pokušaj osvježiti token ako je istekao
+          // token = await refreshAccessToken();
+          if (!token) throw new Error("No access token");
+        }
+
+        const response = await fetch(
+          `${backendUrl}/api/user/body-stats-and-goals`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify(requestData),
+          }
+        );
+
+        console.log("POST /api/user/body-stats-and-goals", response);
 
         const updatedUser = {
           ...user,
@@ -59,75 +88,41 @@ export function useUser() {
           weight: convertToKg(data.weight, data.isWeightImperial),
           activityLevel: data.activityLevel,
           gender: data.gender,
-          currentNutritionPlanId: nutritionPlan.id,
           updatedAt: new Date(),
         };
 
-        setUser(updatedUser);
-        console.log("Updated user:", updatedUser);
+        setUserData(updatedUser);
       } catch (err) {
         console.error("Error setting body stats and goal:", err);
         setError(
           err instanceof Error ? err.message : "An unknown error occurred"
         );
+        throw err;
       } finally {
         setIsLoading(false);
       }
     },
-    [user, setUser, createNutritionPlan]
+    [user, setUserData]
   );
 
-  const changeUserWeight = useCallback(
-    async (newWeight: number) => {
-      if (!user) throw new Error("User not authenticated");
-      setIsLoading(true);
-      setError(null);
-      try {
-        setUser({
-          ...user,
-          weight: convertToKg(newWeight, false),
-          updatedAt: new Date(),
-        });
-      } catch (err) {
-        setError(
-          err instanceof Error ? err.message : "An unknown error occurred"
-        );
-      } finally {
-        setIsLoading(false);
-      }
-    },
-    [user, setUser]
-  );
+  // Pratimo promjene user stanja
+  useEffect(() => {
+    console.log("User state changed:", user);
+  }, [user]);
 
-  const changeUserHeight = useCallback(
-    async (newHeight: number) => {
-      if (!user) throw new Error("User not authenticated");
-      setIsLoading(true);
-      setError(null);
-      try {
-        setUser({
-          ...user,
-          height: convertToCm(newHeight, false),
-          updatedAt: new Date(),
-        });
-      } catch (err) {
-        setError(
-          err instanceof Error ? err.message : "An unknown error occurred"
-        );
-      } finally {
-        setIsLoading(false);
-      }
-    },
-    [user, setUser]
-  );
+  useEffect(() => {
+    console.log("UserData state changed:", userData);
+  }, [userData]);
 
   return {
     user,
     isLoading,
     error,
     bodyStatsAndGoal,
-    changeUserWeight,
-    changeUserHeight,
+    userData,
+    setUserData,
+    trainer,
+    setTrainer,
   } as UseUserContextType;
 }
 
@@ -136,6 +131,8 @@ export type UseUserContextType = {
   isLoading: boolean;
   error: string | null;
   bodyStatsAndGoal: (data: BodyStatsAndGoalDataType) => Promise<void>;
-  changeUserWeight: (newWeight: number) => Promise<void>;
-  changeUserHeight: (newHeight: number) => Promise<void>;
+  userData: UserBase | null;
+  setUserData: (user: UserBase) => void;
+  trainer: UserBase | null;
+  setTrainer: (trainer: UserBase) => void;
 };

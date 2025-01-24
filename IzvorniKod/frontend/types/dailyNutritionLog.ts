@@ -1,6 +1,6 @@
 export type DailyNutritionLogBase = {
-  id: string;
-  userId: string;
+  id: number;
+  userId: number;
   date: Date;
   createdAt: Date;
   updatedAt: Date;
@@ -13,4 +13,4 @@ export type CreateDailyNutritionLogInput = Omit<
 
 export type UpdateDailyNutritionLogInput = Partial<
   Omit<DailyNutritionLogBase, "createdAt" | "updatedAt">
-> & { id: string };
+> & { id: number };

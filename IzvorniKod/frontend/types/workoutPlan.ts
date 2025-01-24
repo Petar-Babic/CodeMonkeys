@@ -1,26 +1,31 @@
-import { WorkoutWithPlannedExercises } from "./workout";
+import {
+  WorkoutWithPlannedExerciseBaseCreateInput,
+  WorkoutWithPlannedExerciseBaseUpdateInput,
+  WorkoutWithPlannedExercisesBase,
+} from "./workout";
 
 export type WorkoutPlanBase = {
-  id: string;
+  id: number;
   name: string;
   description?: string;
   image?: string;
-  userId?: string;
-  trainerId?: string;
-  createdById: string;
-  createdAt: Date;
-  updatedAt: Date;
+  userId?: number | null;
+  createdById: number;
+  originalWorkoutPlanId?: number;
 };
 
 export type CreateWorkoutPlanInput = Omit<
   WorkoutPlanBase,
-  "id" | "createdAt" | "updatedAt"
->;
+  "id" | "createdById"
+> & {
+  workouts: WorkoutWithPlannedExerciseBaseCreateInput[];
+};
 
-export type UpdateWorkoutPlanInput = Partial<
-  Omit<WorkoutPlanBase, "createdAt" | "updatedAt">
-> & { id: string };
+export type UpdateWorkoutPlanInput = Partial<WorkoutPlanBase> & {
+  id: number;
+  workouts: WorkoutWithPlannedExerciseBaseUpdateInput[];
+};
 
 export type WorkoutPlanWithWorkouts = WorkoutPlanBase & {
-  workouts: WorkoutWithPlannedExercises[];
+  workouts: WorkoutWithPlannedExercisesBase[];
 };
