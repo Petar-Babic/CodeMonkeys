@@ -94,6 +94,7 @@ public class WorkoutPlanController {
     }
 
 
+    //mozda bolje /workout-plans/active
     @GetMapping("/user/current-workout-plan")
     public ResponseEntity<?> getCurrentUserWorkoutPlan(@RequestHeader("Authorization") String token){
         String email = jwtService.extractEmail(token.trim().substring(7));
@@ -102,6 +103,14 @@ public class WorkoutPlanController {
         if(activeWorkoutPlan==null){
             ResponseEntity.status(HttpStatus.BAD_REQUEST).body("There is currently no active workout plan.");
         }
+        return ResponseEntity.status(HttpStatus.OK).body(activeWorkoutPlan);
+    }
+
+    @PutMapping("/workout-plans/active/{id}")
+    public ResponseEntity<?> setActiveWorkoutPlan(@RequestHeader("Authorization") String token, @PathVariable Long id){
+        String email = jwtService.extractEmail(token.trim().substring(7));
+        MyUser user = (MyUser) myUserService.getMyUser(email);
+        WorkoutPlanResponse activeWorkoutPlan = workoutPlanService.setActiveWorkoutPlan(id, user);
         return ResponseEntity.status(HttpStatus.OK).body(activeWorkoutPlan);
     }
 

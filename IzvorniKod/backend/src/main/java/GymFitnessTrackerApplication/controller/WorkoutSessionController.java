@@ -3,6 +3,7 @@ package GymFitnessTrackerApplication.controller;
 import GymFitnessTrackerApplication.model.domain.MyUser;
 import GymFitnessTrackerApplication.model.dto.forms.WorkoutSessionForm;
 import GymFitnessTrackerApplication.model.dto.response.WorkoutSessionResponse;
+import GymFitnessTrackerApplication.model.dto.workoutDTOs.ReviewDTO;
 import GymFitnessTrackerApplication.service.JwtService;
 import GymFitnessTrackerApplication.service.MyUserService;
 import GymFitnessTrackerApplication.service.WorkoutSessionService;
@@ -82,4 +83,13 @@ public class WorkoutSessionController {
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
+    @PostMapping("/trainer/workout-session/{id}")
+    public ResponseEntity<?> createTrainerReviewForWorkoutSession(@RequestHeader("Authorization") String token,
+                                                                  @PathVariable Long id, @RequestBody ReviewDTO review){
+        String email = jwtService.extractEmail(token.trim().substring(7));
+        MyUser user = (MyUser) myUserService.getMyUser(email);
+        ReviewDTO reviewDTO = workoutSessionService.createTrainerReview(id, review, user);
+
+        return ResponseEntity.status(HttpStatus.OK).body(reviewDTO);
+    }
 }

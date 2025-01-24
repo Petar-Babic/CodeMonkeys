@@ -100,9 +100,10 @@ public class WorkoutPlanServiceJpa implements WorkoutPlanService {
         if(workoutPlan.getOwner()!=user) {
             throw new ForbiddenActionException("You have no permission to update this workout session.");
         }
-
-        workoutPlan.setName(workoutPlanResponse.getName());
-        workoutPlan.setDescription(workoutPlanResponse.getDescription());
+        if(workoutPlanResponse.getName()!=null)
+            workoutPlan.setName(workoutPlanResponse.getName());
+        if(workoutPlanResponse.getDescription()!=null)
+            workoutPlan.setDescription(workoutPlanResponse.getDescription());
         if (workoutPlanResponse.getImage() != null) {
             workoutPlan.setImage(workoutPlanResponse.getImage());
         }
@@ -121,9 +122,12 @@ public class WorkoutPlanServiceJpa implements WorkoutPlanService {
 
                 Workout workout = workoutRepo.findById(workoutResponse.getId()).orElseThrow(()->new NonExistantEntityException("Workout with id "+workoutResponse.getId()+" not found."));
                 workoutIds.remove(workoutResponse.getId());
-                workout.setName(workoutResponse.getName());
-                workout.setDescription(workoutResponse.getDescription());
-                workout.setOrderNumber(workoutResponse.getOrder());
+                if(workoutResponse.getName()!=null)
+                    workout.setName(workoutResponse.getName());
+                if(workoutResponse.getDescription()!=null)
+                    workout.setDescription(workoutResponse.getDescription());
+                if(workoutResponse.getOrder()!=null)
+                    workout.setOrderNumber(workoutResponse.getOrder());
                 Set<Long> plannedExerciseIds = workout.getPlannedExercises().stream().map(PlannedExercise::getId).collect(Collectors.toSet());
                 for(PlannedExerciseResponse plannedExerciseResponse : workoutResponse.getExercises()) {
                     if(plannedExerciseResponse.plannedExerciseId()!=null){
@@ -137,10 +141,14 @@ public class WorkoutPlanServiceJpa implements WorkoutPlanService {
                                     .orElseThrow(()->new NonExistantEntityException("Exercise with id "+plannedExerciseResponse.exerciseId()+" not found."));
                             plannedExercise.setExercise(exercise);
                         }
-                        plannedExercise.setSets(plannedExerciseResponse.sets());
-                        plannedExercise.setReps(plannedExerciseResponse.reps());
-                        plannedExercise.setRpe(plannedExerciseResponse.rpe());
-                        plannedExercise.setOrderNumber(plannedExerciseResponse.order());
+                        if(plannedExerciseResponse.sets()!=null)
+                            plannedExercise.setSets(plannedExerciseResponse.sets());
+                        if(plannedExerciseResponse.reps()!=null)
+                            plannedExercise.setReps(plannedExerciseResponse.reps());
+                        if(plannedExerciseResponse.rpe()!=null)
+                            plannedExercise.setRpe(plannedExerciseResponse.rpe());
+                        if(plannedExerciseResponse.order()!=null)
+                            plannedExercise.setOrderNumber(plannedExerciseResponse.order());
                     }
                     else{
                         //napravi novi
@@ -236,6 +244,21 @@ public class WorkoutPlanServiceJpa implements WorkoutPlanService {
             return null;
         }
         return generateWorkoutPlanResponse(workoutPlan);
+    }
+
+    @Override
+    public WorkoutPlanResponse setActiveWorkoutPlan(Long workoutPlanId, MyUser user) {
+        WorkoutPlan newActiveWorkoutPlan = workoutPlanRepo.findById(workoutPlanId)
+                .orElseThrow(()-> new NonExistantEntityException("Workout with id "+workoutPlanId+" not found."));
+        if(newActiveWorkoutPlan.getOwner()!=user)
+            throw new ForbiddenActionException("You don't have the authority to set this workout plan active");
+        WorkoutPlan currentActiveWorkoutPlan = workoutPlanRepo.findActiveWorkoutPlanForUser(user);
+        currentActiveWorkoutPlan.setActive(false);
+        newActiveWorkoutPlan.setActive(true);
+        workoutPlanRepo.save(newActiveWorkoutPlan);
+        workoutPlanRepo.save(currentActiveWorkoutPlan);
+
+        return generateWorkoutPlanResponse(newActiveWorkoutPlan);
     }
 
     //zasto ovo?

@@ -105,8 +105,9 @@ public class ExerciseServiceJpa implements ExerciseService {
     public ExerciseResponse createExercise(MyUser user, ExerciseForm exerciseForm) {
         Exercise newExercise = new Exercise(exerciseForm.name(), exerciseForm.description(), exerciseForm.gif(), user);
 
-        if (exerciseForm.primaryMuscleGroupsIds() != null) {
-            exerciseForm.primaryMuscleGroupsIds().forEach(muscleGroupId -> {
+        System.out.println("pirmary : "+exerciseForm.primaryMuscleGroupIds());
+        if (exerciseForm.primaryMuscleGroupIds() != null) {
+            exerciseForm.primaryMuscleGroupIds().forEach(muscleGroupId -> {
                 MuscleGroup muscleGroup = muscleGroupRepo.findById(muscleGroupId)
                         .orElseThrow(() -> new NonExistantEntityException("MuscleGroup with id "+ muscleGroupId + " not found."));
                 newExercise.addPrimaryMuscleGroup(muscleGroup);
@@ -114,8 +115,8 @@ public class ExerciseServiceJpa implements ExerciseService {
             });
         }
 
-        if (exerciseForm.secondaryMuscleGroupsIds() != null) {
-            exerciseForm.secondaryMuscleGroupsIds().forEach(muscleGroupId -> {
+        if (exerciseForm.secondaryMuscleGroupIds() != null) {
+            exerciseForm.secondaryMuscleGroupIds().forEach(muscleGroupId -> {
                 MuscleGroup muscleGroup = muscleGroupRepo.findById(muscleGroupId)
                         .orElseThrow(() -> new NonExistantEntityException("MuscleGroup with id "+ muscleGroupId + " not found."));
                 newExercise.addSecondaryMuscleGroup(muscleGroup);
@@ -136,17 +137,25 @@ public class ExerciseServiceJpa implements ExerciseService {
         if(exercise.getCreatedByUser()!=user) {
             throw new ForbiddenActionException("You have no permission to update this exercise.");
         }
+        if(exerciseForm.name()!=null)
+            exercise.setName(exerciseForm.name());
+        if(exerciseForm.description()!=null)
+            exercise.setDescription(exerciseForm.description());
+        if(exerciseForm.gif()!=null)
+            exercise.setGif(exerciseForm.gif());
 
-        exercise.setName(exerciseForm.name());
-        exercise.setDescription(exerciseForm.description());
-        exercise.setGif(exerciseForm.gif());
+        for (MuscleGroup muscleGroup : exercise.getPrimaryMuscleGroup()) {
+            muscleGroup.getPrimaryToExercises().remove(exercise);
+        }
+        for (MuscleGroup muscleGroup : exercise.getSecondaryMuscleGroup()) {
+            muscleGroup.getSecondaryToExercises().remove(exercise);
+        }
 
-        //nije dovoljno -> postoji tablica relacije
         exercise.getPrimaryMuscleGroup().clear();
         exercise.getSecondaryMuscleGroup().clear();
 
-        if (exerciseForm.primaryMuscleGroupsIds() != null) {
-            exerciseForm.primaryMuscleGroupsIds().forEach(muscleGroupId -> {
+        if (exerciseForm.primaryMuscleGroupIds() != null) {
+            exerciseForm.primaryMuscleGroupIds().forEach(muscleGroupId -> {
                 MuscleGroup muscleGroup = muscleGroupRepo.findById(muscleGroupId)
                         .orElseThrow(() -> new NonExistantEntityException("MuscleGroup with id "+ muscleGroupId + " not found."));
                 exercise.addPrimaryMuscleGroup(muscleGroup);
@@ -154,8 +163,8 @@ public class ExerciseServiceJpa implements ExerciseService {
             });
         }
 
-        if (exerciseForm.secondaryMuscleGroupsIds() != null) {
-            exerciseForm.secondaryMuscleGroupsIds().forEach(muscleGroupId -> {
+        if (exerciseForm.secondaryMuscleGroupIds() != null) {
+            exerciseForm.secondaryMuscleGroupIds().forEach(muscleGroupId -> {
                 MuscleGroup muscleGroup = muscleGroupRepo.findById(muscleGroupId)
                         .orElseThrow(() -> new NonExistantEntityException("MuscleGroup with id "+ muscleGroupId + " not found."));
                 exercise.addSecondaryMuscleGroup(muscleGroup);
@@ -174,6 +183,16 @@ public class ExerciseServiceJpa implements ExerciseService {
         if(exercise.getCreatedByUser()!=user || !user.getRole().equals(Role.ADMIN)) {
             throw new ForbiddenActionException("You have no permission to delete this exercise.");
         }
+        for (MuscleGroup muscleGroup : exercise.getPrimaryMuscleGroup()) {
+            muscleGroup.getPrimaryToExercises().remove(exercise);
+        }
+        for (MuscleGroup muscleGroup : exercise.getSecondaryMuscleGroup()) {
+            muscleGroup.getSecondaryToExercises().remove(exercise);
+        }
+
+        exercise.getPrimaryMuscleGroup().clear();
+        exercise.getSecondaryMuscleGroup().clear();
+
         exerciseRepo.delete(exercise);
     }
     @Override

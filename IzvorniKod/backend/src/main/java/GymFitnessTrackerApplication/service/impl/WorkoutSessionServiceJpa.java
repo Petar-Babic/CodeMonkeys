@@ -163,6 +163,21 @@ public class WorkoutSessionServiceJpa implements WorkoutSessionService {
         return generateSetWorkoutSessionResponse(workoutSessions);
     }
 
+    @Override
+    public ReviewDTO createTrainerReview(Long workoutSessionId, ReviewDTO reviewDTO, MyUser trainer) {
+        if(trainer.getRole()!=Role.TRAINER)
+            throw new ForbiddenActionException("You don't have the authority to write a trainer review.");
+        WorkoutSession workoutSession = workoutSessionRepo.findById(workoutSessionId)
+                .orElseThrow(()->new NonExistantEntityException("Workout session with id "+workoutSessionId+" not found."));
+        if(workoutSession.getUser().getTrainer()!=trainer)
+            throw new ForbiddenActionException("You don't have the authority to write a trainer review for this user's workout session.");
+
+        Review trainerReview = new Review(reviewDTO);
+        workoutSession.setTrainerReview(trainerReview);
+        workoutSessionRepo.save(workoutSession);
+        return reviewDTO;
+    }
+
 
     private WorkoutSessionResponse generateWorkoutSessionResponse(WorkoutSession workoutSession){
         ReviewDTO userReview = new ReviewDTO(workoutSession.getUserReview().getRating(),workoutSession.getUserReview().getComment());

@@ -20,6 +20,7 @@ public interface WorkoutPlanService {
     public Set<WorkoutPlanResponse> getPublicWorkoutPlans();
     public WorkoutPlanResponse getPublicWorkoutPlanById(Long workoutPlanId);
     public WorkoutPlanResponse getActiveWorkoutPlan(MyUser user);
+    public WorkoutPlanResponse setActiveWorkoutPlan(Long workoutPlanId, MyUser user);
     String uploadFile(final MultipartFile file) throws AmazonClientException;
     void deleteFile(final String fileName);
     String getURLToFile(final String fileName);
