@@ -35,6 +35,8 @@ export default async function AdminEditWorkoutPlanPage(props: {
 
   const workoutPlan = await getWorkoutPlanWithWorkoutsAPI(id);
 
+  console.log("workoutPlan", JSON.stringify(workoutPlan, null, 4));
+
   return (
     <div className="w-full p-6 bg-white h-full flex-col flex xl:flex-row relative max-xl:pt-14">
       <AdminWorkoutPlanForm workoutPlan={workoutPlan ?? null} />

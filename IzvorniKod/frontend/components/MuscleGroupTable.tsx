@@ -10,7 +10,7 @@ import { useAppContext } from "@/contexts/AppContext";
 import Image from "next/image";
 
 export default function MuscleGroupTable() {
-  const { muscleGroups, setMuscleGroups } = useAppContext();
+  const { muscleGroups, deleteMuscleGroup } = useAppContext();
 
   const columns = [
     {
@@ -84,7 +84,7 @@ export default function MuscleGroupTable() {
 
   const handleDelete = async (id: number) => {
     try {
-      setMuscleGroups(muscleGroups.filter((group) => group.id !== id));
+      await deleteMuscleGroup(id);
       toast.success("Mišićna grupa je uspješno izbrisana");
     } catch (error) {
       console.error(error);

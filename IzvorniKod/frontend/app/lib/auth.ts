@@ -18,6 +18,11 @@ declare module "next-auth" {
       role: string;
       provider?: string;
       image?: string;
+      users?: {
+        userId: number;
+        image: string;
+        name: string;
+      }[];
     };
   }
 
@@ -28,6 +33,11 @@ declare module "next-auth" {
     role: string;
     accessToken?: string;
     provider?: string;
+    users?: {
+      userId: number;
+      image: string;
+      name: string;
+    }[];
   }
 }
 
@@ -37,6 +47,11 @@ declare module "next-auth/jwt" {
     role: string;
     accessToken?: string;
     provider?: string;
+    users?: {
+      userId: number;
+      image: string;
+      name: string;
+    }[];
   }
 }
 
@@ -70,7 +85,7 @@ export const authOptions: NextAuthOptions = {
           }
 
           const data = await response.json();
-          console.log(data);
+          console.log("data", data);
 
           // i will delete this later
           // i just want to test the Post/ api/auth/refresh

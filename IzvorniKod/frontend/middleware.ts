@@ -26,7 +26,6 @@ export const config = {
      * 10. /terms-of-service
      */
     "/((?!api|_next|fonts|icons|[\\w-]+\\.\\w+|$|sign-in|sign-up|privacy-policy|terms-of-service).*)",
-    "/admin/:path*",
   ],
 };
 

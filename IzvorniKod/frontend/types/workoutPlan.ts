@@ -9,7 +9,7 @@ export type WorkoutPlanBase = {
   name: string;
   description?: string;
   image?: string;
-  userId?: number;
+  userId?: number | null;
   createdById: number;
   originalWorkoutPlanId?: number;
 };
