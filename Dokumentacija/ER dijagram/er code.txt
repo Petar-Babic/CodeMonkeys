@@ -120,6 +120,13 @@ review [color: yellow] {
 verificationToken [color: gray] {
   id uuid pk
   token uuid
+  myUser uuid fk
+  expiry datetime
+}
+
+refreshToken [color: gray] {
+  id uuid pk
+  token uuid
   userId uuid fk
   expires datetime
 }
@@ -152,6 +159,8 @@ bodyMeasurement [color: teal] {
   biceps number
   createdAt datetime
   updatedAt datetime
+  isGoal boolean
+  createdBy uuid fk
 }
 
 performedExercises.workoutSession > workoutSession.id
@@ -183,6 +192,8 @@ meal.suggestedId > meal.id
 
 verificationToken.userId > user.id
 
+refreshToken.myUser > user.id
+
 sleepLog.userId > user.id
 
 muscleGroup.id <> exercise.primaryMuscleGroup
@@ -190,5 +201,4 @@ muscleGroup.id <> exercise.secondaryMuscleGroup
 
 exercise.createdById > user.id
 
-user.bodyMeasurement > bodyMeasurement.id
-user.goalBodyMeasurement > bodyMeasurement.id
+user.id > bodyMeasurement.createdBy
