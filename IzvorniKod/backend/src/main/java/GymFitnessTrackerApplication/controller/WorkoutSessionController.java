@@ -75,6 +75,7 @@ public class WorkoutSessionController {
         return ResponseEntity.status(HttpStatus.OK).body(wsr);
     }
 
+    //mozda bolje /user/workout-sessions
     @GetMapping("/workout-sessions-user")
     public ResponseEntity<?> getUserWorkoutSessions(@RequestHeader("Authorization") String token){
         String email = jwtService.extractEmail(token.trim().substring(7));

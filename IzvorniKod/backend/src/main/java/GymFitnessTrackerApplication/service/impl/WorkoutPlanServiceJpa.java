@@ -296,34 +296,4 @@ public class WorkoutPlanServiceJpa implements WorkoutPlanService {
         return wpr;
     }
 
-
-
-    @Override
-    public String uploadFile(MultipartFile file) throws AmazonClientException {
-        String fileName = "img_" + System.currentTimeMillis();
-        File fFile = convertMultipartFileToFile(file);
-        s3Client.putObject(new PutObjectRequest(bucketName, fileName, fFile));
-        return getURLToFile(fileName);
-    }
-
-    @Override
-    public void deleteFile(String fileName) {
-        s3Client.deleteObject(bucketName, fileName);
-    }
-
-    @Override
-    public String getURLToFile(String fileName) {
-        Date expiration = new Date(System.currentTimeMillis() + 7200 * 1000); //2 sata
-        return s3Client.generatePresignedUrl(bucketName,fileName,expiration, HttpMethod.GET).toString();
-    }
-
-    private File convertMultipartFileToFile(MultipartFile mpFile){
-        File convertedFile = new File(mpFile.getOriginalFilename());
-        try (FileOutputStream fos = new FileOutputStream(convertedFile)){
-            fos.write(mpFile.getBytes());
-        }catch(IOException e){
-            return null;
-        }
-        return convertedFile;
-    }
 }

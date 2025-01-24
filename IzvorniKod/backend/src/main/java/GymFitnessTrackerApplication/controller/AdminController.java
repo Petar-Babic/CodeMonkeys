@@ -44,8 +44,5 @@ public class AdminController {
         return ResponseEntity.status(HttpStatus.OK).body("Exercise successfully approved");
     }
 
-    //prebaciti f-ju kreiranja muscle grupa ovdje
-
-
 
 }

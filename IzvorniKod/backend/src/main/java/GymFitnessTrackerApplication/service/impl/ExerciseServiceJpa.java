@@ -210,28 +210,4 @@ public class ExerciseServiceJpa implements ExerciseService {
                 exercise.getSecondaryMuscleGroup().stream().map(MuscleGroup::getId).collect(Collectors.toList()));
     }
 
-
-
-
-    public String uploadFile(MultipartFile file) throws AmazonClientException {
-        String fileName = "img_" + System.currentTimeMillis();
-        File fFile = convertMultipartFileToFile(file);
-        s3Client.putObject(new PutObjectRequest(bucketName, fileName, fFile));
-        return getURLToFile(fileName);
-    }
-
-    public String getURLToFile(String fileName) {
-        Date expiration = new Date(System.currentTimeMillis() + 365L * 24 * 3600 * 1000);
-        return s3Client.generatePresignedUrl(bucketName,fileName,expiration, HttpMethod.GET).toString();
-    }
-    private File convertMultipartFileToFile(MultipartFile mpFile){
-        File convertedFile = new File(Objects.requireNonNull(mpFile.getOriginalFilename()));
-        try (FileOutputStream fos = new FileOutputStream(convertedFile)){
-            fos.write(mpFile.getBytes());
-        }catch(IOException e){
-            return null;
-        }
-        return convertedFile;
-    }
-
 }

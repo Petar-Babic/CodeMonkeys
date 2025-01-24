@@ -83,8 +83,6 @@ public class WorkoutPlanController {
         return ResponseEntity.status(HttpStatus.OK).body(updatedWorkoutPlan);
     }
 
-    // TODO: Add endpoint for deleting workout plan for admin
-
     @DeleteMapping("/workout-plans/{id}")
     public ResponseEntity<?> deleteWorkoutPlan(@RequestHeader("Authorization") String token, @PathVariable Long id){
         String email = jwtService.extractEmail(token.trim().substring(7));
@@ -116,17 +114,8 @@ public class WorkoutPlanController {
 
 
     @GetMapping("/workout-plans/{id}")
-    public ResponseEntity<?> getWorkoutPlanById(@RequestHeader("Authorization") String token, @PathVariable Long id){
-        String email = jwtService.extractEmail(token.trim().substring(7));
-        MyUser user = (MyUser) myUserService.getMyUser(email);
-        //mozda dodati da ako user trazi neciji NEpublic workout plan da ne moze vidjeti
+    public ResponseEntity<?> getWorkoutPlanById(@PathVariable Long id){
         WorkoutPlanResponse workoutPlan = workoutPlanService.getWorkoutPlanById(id);
         return ResponseEntity.status(HttpStatus.OK).body(workoutPlan);
-    }
-
-    @PostMapping("upload-file")
-    public ResponseEntity<?> uploadFile(@RequestParam("file") MultipartFile file){
-        String fileName = workoutPlanService.uploadFile(file);
-        return ResponseEntity.status(HttpStatus.OK).body(fileName);
     }
 }
