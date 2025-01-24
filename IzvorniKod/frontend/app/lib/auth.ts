@@ -97,6 +97,7 @@ export const authOptions: NextAuthOptions = {
             role: data.role,
             accessToken: data.token,
             image: data.image,
+            users: data.users,
           };
         } catch (error) {
           console.error("Authentication error:", error);
@@ -147,6 +148,7 @@ export const authOptions: NextAuthOptions = {
             email: profile.email,
             name: profile.name,
             image: user?.image,
+            users: user?.users,
           };
 
           const response = await fetch(`${backendUrl}/api/auth/oauth`, {
@@ -188,6 +190,7 @@ export const authOptions: NextAuthOptions = {
         token.role = user.role;
         token.accessToken = user.accessToken;
         token.provider = account?.provider;
+        token.users = user.users;
       }
       return token;
     },
@@ -201,6 +204,7 @@ export const authOptions: NextAuthOptions = {
         role: token.role,
         provider: token.provider,
         image: session.user.image,
+        users: token.users,
       } as Session["user"];
 
       session.accessToken = token.accessToken || "";

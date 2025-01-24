@@ -13,8 +13,6 @@ import { UserBase } from "@/types/user";
 import Link from "next/link";
 import { Toaster } from "sonner";
 import { FoodBase } from "@/types/food";
-import { authOptions } from "@/app/lib/auth";
-import { getServerSession } from "next-auth";
 
 const getInitialData = async (
   userId: number,
@@ -171,11 +169,18 @@ export default async function AppLayoutComponent({
 }>) {
   const initialData = await getInitialData(userId, accessToken);
 
-  const session = await getServerSession(authOptions);
-
   if (!initialData.user) {
-    const user = session?.user as UserBase;
-    initialData.user = user;
+    return (
+      <div className="flex flex-col items-center justify-center h-screen bg-black">
+        <Toaster />
+        <Link
+          href="/sign-in"
+          className="bg-white text-2xl font-bold hover:text-gray-300 transition-colors duration-300 p-2 rounded-md w-1/2 text-center"
+        >
+          Login
+        </Link>
+      </div>
+    );
   }
 
   const safeInitialData = {
@@ -188,27 +193,21 @@ export default async function AppLayoutComponent({
     <AuthProvider>
       <AppProvider initialData={safeInitialData}>
         <div className="flex flex-col min-h-screen">
-          <Toaster />
+          <Toaster />{" "}
           <NutritionPlanRedirect
             innitialNutritionPlan={initialData.nutritionPlan}
           />
           <Header />
           <div className="flex flex-1 h-[calc(100dvh-60px)]">
             <div className="hidden xl:block">
-              <Navigation
-                orientation="vertical"
-                role={initialData.user?.role}
-              />
+              <Navigation orientation="vertical" role={"USER"} />
             </div>
             <main className="flex-1 overflow-y-auto max-xl:pb-[60px]">
               {children}
             </main>
           </div>
           <div className="xl:hidden fixed bottom-0 w-full">
-            <Navigation
-              orientation="horizontal"
-              role={initialData.user?.role}
-            />
+            <Navigation orientation="horizontal" role={"USER"} />
           </div>
         </div>
       </AppProvider>

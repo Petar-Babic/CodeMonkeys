@@ -1,6 +1,7 @@
 package GymFitnessTrackerApplication.model.dto.response;
 
 import GymFitnessTrackerApplication.model.domain.MyUser;
+import GymFitnessTrackerApplication.model.domain.Role;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,7 +11,7 @@ public class JwtResponseTrainer extends  JwtResponse{
     private List<UserDetailsResponse> users;
 
     public JwtResponseTrainer(String token, String id, String name, String email, List<MyUser> users){
-        super(token,id,name,email);
+        super(token,id,name,email,Role.TRAINER.toString());
         List<UserDetailsResponse> usrs = new ArrayList<>();
         users.forEach(
                 myUser -> {
@@ -25,6 +26,6 @@ public class JwtResponseTrainer extends  JwtResponse{
     }
 
     public JwtResponseTrainer(String token, String id, String name, String email) {
-        super(token,id,name,email);
+        super(token,id,name,email,Role.TRAINER.toString());
     }
 }

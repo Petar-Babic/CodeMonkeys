@@ -78,6 +78,8 @@ function useAuth(): AuthContextType {
           password: credentials.password,
         });
 
+        console.log("result", result);
+
         if (result?.error) {
           throw new Error(result.error);
         }

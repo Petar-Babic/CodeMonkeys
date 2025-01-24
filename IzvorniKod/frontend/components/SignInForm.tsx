@@ -22,7 +22,7 @@ import {
   // FaFacebook,
   //  FaApple
 } from "react-icons/fa";
-import { SignInResponse } from "next-auth/react";
+import { getSession, SignInResponse } from "next-auth/react";
 import { useAuthContext } from "@/contexts/AuthContext";
 
 const formSchema = z.object({
@@ -64,7 +64,16 @@ export function SignInForm() {
         return;
       }
 
-      router.push("/workouts");
+      const session = await getSession();
+      console.log("session", session);
+
+      if (session?.user?.role === "ADMIN") {
+        router.push("/admin");
+      } else if (session?.user?.role === "TRAINER") {
+        router.push("/pick-client");
+      } else {
+        router.push("/workouts");
+      }
     } catch (error) {
       console.error("Login failed:", error);
       setError("An error occurred. Please try again.");
@@ -87,7 +96,16 @@ export function SignInForm() {
         return;
       }
 
-      router.push("/workouts");
+      const session = await getSession();
+      console.log("session", session);
+
+      if (session?.user?.role === "ADMIN") {
+        router.push("/admin");
+      } else if (session?.user?.role === "TRAINER") {
+        router.push("/pick-client");
+      } else {
+        router.push("/workouts");
+      }
     } catch (error) {
       console.error(`${provider} login failed:`, error);
     } finally {

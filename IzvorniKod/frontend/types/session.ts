@@ -7,6 +7,11 @@ export type SessionBase = {
   userId: number;
   refreshToken?: string;
   expires: Date;
+  users?: {
+    userId: number;
+    name: string;
+    image: string;
+  }[];
 };
 
 export type SessionWithRelations = SessionBase & {

@@ -17,7 +17,8 @@ export default function NutritionPlanRedirect({
     if (
       innitialNutritionPlan === null &&
       nutritionPlan === null &&
-      pathname !== "/body-stats-and-goals"
+      pathname !== "/body-stats-and-goals" &&
+      pathname !== "/pick-client"
     ) {
       router.push("/body-stats-and-goals");
     }

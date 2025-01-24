@@ -57,7 +57,7 @@ public class AuthService {
         // refresh token impl
         if(user.getRole().equals(Role.USER) || user.getRole().equals(Role.ADMIN)) {
             token = jwtService.generateToken(user);
-            return new JwtResponse(token, user.getId().toString(), user.getName(), user.getEmail());
+            return new JwtResponse(token, user.getId().toString(), user.getName(), user.getEmail(), user.getRole().toString());
         }
 
         List<MyUser> trainedBy = myUserService.getTrainedBy(user);
@@ -77,7 +77,7 @@ public class AuthService {
        RefreshToken refrToken = refreshTokenService.getToken(refreshToken,"token");
         MyUser user = refrToken.getMyUser();
         String token = jwtService.generateToken(myUserDetailsService.loadUserByUsername(user.getEmail().toString()));
-        return new JwtResponse(token, user.getId().toString(), user.getName(), user.getEmail());
+        return new JwtResponse(token, user.getId().toString(), user.getName(), user.getEmail(), user.getRole().toString());
     }
 
     public JwtResponse signup(SignupForm signupForm){
@@ -85,7 +85,7 @@ public class AuthService {
         MyUser noviUser = myUserService.createMyUser(signupForm);
         String token = jwtService.generateToken(myUserDetailsService.loadUserByUsername(signupForm.getEmail()));
         //refresh token implementacija
-         return new JwtResponse(token,noviUser.getId().toString(),noviUser.getName(),noviUser.getEmail());
+         return new JwtResponse(token, noviUser.getId().toString(), noviUser.getName(), noviUser.getEmail(), noviUser.getRole().toString());
     }
 
     public JwtResponse oauth(OAuthForm oAuthForm){
@@ -102,7 +102,7 @@ public class AuthService {
 
         }
         String token = jwtService.generateToken(myUserDetailsService.loadUserByUsername(email));
-        return new JwtResponse(token,user.getId().toString(),name,email);
+        return new JwtResponse(token, user.getId().toString(), name, email, user.getRole().toString());
     }
 
 }

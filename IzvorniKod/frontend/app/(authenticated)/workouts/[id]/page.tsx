@@ -50,10 +50,7 @@ export default function WorkoutNowPage() {
   };
 
   const handleFinishWorkout = async () => {
-
-    const data: CreateWorkoutSessionInput = {
-     
-    };
+    const data: CreateWorkoutSessionInput = {};
 
     await createWorkoutSession(data);
 
