@@ -97,6 +97,7 @@ public class MealServiceJpa implements MealService {
         Meal m = meal.get();
         if(!m.getUser().toString().equals(u.getId().toString())) {
             if(u.getRole().equals(Role.USER)) throw new AdminRestrictedException("User doesnt have authority");
+            if( m.getUser().getTrainer() != null && !m.getUser().getTrainer().equals(u)) throw new AdminRestrictedException("User isnt trained by this");
         }
         return m;
     }
@@ -119,5 +120,11 @@ public class MealServiceJpa implements MealService {
                             (mealDate.isEqual(endDate) || mealDate.isBefore(endDate));
                 })
                 .collect(Collectors.toList());
+    }
+
+    public void deleteMeal(String id){
+        Optional<Meal>  opt=  mealRepo.findById(Long.parseLong(id));
+        if(opt.isEmpty()) throw new NoExistingFoodException("No such meal");
+        else mealRepo.deleteById(opt.get().getId());
     }
 }

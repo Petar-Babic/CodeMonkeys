@@ -115,6 +115,27 @@ public class FoodController {
         return ResponseEntity.status(200).body(res);
     }
 
+    @PutMapping("/api/meal/{id}")
+    public ResponseEntity<?> updateMeal(@RequestHeader("Authorization") String auth,@RequestBody MealForm form,@PathVariable String id ){
+        String email = jwtService.extractEmail(auth.trim().substring(7));
+        MyUser user = (MyUser) myUserService.getMyUser(email);
+        return ResponseEntity.status(200).body("Updated meal :"+id);
+    }
+
+    @DeleteMapping("/api/meal/{id}")
+    public ResponseEntity<?> deleteMeal(@RequestHeader("Authorization") String auth,@PathVariable String id){
+        String email = jwtService.extractEmail(auth.trim().substring(7));
+        MyUser user = (MyUser) myUserService.getMyUser(email);
+        Meal m = mealService.getMeal(user,id);
+        if(user.getRole().equals(Role.ADMIN) || (user.getRole().equals(Role.TRAINER)) ||  user.getId().equals(m.getUser().getId())) {
+            if (user.getRole().equals(Role.TRAINER) && m.getUser().getTrainer() == null)
+                throw new AdminRestrictedException("Trainer doesnt train user");
+            mealService.deleteMeal(id);
+        }
+        else throw new NoExistingFoodException("Error occured");
+        return ResponseEntity.status(200).body("Deleted meal : "+id);
+    }
+
     @GetMapping("/api/meal/{id}")
     public ResponseEntity<?> getMeal(@PathVariable String id,@RequestHeader("Authorization") String auth){
         String email = jwtService.extractEmail(auth.trim().substring(7));
