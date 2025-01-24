@@ -35,6 +35,9 @@ public class Exercise {
     )
     private Set<MuscleGroup> secondaryMuscleGroup = new HashSet<>();
 
+    @OneToMany(mappedBy = "exercise", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private Set<PlannedExercise> plannedExercises;
+
     public Exercise() {}
 
     public Exercise(String name, String description, String gif, MyUser user) {
@@ -106,5 +109,9 @@ public class Exercise {
 
     public void setSecondaryMuscleGroup(Set<MuscleGroup> secondaryMuscleGroup) {
         this.secondaryMuscleGroup = secondaryMuscleGroup;
+    }
+
+    public Set<PlannedExercise> getPlannedExercises() {
+        return plannedExercises;
     }
 }

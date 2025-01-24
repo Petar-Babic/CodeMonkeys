@@ -76,22 +76,23 @@ public class WorkoutPlanController {
     }
 
     @PutMapping("workout-plans/{id}")
-    public ResponseEntity<?> updateWorkoutPlan(@PathVariable Long id, @RequestBody WorkoutPlanForm workoutPlanForm) {
-        WorkoutPlanResponse updatedWorkoutPlan = workoutPlanService.updateWorkoutPlan(id, workoutPlanForm);
+    public ResponseEntity<?> updateWorkoutPlan(@RequestHeader("Authorization") String token, @PathVariable Long id, @RequestBody WorkoutPlanResponse workoutPlanResponse) {
+        String email = jwtService.extractEmail(token.trim().substring(7));
+        MyUser user = (MyUser) myUserService.getMyUser(email);
+        WorkoutPlanResponse updatedWorkoutPlan = workoutPlanService.updateWorkoutPlan(id, workoutPlanResponse, user);
         return ResponseEntity.status(HttpStatus.OK).body(updatedWorkoutPlan);
     }
 
-    // TODO: Add endpoint for deleting workout plan for admin
-    // @DeleteMapping("/workout-plans/{id}")
-    // MNatija, ovo je napravio Korda
-    // mjenjaj sta oces samo treba biti ova funkcionalnost
     @DeleteMapping("/workout-plans/{id}")
-    public ResponseEntity<?> deleteWorkoutPlan(@PathVariable Long id){
-        workoutPlanService.deleteWorkoutPlan(id);
+    public ResponseEntity<?> deleteWorkoutPlan(@RequestHeader("Authorization") String token, @PathVariable Long id){
+        String email = jwtService.extractEmail(token.trim().substring(7));
+        MyUser user = (MyUser) myUserService.getMyUser(email);
+        workoutPlanService.deleteWorkoutPlan(id, user);
         return ResponseEntity.status(HttpStatus.OK).body("Workout plan successfully deleted.");
     }
 
 
+    //mozda bolje /workout-plans/active
     @GetMapping("/user/current-workout-plan")
     public ResponseEntity<?> getCurrentUserWorkoutPlan(@RequestHeader("Authorization") String token){
         String email = jwtService.extractEmail(token.trim().substring(7));
@@ -103,18 +104,18 @@ public class WorkoutPlanController {
         return ResponseEntity.status(HttpStatus.OK).body(activeWorkoutPlan);
     }
 
+    @PutMapping("/workout-plans/active/{id}")
+    public ResponseEntity<?> setActiveWorkoutPlan(@RequestHeader("Authorization") String token, @PathVariable Long id){
+        String email = jwtService.extractEmail(token.trim().substring(7));
+        MyUser user = (MyUser) myUserService.getMyUser(email);
+        WorkoutPlanResponse activeWorkoutPlan = workoutPlanService.setActiveWorkoutPlan(id, user);
+        return ResponseEntity.status(HttpStatus.OK).body(activeWorkoutPlan);
+    }
 
-    // ovo je napravio Korda
-    // mjenjaj sta oces samo treba biti ova funkcionalnost 
+
     @GetMapping("/workout-plans/{id}")
     public ResponseEntity<?> getWorkoutPlanById(@PathVariable Long id){
         WorkoutPlanResponse workoutPlan = workoutPlanService.getWorkoutPlanById(id);
         return ResponseEntity.status(HttpStatus.OK).body(workoutPlan);
-    }
-
-    @PostMapping("upload-file")
-    public ResponseEntity<?> uploadFile(@RequestParam("file") MultipartFile file){
-        String fileName = workoutPlanService.uploadFile(file);
-        return ResponseEntity.status(HttpStatus.OK).body(fileName);
     }
 }

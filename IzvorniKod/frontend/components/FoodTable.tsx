@@ -9,7 +9,7 @@ import { toast } from "sonner";
 import { useAppContext } from "@/contexts/AppContext";
 
 export default function FoodTable() {
-  const { foods, setFoods } = useAppContext();
+  const { foods, deleteFood } = useAppContext();
 
   const columns = [
     {
@@ -85,7 +85,7 @@ export default function FoodTable() {
 
   const handleDelete = async (id: number) => {
     try {
-      setFoods(foods.filter((food) => food.id !== id));
+      await deleteFood(id);
       toast.success("Hrana je uspješno izbrisana");
     } catch (error) {
       console.error(error);

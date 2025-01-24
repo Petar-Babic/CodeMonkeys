@@ -30,6 +30,12 @@ public class MuscleGroupController {
         return ResponseEntity.status(HttpStatus.OK).body(updatedMuscleGroup);
     }
 
+    @DeleteMapping("muscle-groups/{id}")
+    public ResponseEntity<?> deleteMuscleGroup(@PathVariable Long id) {
+        muscleGroupService.deleteMuscleGroup(id);
+        return ResponseEntity.status(HttpStatus.OK).body("Successfully deleted Muscle Group");
+    }
+
     @GetMapping("muscle-groups/{id}")
     public ResponseEntity<?> getMuscleGroupById(@PathVariable Long id) {
         MuscleGroupResponse muscleGroup = muscleGroupService.getMuscleGroupById(id);

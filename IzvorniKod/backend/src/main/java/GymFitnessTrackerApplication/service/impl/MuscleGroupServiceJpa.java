@@ -3,6 +3,7 @@ package GymFitnessTrackerApplication.service.impl;
 import GymFitnessTrackerApplication.exception.NonExistantEntityException;
 import GymFitnessTrackerApplication.model.dao.ExerciseRepo;
 import GymFitnessTrackerApplication.model.dao.MuscleGroupRepo;
+import GymFitnessTrackerApplication.model.domain.Exercise;
 import GymFitnessTrackerApplication.model.domain.MuscleGroup;
 import GymFitnessTrackerApplication.model.dto.response.MuscleGroupResponse;
 import GymFitnessTrackerApplication.model.dto.workoutDTOs.MuscleGroupDTO;
@@ -41,12 +42,12 @@ public class MuscleGroupServiceJpa implements MuscleGroupService {
     public MuscleGroupResponse updateMuscleGroup(Long id, MuscleGroupDTO muscleGroupDTO) {
         MuscleGroup muscleGroup = muscleGroupRepo.findById(id)
                 .orElseThrow(() -> new NonExistantEntityException("Muscle group with id " + id + " not found"));
-
-        muscleGroup.setName(muscleGroupDTO.name());
-        muscleGroup.setDescription(muscleGroupDTO.description());
-        if (muscleGroupDTO.image() != null) {
+        if(muscleGroupDTO.name()!=null)
+            muscleGroup.setName(muscleGroupDTO.name());
+        if(muscleGroupDTO.description()!=null)
+            muscleGroup.setDescription(muscleGroupDTO.description());
+        if (muscleGroupDTO.image() != null)
             muscleGroup.setImage(muscleGroupDTO.image());
-        }
 
         muscleGroupRepo.save(muscleGroup);
         return new MuscleGroupResponse(muscleGroup.getId(), muscleGroup.getName(), muscleGroup.getDescription(), muscleGroup.getImage());
@@ -57,7 +58,15 @@ public class MuscleGroupServiceJpa implements MuscleGroupService {
         MuscleGroup muscleGroup = muscleGroupRepo.findById(id).
                 orElseThrow(() -> new NonExistantEntityException("Muscle group with "+id+"not found"));
 
-        //treba li paziti na vezu???
+        for(Exercise exercise : muscleGroup.getPrimaryToExercises()){
+            exercise.getPrimaryMuscleGroup().remove(muscleGroup);
+        }
+        for(Exercise exercise : muscleGroup.getPrimaryToExercises()){
+            exercise.getPrimaryMuscleGroup().remove(muscleGroup);
+        }
+        muscleGroup.getPrimaryToExercises().clear();
+        muscleGroupRepo.save(muscleGroup);
+
         muscleGroupRepo.delete(muscleGroup);
     }
 

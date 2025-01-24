@@ -1,10 +1,9 @@
 package GymFitnessTrackerApplication.service.impl;
 
+import GymFitnessTrackerApplication.exception.ForbiddenActionException;
 import GymFitnessTrackerApplication.exception.InvalidInputException;
 import GymFitnessTrackerApplication.exception.NonExistantEntityException;
-import GymFitnessTrackerApplication.model.dao.PlannedExerciseRepo;
-import GymFitnessTrackerApplication.model.dao.WorkoutRepo;
-import GymFitnessTrackerApplication.model.dao.WorkoutSessionRepo;
+import GymFitnessTrackerApplication.model.dao.*;
 import GymFitnessTrackerApplication.model.domain.*;
 import GymFitnessTrackerApplication.model.dto.forms.WorkoutSessionForm;
 import GymFitnessTrackerApplication.model.dto.response.WorkoutSessionResponse;
@@ -18,6 +17,7 @@ import org.springframework.stereotype.Service;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class WorkoutSessionServiceJpa implements WorkoutSessionService {
@@ -28,9 +28,13 @@ public class WorkoutSessionServiceJpa implements WorkoutSessionService {
     private PlannedExerciseRepo plannedExerciseRepo;
     @Autowired
     private WorkoutSessionRepo workoutSessionRepo;
+    @Autowired
+    private PerformedExerciseRepo performedExerciseRepo;
+    @Autowired
+    private PerformedSetRepo performedSetRepo;
 
     @Override
-    public void createWorkoutSession(WorkoutSessionForm workoutSessionForm, MyUser user) {
+    public WorkoutSessionResponse createWorkoutSession(WorkoutSessionForm workoutSessionForm, MyUser user) {
         Workout workout = workoutRepo.findById(workoutSessionForm.workoutId()).orElse(null);
         Date date = workoutSessionForm.date();
         ReviewDTO reviewDTO = workoutSessionForm.userReview();
@@ -44,30 +48,100 @@ public class WorkoutSessionServiceJpa implements WorkoutSessionService {
         WorkoutSession newWorkoutSession = new WorkoutSession(date, user, userReview, workout);
         for(PerformedExerciseDTO performedExerciseDTO : performedExercises) {
             PlannedExercise plannedExerciseId = plannedExerciseRepo.findById(performedExerciseDTO.getPlannedExerciseId()).orElse(null);
-            Set<PerformedSetDTO> performedSetsDTO = performedExerciseDTO.getPerformedSets();
-            if(plannedExerciseId==null || performedSetsDTO==null) { throw new InvalidInputException("Invalid input for planned exercise."); }
-            PerformedExercises newPerformedExercise = new PerformedExercises(newWorkoutSession, plannedExerciseId);
-            for(PerformedSetDTO performedSetDTO : performedSetsDTO) {
-                Integer reps = performedSetDTO.reps();
-                Float weight = performedSetDTO.weight();
-                Integer rpe = performedSetDTO.rpe();
-                if(reps==null || weight==null || rpe==null) { throw new InvalidInputException("Invalid input for a performed set."); }
-                PerformedSet newPerformedSet = new PerformedSet(newPerformedExercise, reps,rpe,weight);
-                newPerformedExercise.addPerformedSet(newPerformedSet);
-            }
+            PerformedExercises newPerformedExercise = getPerformedExercises(performedExerciseDTO, plannedExerciseId, newWorkoutSession);
             newWorkoutSession.addPerformedExercise(newPerformedExercise);
         }
         workoutSessionRepo.save(newWorkoutSession);
+        return generateWorkoutSessionResponse(newWorkoutSession);
     }
 
-    @Override
-    public void updateWorkoutSession(WorkoutSessionForm workoutSessionForm, MyUser user) {
 
+
+    //mouzda napraviti da prima ExerciseResponse, a ne form jer mi trebaju id-evi svega
+    @Override
+    public WorkoutSessionResponse updateWorkoutSession(Long workoutSessionId, WorkoutSessionResponse workoutSessionResponse, MyUser user) {
+        WorkoutSession workoutSession = workoutSessionRepo.findById(workoutSessionId)
+                .orElseThrow(()-> new NonExistantEntityException("Workout session with id "+workoutSessionId+" not found."));
+        if(workoutSession.getUser()!=user) {
+            throw new ForbiddenActionException("You have no permission to update this workout session.");
+        }
+
+        //iz response sve uzimam
+        //workoutSession.setDate(workoutSessionResponse.getDate());
+        //userreview
+        if(workoutSessionResponse.getUserReview()!=null ||
+                !(workoutSession.getUserReview().getRating().equals(workoutSessionResponse.getUserReview().rating())
+                        && workoutSession.getUserReview().getComment().equals(workoutSessionResponse.getUserReview().comment()))){
+            workoutSession.getUserReview().setRating(workoutSessionResponse.getUserReview().rating());
+            workoutSession.getUserReview().setComment(workoutSessionResponse.getUserReview().comment());
+            //provjeri hoce li ovo trajno promijeniti???
+        }
+        //provjeriti jesu li svi id-evi iz workoutsession u workoutsessionresponsu -> nisu= obrisi ih
+        Set<Long> wsIds = workoutSession.getPerformedExercises().stream().map(PerformedExercises::getId).collect(Collectors.toSet());
+        for(PerformedExerciseDTO perfEDTO : workoutSessionResponse.getPerformedExercises()) {
+            //razlikovati ako postoji, ako je id==null -> kreirati novi
+            if(perfEDTO.getId()!=null){
+                PerformedExercises performedExercises = performedExerciseRepo.findById(perfEDTO.getId())
+                        .orElseThrow(()-> new NonExistantEntityException("Performed exercise with id "+perfEDTO.getId()+" not found."));
+                wsIds.remove(performedExercises.getId());
+                Set<Long> setIds = performedExercises.getPerformedSets().stream().map(PerformedSet::getId).collect(Collectors.toSet());
+                for(PerformedSetDTO performedSetDTO : perfEDTO.getPerformedSets()) {
+                    if(performedSetDTO.id()==null){
+                        //kreiraj novi set i spoji na exercise
+                        addSetToPerformedExercise(performedExercises, performedSetDTO);
+                    }
+                    else{
+                        //promijeni postojeci
+                        PerformedSet performedSet = performedSetRepo.findById(performedSetDTO.id())
+                                .orElseThrow(()-> new NonExistantEntityException("Performed set with id "+performedSetDTO.id()+" not found."));
+                        performedSet.setReps(performedSetDTO.reps());
+                        performedSet.setWeight(performedSetDTO.weight());
+                        performedSet.setRpe(performedSetDTO.rpe());
+                        setIds.remove(performedSet.getId());
+                    }
+                }
+                if(!setIds.isEmpty()) {
+                    for(Long id : setIds) {
+                        PerformedSet performedSet = performedSetRepo.findById(id).orElseThrow(()-> new NonExistantEntityException("Performed set with id "+id+" not found."));
+                        performedExercises.getPerformedSets().remove(performedSet);
+                    }
+                }
+            }
+            else{
+                //kreairati i spojiti na workout session
+                PlannedExercise plannedExerciseId = plannedExerciseRepo.findById(perfEDTO.getPlannedExerciseId()).orElse(null);
+                Set<PerformedSetDTO> performedSetsDTO = perfEDTO.getPerformedSets();
+                if(plannedExerciseId==null || performedSetsDTO==null) { throw new InvalidInputException("Invalid input for planned exercise."); }
+                PerformedExercises newPerformedExercise = getPerformedExercises(perfEDTO, plannedExerciseId, workoutSession);
+                workoutSession.addPerformedExercise(newPerformedExercise);
+            }
+        }
+        for(Long id : wsIds){
+            PerformedExercises performedExercises = performedExerciseRepo.findById(id).orElse(null);
+            workoutSession.getPerformedExercises().remove(performedExercises);
+        }
+
+        workoutSessionRepo.save(workoutSession);
+        return generateWorkoutSessionResponse(workoutSession);
+    }
+
+    private static void addSetToPerformedExercise(PerformedExercises performedExercises, PerformedSetDTO performedSetDTO) {
+        Integer reps = performedSetDTO.reps();
+        Float weight = performedSetDTO.weight();
+        Integer rpe = performedSetDTO.rpe();
+        if(reps==null || weight==null || rpe==null) { throw new InvalidInputException("Invalid input for a performed set."); }
+        PerformedSet newPerformedSet = new PerformedSet(performedExercises, reps,rpe,weight);
+        performedExercises.addPerformedSet(newPerformedSet);
     }
 
     @Override
     public void deleteWorkoutSession(Long workoutSessionId, MyUser user) {
-        //usput obrisati performedExercises, preformedset
+        WorkoutSession workoutSession = workoutSessionRepo.findById(workoutSessionId)
+                .orElseThrow(()-> new NonExistantEntityException("Workout session with id "+workoutSessionId+" not found."));
+        if(workoutSession.getUser()!=user) {
+            throw new ForbiddenActionException("You have no permission to delete this workout session.");
+        }
+        workoutSessionRepo.delete(workoutSession);
     }
 
     @Override
@@ -89,6 +163,21 @@ public class WorkoutSessionServiceJpa implements WorkoutSessionService {
         return generateSetWorkoutSessionResponse(workoutSessions);
     }
 
+    @Override
+    public ReviewDTO createTrainerReview(Long workoutSessionId, ReviewDTO reviewDTO, MyUser trainer) {
+        if(trainer.getRole()!=Role.TRAINER)
+            throw new ForbiddenActionException("You don't have the authority to write a trainer review.");
+        WorkoutSession workoutSession = workoutSessionRepo.findById(workoutSessionId)
+                .orElseThrow(()->new NonExistantEntityException("Workout session with id "+workoutSessionId+" not found."));
+        if(workoutSession.getUser().getTrainer()!=trainer)
+            throw new ForbiddenActionException("You don't have the authority to write a trainer review for this user's workout session.");
+
+        Review trainerReview = new Review(reviewDTO);
+        workoutSession.setTrainerReview(trainerReview);
+        workoutSessionRepo.save(workoutSession);
+        return reviewDTO;
+    }
+
 
     private WorkoutSessionResponse generateWorkoutSessionResponse(WorkoutSession workoutSession){
         ReviewDTO userReview = new ReviewDTO(workoutSession.getUserReview().getRating(),workoutSession.getUserReview().getComment());
@@ -98,7 +187,7 @@ public class WorkoutSessionServiceJpa implements WorkoutSessionService {
         }
         WorkoutSessionResponse wsr = new WorkoutSessionResponse(workoutSession.getId(), workoutSession.getDate(), userReview, trainerReview);
         for(PerformedExercises pe : workoutSession.getPerformedExercises()){
-            PerformedExerciseDTO peDTO = new PerformedExerciseDTO(pe.getPlannedExercise().getId());
+            PerformedExerciseDTO peDTO = new PerformedExerciseDTO(pe.getId(), pe.getPlannedExercise().getId());
             for(PerformedSet ps : pe.getPerformedSets()){
                 PerformedSetDTO psDTO = new PerformedSetDTO(ps.getId(), ps.getReps(), ps.getRpe(), ps.getWeight());
                 peDTO.addPerformedSet(psDTO);
@@ -114,5 +203,15 @@ public class WorkoutSessionServiceJpa implements WorkoutSessionService {
             response.add(generateWorkoutSessionResponse(workoutSession));
         }
         return response;
+    }
+
+    private static PerformedExercises getPerformedExercises(PerformedExerciseDTO performedExerciseDTO, PlannedExercise plannedExerciseId, WorkoutSession newWorkoutSession) {
+        Set<PerformedSetDTO> performedSetsDTO = performedExerciseDTO.getPerformedSets();
+        if(plannedExerciseId ==null || performedSetsDTO==null) { throw new InvalidInputException("Invalid input for planned exercise."); }
+        PerformedExercises newPerformedExercise = new PerformedExercises(newWorkoutSession, plannedExerciseId);
+        for(PerformedSetDTO performedSetDTO : performedSetsDTO) {
+            addSetToPerformedExercise(newPerformedExercise, performedSetDTO);
+        }
+        return newPerformedExercise;
     }
 }

@@ -47,8 +47,12 @@ const NutritionPage = () => {
 
   const [meals, setMeals] = useState<MealBase[]>([]);
   const [mealFoods, setMealFoods] = useState<FoodBase[]>([]);
-  const [mealSuggestions, setMealSuggestions] = useState<MealSuggestionBase[]>([]);
-  const [mealSuggestionsByDate, setMealSuggestionsByDate] = useState<{ [key: string]: MealSuggestionBase[] }>({});
+  const [mealSuggestions, setMealSuggestions] = useState<MealSuggestionBase[]>(
+    []
+  );
+  const [mealSuggestionsByDate, setMealSuggestionsByDate] = useState<{
+    [key: string]: MealSuggestionBase[];
+  }>({});
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isFoodModalOpen, setIsFoodModalOpen] = useState(false);
@@ -65,7 +69,7 @@ const NutritionPage = () => {
 
   const defaultMeal: MealBase = {
     id: 0,
-    name: '',
+    name: "",
     calories: 0,
     protein: 0,
     carbs: 0,
@@ -74,7 +78,7 @@ const NutritionPage = () => {
     dailyNutritionLogId: 0,
     createdAt: new Date(),
     updatedAt: new Date(),
-  };  
+  };
 
   const [goals, setGoals] = useState<NutritionPlanBase>({
     id: 0,
@@ -102,7 +106,9 @@ const NutritionPage = () => {
   const [nutritionPlan, setNutritionPlan] = useState<NutritionPlanBase>(goals);
 
   //Date---------------------------------------------------------------------------------------------------------------------
-  const [mealsByDate, setMealsByDate] = useState<{ [key: string]: MealBase[] }>({});
+  const [mealsByDate, setMealsByDate] = useState<{ [key: string]: MealBase[] }>(
+    {}
+  );
   const [currentDate, setCurrentDate] = useState(new Date());
 
   const formatDateKey = (date: Date) => date.toISOString().split("T")[0];
@@ -229,7 +235,10 @@ const NutritionPage = () => {
     [key in keyof NutritionPlanBase]?: string;
   }>({});
 
-  const handleRangeChange = (goalName: keyof NutritionPlanBase, range: string) => {
+  const handleRangeChange = (
+    goalName: keyof NutritionPlanBase,
+    range: string
+  ) => {
     setGoalRanges((prev) => ({ ...prev, [goalName]: range }));
   };
 
@@ -266,7 +275,6 @@ const NutritionPage = () => {
       if (within20) return "yellow";
       return "red";
     }
-
   };
 
   //Pie chart--------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -337,16 +345,16 @@ const NutritionPage = () => {
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-  
+
     setCurrentMeal((prevMeal) => {
       if (!prevMeal) return prevMeal;
-  
+
       return {
         ...prevMeal,
         [name]: name === "calories" ? Number(value) : value,
       };
     });
-  
+
     setHasUnsavedChanges(true);
   };
 
@@ -407,7 +415,7 @@ const NutritionPage = () => {
 
   const handleSave = (food: FoodBase, newAmount: number) => {
     const ratio = newAmount / food.defaultNumber;
-  
+
     const updatedFood: FoodBase = {
       ...food,
       defaultNumber: newAmount,
@@ -430,10 +438,9 @@ const NutritionPage = () => {
       carbs: prevMeal.carbs - food.carbs + updatedFood.carbs,
       fat: prevMeal.fat - food.fat + updatedFood.fat,
     }));
-  
-    // Exit editing mode
+
     setEditingFoodId(null);
-  };  
+  };
 
   const [editingFoodId, setEditingFoodId] = useState<number | null>(null);
 
@@ -585,7 +592,7 @@ const NutritionPage = () => {
       carbs: prevMeal.carbs + food.carbs,
       fat: prevMeal.fat + food.fat,
     }));
-  
+
     closeFoodModal();
   };   
 
@@ -667,7 +674,9 @@ const NutritionPage = () => {
   }, [currentMonth, mealsByDate, calculateDailyCalories]);
 
   //Month Selector--------------------------------------------------------------------------------------------------------------------------------------------------------
-  const [mealsByMonth, setMealsByMonth] = useState<Record<string, MealBase[]>>({});
+  const [mealsByMonth, setMealsByMonth] = useState<Record<string, MealBase[]>>(
+    {}
+  );
 
   const formatMonthKey = (date: Date) => {
     return `${date.getFullYear()}-${(date.getMonth() + 1)
@@ -753,7 +762,7 @@ const NutritionPage = () => {
             false;
 
           const content =
-          typeof goal === "number" && goal > 0 ? (
+            typeof goal === "number" && goal > 0 ? (
               <>
                 <h2 className="text-xl font-semibold">{label}</h2>
                 <p
@@ -857,7 +866,11 @@ const NutritionPage = () => {
                       type="text"
                       inputMode="numeric"
                       name={field.name as string}
-                      value={goals.startDate ? goals.startDate.toISOString().split("T")[0] : ""}
+                      value={
+                        goals.startDate
+                          ? goals.startDate.toISOString().split("T")[0]
+                          : ""
+                      }
                       onChange={handleGoalsChange}
                       className="w-full border border-gray-300 rounded-md px-3 py-2"
                     />
@@ -1045,63 +1058,61 @@ const NutritionPage = () => {
 
       {/* Pie Chart and Progress Section */}
       <div className="flex flex-col items-center w-1/2 space-y-4">
-          <div className="w-full max-w-md h-[400px] flex items-center justify-center">
-            {isAllZero ? (
-              <p className="text-center text-gray-500">
-                No data available. Add meals to see your macros chart!
-              </p>
-            ) : (
-              <Pie
-                data={data}
-                options={{
-                  responsive: true,
-                  maintainAspectRatio: false,
-                  plugins: {
-                    tooltip: {
-                      callbacks: {
-                        label: function (tooltipItem) {
-                          const value = tooltipItem.raw as number;
-                          return `${tooltipItem.label}: ${value.toFixed(2)}%`;
-                        },
+        <div className="w-full max-w-md h-[400px] flex items-center justify-center">
+          {isAllZero ? (
+            <p className="text-center text-gray-500">
+              No data available. Add meals to see your macros chart!
+            </p>
+          ) : (
+            <Pie
+              data={data}
+              options={{
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                  tooltip: {
+                    callbacks: {
+                      label: function (tooltipItem) {
+                        const value = tooltipItem.raw as number;
+                        return `${tooltipItem.label}: ${value.toFixed(2)}%`;
                       },
                     },
-                    legend: {
-                      position: "top",
-                    },
                   },
-                }}
-              />
-            )}
-          </div>
-
-          {/* Progress Bar */}
-          {goals.calories > 0 ? (
-            <div className="w-full bg-gray-300 rounded-full h-4 relative">
-              <div
-                className={`h-4 rounded-full ${
-                  calculateTotalCalories() > goals.calories + 50
-                    ? "bg-red-500"
-                    : calculateTotalCalories() < goals.calories - 50
-                    ? "bg-blue-500"
-                    : "bg-green-500"
-                }`}
-                style={{
-                  width: `${
-                    (calculateTotalCalories() / goals.calories) * 100
-                  }%`,
-                }}
-              ></div>
-              <p className="absolute inset-0 flex items-center justify-center text-gray-500 text-sm font-semibold">
-                {((calculateTotalCalories() / goals.calories) * 100).toFixed(1)}
-                % of goal complete
-              </p>
-            </div>
-          ) : (
-            <p className="text-gray-500 text-sm mt-2">
-              Set your calorie goal to see progress.
-            </p>
+                  legend: {
+                    position: "top",
+                  },
+                },
+              }}
+            />
           )}
         </div>
+
+        {/* Progress Bar */}
+        {goals.calories > 0 ? (
+          <div className="w-full bg-gray-300 rounded-full h-4 relative">
+            <div
+              className={`h-4 rounded-full ${
+                calculateTotalCalories() > goals.calories + 50
+                  ? "bg-red-500"
+                  : calculateTotalCalories() < goals.calories - 50
+                  ? "bg-blue-500"
+                  : "bg-green-500"
+              }`}
+              style={{
+                width: `${(calculateTotalCalories() / goals.calories) * 100}%`,
+              }}
+            ></div>
+            <p className="absolute inset-0 flex items-center justify-center text-gray-500 text-sm font-semibold">
+              {((calculateTotalCalories() / goals.calories) * 100).toFixed(1)}%
+              of goal complete
+            </p>
+          </div>
+        ) : (
+          <p className="text-gray-500 text-sm mt-2">
+            Set your calorie goal to see progress.
+          </p>
+        )}
+      </div>
 
       {isModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-10">
@@ -1152,19 +1163,19 @@ const NutritionPage = () => {
                   <p>{currentMeal.calories} kcal</p>
                 </div>
                 {mealFoods.length > 0 ? (
-                <table className="macro-table w-full mt-4">
-                  <thead>
-                    <tr>
-                      <th className="px-4 py-2">Food</th>
-                      <th className="px-4 py-2">Amount</th>
-                      <th className="px-4 py-2">Calories</th>
-                      <th className="px-4 py-2">Protein</th>
-                      <th className="px-4 py-2">Carbs</th>
-                      <th className="px-4 py-2">Fats</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {mealFoods.map((food) => (
+                  <table className="macro-table w-full mt-4">
+                    <thead>
+                      <tr>
+                        <th className="px-4 py-2">Food</th>
+                        <th className="px-4 py-2">Amount</th>
+                        <th className="px-4 py-2">Calories</th>
+                        <th className="px-4 py-2">Protein</th>
+                        <th className="px-4 py-2">Carbs</th>
+                        <th className="px-4 py-2">Fats</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {mealFoods.map((food) => (
                         <tr key={food.id}>
                           <td className="px-4 py-2">{food.name}</td>
                           <td className="px-4 py-2 flex justify-between items-center">
@@ -1229,7 +1240,9 @@ const NutritionPage = () => {
                     </tbody>
                   </table>
                 ) : (
-                  <p className="text-gray-500 mt-4">No foods added to this meal yet.</p>
+                  <p className="text-gray-500 mt-4">
+                    No foods added to this meal yet.
+                  </p>
                 )}
                 <div className="mt-4 flex justify-between">
                   <div className="flex">

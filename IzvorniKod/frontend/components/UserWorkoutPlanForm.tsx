@@ -168,7 +168,7 @@ export function UserWorkoutPlanForm() {
         await updateWorkoutPlan(formattedData);
       }
 
-      router.push("/admin/workout-plans");
+      router.push("/workout-plans");
     } catch (error) {
       console.error("Error submitting form:", error);
     } finally {

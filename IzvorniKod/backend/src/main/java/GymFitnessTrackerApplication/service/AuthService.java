@@ -10,6 +10,7 @@ import GymFitnessTrackerApplication.model.dto.forms.UserIDForm;
 import GymFitnessTrackerApplication.model.dto.response.EmailResponse;
 import GymFitnessTrackerApplication.model.dto.response.JwtResponse;
 import GymFitnessTrackerApplication.model.dto.response.JwtResponseTrainer;
+import GymFitnessTrackerApplication.model.dto.response.UserDetailsResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -51,12 +52,22 @@ public class AuthService {
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(loginForm.email(),loginForm.password()));
         MyUser user = myUserService.getMyUser(loginForm.email());
-        String token = jwtService.generateToken(myUserDetailsService.loadUserByUsername(loginForm.email()));
+        String token;
+        //String token = jwtService.generateToken(myUserDetailsService.loadUserByUsername(loginForm.email()));
         // refresh token impl
-        if(user.getRole().equals(Role.USER) || user.getRole().equals(Role.ADMIN))
-            return new JwtResponse(token,user.getId().toString(),user.getName(), user.getEmail());
+        if(user.getRole().equals(Role.USER) || user.getRole().equals(Role.ADMIN)) {
+            token = jwtService.generateToken(user);
+            return new JwtResponse(token, user.getId().toString(), user.getName(), user.getEmail(), user.getRole().toString());
+        }
 
         List<MyUser> trainedBy = myUserService.getTrainedBy(user);
+        List<UserDetailsResponse> usrs = new ArrayList<>();
+        trainedBy.forEach(
+                myUser -> {
+                    usrs.add(new UserDetailsResponse(myUser.getId(), myUser.getName(), myUser.getImage()));
+                }
+        );
+        token = jwtService.generateTokenTrainer(user,usrs);
         return new JwtResponseTrainer(token,user.getId().toString(),user.getName(), user.getEmail(),trainedBy);
 
     }
@@ -66,7 +77,7 @@ public class AuthService {
        RefreshToken refrToken = refreshTokenService.getToken(refreshToken,"token");
         MyUser user = refrToken.getMyUser();
         String token = jwtService.generateToken(myUserDetailsService.loadUserByUsername(user.getEmail().toString()));
-        return new JwtResponse(token,user.getId().toString(), user.getName(), user.getEmail());
+        return new JwtResponse(token, user.getId().toString(), user.getName(), user.getEmail(), user.getRole().toString());
     }
 
     public JwtResponse signup(SignupForm signupForm){
@@ -74,7 +85,7 @@ public class AuthService {
         MyUser noviUser = myUserService.createMyUser(signupForm);
         String token = jwtService.generateToken(myUserDetailsService.loadUserByUsername(signupForm.getEmail()));
         //refresh token implementacija
-         return new JwtResponse(token,noviUser.getId().toString(),noviUser.getName(),noviUser.getEmail());
+         return new JwtResponse(token, noviUser.getId().toString(), noviUser.getName(), noviUser.getEmail(), noviUser.getRole().toString());
     }
 
     public JwtResponse oauth(OAuthForm oAuthForm){
@@ -91,7 +102,7 @@ public class AuthService {
 
         }
         String token = jwtService.generateToken(myUserDetailsService.loadUserByUsername(email));
-        return new JwtResponse(token,user.getId().toString(),name,email);
+        return new JwtResponse(token, user.getId().toString(), name, email, user.getRole().toString());
     }
 
 }

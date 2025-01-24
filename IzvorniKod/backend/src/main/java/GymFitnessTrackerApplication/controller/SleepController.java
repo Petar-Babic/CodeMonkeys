@@ -1,6 +1,8 @@
 package GymFitnessTrackerApplication.controller;
 
+import GymFitnessTrackerApplication.exception.AdminRestrictedException;
 import GymFitnessTrackerApplication.model.domain.MyUser;
+import GymFitnessTrackerApplication.model.domain.Role;
 import GymFitnessTrackerApplication.model.domain.SleepLog;
 import GymFitnessTrackerApplication.model.dto.forms.SleepLogForm;
 import GymFitnessTrackerApplication.model.dto.response.SleepLogResponse;
@@ -33,9 +35,17 @@ public class SleepController {
 
     @PostMapping("")
     public ResponseEntity<?> createSleepLog(@RequestBody SleepLogForm form,@RequestHeader("Authorization") String auth){
+        SleepLog sleepLog = null;
         String email= jwtService.extractEmail(auth.trim().substring(7));
         MyUser user = (MyUser) myUserService.getMyUser(email);
-        SleepLog sleepLog = sleepService.createFromForm(form,user);
+        if(user.getRole().equals(Role.TRAINER) || user.getRole().equals(Role.ADMIN)) {
+            String idUser = jwtService.extractUserId(auth.trim().substring(7));
+            if(user.getRole().equals(Role.TRAINER) && myUserService.getMyUserByID(idUser).getTrainer().getId().equals(user.getId()))
+                sleepLog = sleepService.createFromForm(form,myUserService.getMyUserByID(idUser));
+            else if (user.getRole().equals(Role.ADMIN))  sleepLog = sleepService.createFromForm(form,myUserService.getMyUserByID(idUser));
+            else
+                throw new AdminRestrictedException("USER NOT TRAINED BY TRAINER");
+        } else  sleepLog = sleepService.createFromForm(form,user);
         return  ResponseEntity.status(200).body(new SleepLogResponse(sleepLog));
     }
 
@@ -43,6 +53,19 @@ public class SleepController {
     public ResponseEntity<?> getSleepLogs(@RequestHeader("Authorization") String auth){
         String email= jwtService.extractEmail(auth.trim().substring(7));
         MyUser user = (MyUser) myUserService.getMyUser(email);
+        if(user.getRole().equals(Role.TRAINER) || user.getRole().equals(Role.ADMIN)
+         ){
+
+            if(user.getRole().equals(Role.ADMIN)) {
+                List<SleepLog> sleepLogs=  sleepService.getUserLogs(user);
+                List<SleepLogResponse> odg = new ArrayList<>();
+                sleepLogs.forEach(sleepLog -> odg.add(new SleepLogResponse(sleepLog)));
+                return ResponseEntity.status(200).body(odg);
+            }else {
+                String idUser = jwtService.extractUserId(auth.trim().substring(7));
+                user = myUserService.getMyUserByID(idUser);
+            }
+        }
         List<SleepLog> sleepLogs=  sleepService.getUserLogs(user);
         List<SleepLogResponse> odg = new ArrayList<>();
         sleepLogs.forEach(sleepLog -> odg.add(new SleepLogResponse(sleepLog)));
@@ -53,6 +76,10 @@ public class SleepController {
     public ResponseEntity<?> getSleepLog(@RequestHeader("Authorization") String auth,@PathVariable String id){
         String email= jwtService.extractEmail(auth.trim().substring(7));
         MyUser user = (MyUser) myUserService.getMyUser(email);
+        if(user.getRole().equals(Role.TRAINER) || user.getRole().equals(Role.ADMIN)
+        ){
+            if(user.getRole().equals(Role.ADMIN)) return ResponseEntity.status(200).body(new SleepLogResponse(sleepService.getSpecificLog(user,id).get()));
+        }
         Optional<SleepLog> optLog = sleepService.getSpecificLog(user,id);
         return ResponseEntity.status(200).body(new SleepLogResponse(optLog.get()));
     }

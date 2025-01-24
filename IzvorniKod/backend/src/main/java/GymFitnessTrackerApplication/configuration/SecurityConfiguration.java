@@ -34,10 +34,11 @@ public class SecurityConfiguration {
                 .cors(cors -> cors.configure(http))
                 .authorizeHttpRequests(registry -> {
                     registry.requestMatchers("/home","/get", "/api/auth/**").permitAll();
-                    registry.requestMatchers("/api/trainers").authenticated();
+                    registry.requestMatchers("/api/trainers","/api/sleep-log/**","/api/sleep-log","/api/food","/api/food/**").authenticated();
+                    registry.requestMatchers(("/api/nutrition-plan")).hasAnyRole("ADMIN","USER");
                     registry.requestMatchers("/admin/**", "/api/admin/**","api/user/admin").hasRole("ADMIN");
                     registry.requestMatchers("/trainer/**").hasRole("TRAINER");
-                    registry.requestMatchers("/user/**", "/api/nutrition-plan/**", "/api/user/**").hasRole("USER");
+                    registry.requestMatchers("/user/**", "/api/user/**").hasRole("USER");
                     registry.anyRequest().authenticated();
                 })
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)

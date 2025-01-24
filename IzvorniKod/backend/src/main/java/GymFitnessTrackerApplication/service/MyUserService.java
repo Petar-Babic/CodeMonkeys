@@ -21,6 +21,8 @@ public interface  MyUserService     {
     MyUser createMyUser(@RequestBody OAuthForm oauthForm);
     MyUser getMyUser(String email);
 
+    MyUser getMyUserByID(String id);
+
     //void updateGoalMeasurements(MyUser user,Measurement m);
 
     void updateUserFromForm(MyUser user, BodyGoalsForm form);

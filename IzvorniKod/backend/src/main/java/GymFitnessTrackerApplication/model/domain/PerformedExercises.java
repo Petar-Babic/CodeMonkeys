@@ -18,7 +18,7 @@ public class PerformedExercises {
     @ManyToOne
     @JoinColumn(name = "planned_exercise_id")
     private PlannedExercise plannedExercise;
-    @OneToMany(mappedBy = "performedExercise", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "performedExercise", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<PerformedSet> performedSets;
 
     public PerformedExercises(WorkoutSession workoutSession, PlannedExercise plannedExercise) {

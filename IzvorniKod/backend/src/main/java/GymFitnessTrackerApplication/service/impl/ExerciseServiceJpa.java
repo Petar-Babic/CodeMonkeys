@@ -1,5 +1,6 @@
 package GymFitnessTrackerApplication.service.impl;
 
+import GymFitnessTrackerApplication.exception.ForbiddenActionException;
 import GymFitnessTrackerApplication.model.dao.ExerciseRepo;
 import GymFitnessTrackerApplication.model.dao.MuscleGroupRepo;
 import GymFitnessTrackerApplication.model.dao.PlannedExerciseRepo;
@@ -81,6 +82,14 @@ public class ExerciseServiceJpa implements ExerciseService {
     }
 
     @Override
+    public void approveExercise(Long exerciseId) {
+        Exercise exercise = exerciseRepo.findById(exerciseId)
+                .orElseThrow(() -> new NonExistantEntityException("Exercise with "+ exerciseId +" not found."));
+        exercise.setApproved(true);
+        exerciseRepo.save(exercise);
+    }
+
+    @Override
     public List<ExerciseResponse> listAllExercisesCreatedByUser(MyUser user) {
         List<Exercise> exercises = exerciseRepo.findByCreatedByUser(user);
         List<ExerciseResponse> result = new ArrayList<>();
@@ -96,8 +105,9 @@ public class ExerciseServiceJpa implements ExerciseService {
     public ExerciseResponse createExercise(MyUser user, ExerciseForm exerciseForm) {
         Exercise newExercise = new Exercise(exerciseForm.name(), exerciseForm.description(), exerciseForm.gif(), user);
 
-        if (exerciseForm.primaryMuscleGroupsIds() != null) {
-            exerciseForm.primaryMuscleGroupsIds().forEach(muscleGroupId -> {
+        System.out.println("pirmary : "+exerciseForm.primaryMuscleGroupIds());
+        if (exerciseForm.primaryMuscleGroupIds() != null) {
+            exerciseForm.primaryMuscleGroupIds().forEach(muscleGroupId -> {
                 MuscleGroup muscleGroup = muscleGroupRepo.findById(muscleGroupId)
                         .orElseThrow(() -> new NonExistantEntityException("MuscleGroup with id "+ muscleGroupId + " not found."));
                 newExercise.addPrimaryMuscleGroup(muscleGroup);
@@ -105,33 +115,47 @@ public class ExerciseServiceJpa implements ExerciseService {
             });
         }
 
-        if (exerciseForm.secondaryMuscleGroupsIds() != null) {
-            exerciseForm.secondaryMuscleGroupsIds().forEach(muscleGroupId -> {
+        if (exerciseForm.secondaryMuscleGroupIds() != null) {
+            exerciseForm.secondaryMuscleGroupIds().forEach(muscleGroupId -> {
                 MuscleGroup muscleGroup = muscleGroupRepo.findById(muscleGroupId)
                         .orElseThrow(() -> new NonExistantEntityException("MuscleGroup with id "+ muscleGroupId + " not found."));
                 newExercise.addSecondaryMuscleGroup(muscleGroup);
                 muscleGroup.addSecondaryToExercises(newExercise);
             });
         }
-
+        if(user.getRole().equals(Role.ADMIN))
+            newExercise.setApproved(true);
         Exercise savedExercise = exerciseRepo.save(newExercise);
         return generateExerciseResponse(savedExercise);
     }
 
+    //mouzda napraviti da prima ExerciseResponse, a ne form jer mi trebaju id-evi svega
     @Override
-    public ExerciseResponse updateExercise(Long id, ExerciseForm exerciseForm) {
+    public ExerciseResponse updateExercise(Long id, ExerciseForm exerciseForm, MyUser user) {
         Exercise exercise = exerciseRepo.findById(id)
-                .orElseThrow(() -> new NonExistantEntityException("EExercise with "+ id +" not found."));
+                .orElseThrow(() -> new NonExistantEntityException("Exercise with "+ id +" not found."));
+        if(exercise.getCreatedByUser()!=user) {
+            throw new ForbiddenActionException("You have no permission to update this exercise.");
+        }
+        if(exerciseForm.name()!=null)
+            exercise.setName(exerciseForm.name());
+        if(exerciseForm.description()!=null)
+            exercise.setDescription(exerciseForm.description());
+        if(exerciseForm.gif()!=null)
+            exercise.setGif(exerciseForm.gif());
 
-        exercise.setName(exerciseForm.name());
-        exercise.setDescription(exerciseForm.description());
-        exercise.setGif(exerciseForm.gif());
+        for (MuscleGroup muscleGroup : exercise.getPrimaryMuscleGroup()) {
+            muscleGroup.getPrimaryToExercises().remove(exercise);
+        }
+        for (MuscleGroup muscleGroup : exercise.getSecondaryMuscleGroup()) {
+            muscleGroup.getSecondaryToExercises().remove(exercise);
+        }
 
         exercise.getPrimaryMuscleGroup().clear();
         exercise.getSecondaryMuscleGroup().clear();
 
-        if (exerciseForm.primaryMuscleGroupsIds() != null) {
-            exerciseForm.primaryMuscleGroupsIds().forEach(muscleGroupId -> {
+        if (exerciseForm.primaryMuscleGroupIds() != null) {
+            exerciseForm.primaryMuscleGroupIds().forEach(muscleGroupId -> {
                 MuscleGroup muscleGroup = muscleGroupRepo.findById(muscleGroupId)
                         .orElseThrow(() -> new NonExistantEntityException("MuscleGroup with id "+ muscleGroupId + " not found."));
                 exercise.addPrimaryMuscleGroup(muscleGroup);
@@ -139,8 +163,8 @@ public class ExerciseServiceJpa implements ExerciseService {
             });
         }
 
-        if (exerciseForm.secondaryMuscleGroupsIds() != null) {
-            exerciseForm.secondaryMuscleGroupsIds().forEach(muscleGroupId -> {
+        if (exerciseForm.secondaryMuscleGroupIds() != null) {
+            exerciseForm.secondaryMuscleGroupIds().forEach(muscleGroupId -> {
                 MuscleGroup muscleGroup = muscleGroupRepo.findById(muscleGroupId)
                         .orElseThrow(() -> new NonExistantEntityException("MuscleGroup with id "+ muscleGroupId + " not found."));
                 exercise.addSecondaryMuscleGroup(muscleGroup);
@@ -153,14 +177,28 @@ public class ExerciseServiceJpa implements ExerciseService {
     }
 
     @Override
-    public void deleteExercise(Long exerciseId) {
+    public void deleteExercise(Long exerciseId, MyUser user) {
         Exercise exercise = exerciseRepo.findById(exerciseId).
                 orElseThrow(() -> new NonExistantEntityException("Exercise with "+exerciseId+" not found"));
-        //String fileName = exercise.getGif();
-        //deleteFile(fileName);
+        System.out.println("role:" + user.getRole());
+        System.out.println("role admin:" + !user.getRole().equals(Role.ADMIN));
+
+        if(!exercise.getCreatedByUser().equals(user) && !user.getRole().equals(Role.ADMIN)) {
+            throw new ForbiddenActionException("You have no permission to delete this exercise.");
+        }
+        for (MuscleGroup muscleGroup : exercise.getPrimaryMuscleGroup()) {
+            muscleGroup.getPrimaryToExercises().remove(exercise);
+        }
+        for (MuscleGroup muscleGroup : exercise.getSecondaryMuscleGroup()) {
+            muscleGroup.getSecondaryToExercises().remove(exercise);
+        }
+
+        exercise.getPrimaryMuscleGroup().clear();
+        exercise.getSecondaryMuscleGroup().clear();
+        exercise.getPlannedExercises().clear();
+
         exerciseRepo.delete(exercise);
     }
-    //prepravi s excpetion-om
     @Override
     public ExerciseResponse getExerciseById(Long id) {
         Exercise exercise = exerciseRepo.findById(id)
@@ -174,35 +212,6 @@ public class ExerciseServiceJpa implements ExerciseService {
                 exercise.getDescription(), exercise.getGif(), exercise.getCreatedByUser().getId(), exercise.isApproved(),
                 exercise.getPrimaryMuscleGroup().stream().map(MuscleGroup::getId).collect(Collectors.toList()),
                 exercise.getSecondaryMuscleGroup().stream().map(MuscleGroup::getId).collect(Collectors.toList()));
-    }
-
-
-    public String uploadFile(MultipartFile file) throws AmazonClientException {
-        String fileName = "img_" + System.currentTimeMillis();
-        File fFile = convertMultipartFileToFile(file);
-        s3Client.putObject(new PutObjectRequest(bucketName, fileName, fFile));
-        return getURLToFile(fileName);
-    }
-
-
-
-    //vjv obrisi
-    public void deleteFile(String fileName) {
-        s3Client.deleteObject(bucketName, fileName);
-    }
-
-    public String getURLToFile(String fileName) {
-        Date expiration = new Date(System.currentTimeMillis() + 365L * 24 * 3600 * 1000);
-        return s3Client.generatePresignedUrl(bucketName,fileName,expiration, HttpMethod.GET).toString();
-    }
-    private File convertMultipartFileToFile(MultipartFile mpFile){
-        File convertedFile = new File(Objects.requireNonNull(mpFile.getOriginalFilename()));
-        try (FileOutputStream fos = new FileOutputStream(convertedFile)){
-            fos.write(mpFile.getBytes());
-        }catch(IOException e){
-            return null;
-        }
-        return convertedFile;
     }
 
 }

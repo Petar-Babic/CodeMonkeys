@@ -4,6 +4,7 @@ import GymFitnessTrackerApplication.model.dao.MyUserRepository;
 import GymFitnessTrackerApplication.model.domain.Measurement;
 import GymFitnessTrackerApplication.model.domain.MyUser;
 import GymFitnessTrackerApplication.model.domain.NutrionPlan;
+import GymFitnessTrackerApplication.model.domain.Role;
 import GymFitnessTrackerApplication.model.dto.forms.BodyGoalsForm;
 import GymFitnessTrackerApplication.model.dto.forms.BodyMeasurementForm;
 import GymFitnessTrackerApplication.model.dto.forms.UserIDForm;
@@ -43,6 +44,10 @@ public class UserDataController {
     public ResponseEntity<?> setBodyMeasurements(@RequestBody BodyMeasurementForm bodyMeasForm, @RequestHeader("Authorization") String auth){
         String email= jwtService.extractEmail(auth.trim().substring(7));
         MyUser user = (MyUser) myUserService.getMyUser(email);
+        if(user.getRole().equals(Role.TRAINER)){
+            String id = jwtService.extractUserId(auth.trim().substring(7));
+            user = myUserService.getMyUserByID(id);
+        }
         Measurement m = myMeasurementsService.createMeasurement(user,bodyMeasForm,"current");
 
         return ResponseEntity.status(HttpStatus.valueOf(200)).body(new BodyMeasurementsResponse(m));
@@ -52,6 +57,10 @@ public class UserDataController {
     public ResponseEntity<?> setGoalBodyMeasurements(@RequestBody BodyMeasurementForm bodyMeasForm, @RequestHeader("Authorization") String auth){
         String email= jwtService.extractEmail(auth.trim().substring(7));
         MyUser user = (MyUser) myUserService.getMyUser(email);
+        if(user.getRole().equals(Role.TRAINER)){
+            String id = jwtService.extractUserId(auth.trim().substring(7));
+            user = myUserService.getMyUserByID(id);
+        }
         Measurement m = myMeasurementsService.createMeasurement(user,bodyMeasForm,"goals");
         return ResponseEntity.status(HttpStatus.valueOf(200)).body(new BodyMeasurementsResponse(m));
     }
@@ -60,10 +69,16 @@ public class UserDataController {
     public ResponseEntity<?> getBodyMeasurements(@RequestHeader("Authorization") String auth) {
         String email= jwtService.extractEmail(auth.trim().substring(7));
         MyUser user = (MyUser) myUserService.getMyUser(email);
+        List<BodyMeasurementsResponse> bm = new ArrayList<>();
+
+        if(user.getRole().equals(Role.TRAINER)){
+            String id = jwtService.extractUserId(auth.trim().substring(7));
+            user = myUserService.getMyUserByID(id);
+        }
         List<Measurement> m = myMeasurementsService.getMyMeasurements(user);
 
-        if(m.isEmpty()) return ResponseEntity.status(HttpStatus.valueOf(200)).body("");
-        List<BodyMeasurementsResponse> bm = new ArrayList<>();
+        if(m.isEmpty()) return ResponseEntity.status(HttpStatus.valueOf(200)).body(bm);
+
         m.forEach( measurement -> {bm.add(new BodyMeasurementsResponse(measurement));});
 
         return ResponseEntity.status(HttpStatus.valueOf(200)).body(bm);
@@ -73,9 +88,15 @@ public class UserDataController {
     public ResponseEntity<?> getGoalBodyMeasurements(@RequestHeader("Authorization") String auth) {
         String email= jwtService.extractEmail(auth.trim().substring(7));
         MyUser user = (MyUser) myUserService.getMyUser(email);
-        List<Measurement> m = myMeasurementsService.getMyGoalMeasurements(user);
-        if(m.isEmpty()) return ResponseEntity.status(HttpStatus.valueOf(200)).body("");
         List<BodyMeasurementsResponse> bm = new ArrayList<>();
+
+        if(user.getRole().equals(Role.TRAINER)){
+            String id = jwtService.extractUserId(auth.trim().substring(7));
+            user = myUserService.getMyUserByID(id);
+        }
+        List<Measurement> m = myMeasurementsService.getMyGoalMeasurements(user);
+
+        if(m.isEmpty()) return ResponseEntity.status(HttpStatus.valueOf(200)).body(bm);
         m.forEach( measurement -> {bm.add(new BodyMeasurementsResponse(measurement));});
         return ResponseEntity.status(HttpStatus.valueOf(200)).body(bm);
     }
@@ -90,11 +111,20 @@ public class UserDataController {
         System.out.println("form: " + form);
         System.out.println("auth: " + auth);
 
+
         String email= jwtService.extractEmail(auth.trim().substring(7));
         MyUser user = (MyUser) myUserService.getMyUser(email);
-        myUserService.updateUserFromForm(user,form);
-        myMeasurementsService.createGoalMeasurementFromStats(user,form);
-        myNutrionService.createNutrionFromForm(user,form);
+        if(user.getRole().equals(Role.TRAINER)){
+            String id = jwtService.extractUserId(auth.trim().substring(7));
+            MyUser user2 = myUserService.getMyUserByID(id);
+            myUserService.updateUserFromForm(user2, form);
+            myMeasurementsService.createGoalMeasurementFromStats(user2, form);
+            myNutrionService.createNutrionPlanTrainer(user,form,user2.getId());
+        }else {
+            myUserService.updateUserFromForm(user, form);
+            myMeasurementsService.createGoalMeasurementFromStats(user, form);
+            myNutrionService.createNutrionFromForm(user, form);
+        }
         //myUserService.updateCurrentNutrion(user,nutrionPlan);
         return ResponseEntity.status(HttpStatus.valueOf(200)).body("Creeated nutrion plan and goal body measurements");
     }
@@ -103,6 +133,10 @@ public class UserDataController {
     public ResponseEntity<?> getUserFullData(@RequestHeader("Authorization") String auth) {
     String email = jwtService.extractEmail(auth.trim().substring(7));
     MyUser user = (MyUser) myUserService.getMyUser(email);
+    if(user.getRole().equals(Role.TRAINER)){
+            String id = jwtService.extractUserId(auth.trim().substring(7));
+            user = myUserService.getMyUserByID(id);
+    }
 
     String imageURl = myUserService.getURLToFile(user.getImage());
 

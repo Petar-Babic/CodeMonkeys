@@ -1,5 +1,7 @@
 package GymFitnessTrackerApplication.service;
 
+import GymFitnessTrackerApplication.model.domain.MyUser;
+import GymFitnessTrackerApplication.model.dto.response.UserDetailsResponse;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
@@ -10,8 +12,10 @@ import org.springframework.stereotype.Service;
 
 import java.security.Key;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Date;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 import javax.crypto.SecretKey;
 
@@ -24,7 +28,61 @@ public class JwtService {
     public String generateToken(UserDetails userDetails) {
         return Jwts.builder()
                 .subject(userDetails.getUsername())
+                .claim("role",userDetails.getAuthorities())
                 .issuedAt(Date.from(Instant.now()))
+                .expiration(Date.from(Instant.now().plusMillis(VALIDITY)))
+                .signWith(generateKey())
+                .compact();
+    }
+
+    public String generateToken(MyUser userDetails) {
+        return Jwts.builder()
+                .subject(userDetails.getEmail())
+                .claim("role", userDetails.getRole().toString())
+                .issuedAt(Date.from(Instant.now()))
+                .expiration(Date.from(Instant.now().plusMillis(VALIDITY)))
+                .signWith(generateKey())
+                .compact();
+    }
+
+    public String generateTokenTrainer(UserDetails userDetails, List<UserDetailsResponse> users) {
+        return Jwts.builder()
+                .subject(userDetails.getUsername())
+                .issuedAt(Date.from(Instant.now()))
+                .claim("role",userDetails.getAuthorities())
+                .claim("users",users)
+                .expiration(Date.from(Instant.now().plusMillis(VALIDITY)))
+                .signWith(generateKey())
+                .compact();
+    }
+    public String generateTokenTrainer(MyUser user, List<UserDetailsResponse> users) {
+        return Jwts.builder()
+                .subject(user.getEmail())
+                .issuedAt(Date.from(Instant.now()))
+                .claim("role",user.getRole().toString())
+                .claim("users",users)
+                .expiration(Date.from(Instant.now().plusMillis(VALIDITY)))
+                .signWith(generateKey())
+                .compact();
+    }
+
+    public String generateForTraining(UserDetails userDetails, String userId) {
+        return Jwts.builder()
+                .subject(userDetails.getUsername())
+                .issuedAt(Date.from(Instant.now()))
+                .claim("role",userDetails.getAuthorities())
+                .claim("userId",userId)
+                .expiration(Date.from(Instant.now().plusMillis(VALIDITY)))
+                .signWith(generateKey())
+                .compact();
+    }
+
+    public String generateForTraining(MyUser user, String userId) {
+        return Jwts.builder()
+                .subject(user.getEmail())
+                .issuedAt(Date.from(Instant.now()))
+                .claim("role",user.getRole())
+                .claim("userId",userId)
                 .expiration(Date.from(Instant.now().plusMillis(VALIDITY)))
                 .signWith(generateKey())
                 .compact();
@@ -37,6 +95,11 @@ public class JwtService {
     public String extractEmail(String jwt) {
         Claims claims = getClaims(jwt);
         return claims.getSubject();
+    }
+
+    public String extractUserId(String jwt){
+        Claims claims = getClaims(jwt);
+        return claims.get("userId",String.class);
     }
 
     private Claims getClaims(String jwt) {

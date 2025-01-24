@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -23,11 +24,7 @@ public class AdminController {
     private WorkoutPlanService workoutPlanService;
     @Autowired
     private ExerciseService exerciseService;
-
-    @GetMapping("/")
-    public ResponseEntity<?> welcome() {
-        return ResponseEntity.ok("Welcome to GymFitnessTracker Application ");
-    }
+    
 
     @GetMapping("/workout-plans")
     public ResponseEntity<?> allWorkoutPlans() {
@@ -41,14 +38,11 @@ public class AdminController {
         return ResponseEntity.status(HttpStatus.OK).body(exercises);
     }
 
-    @PutMapping("/exercise")
-    public ResponseEntity<?> approveExercise(){
-        //dodati da se azurira
+    @PutMapping("/exercise/{id}")
+    public ResponseEntity<?> approveExercise(@PathVariable Long id) {
+        exerciseService.approveExercise(id);
         return ResponseEntity.status(HttpStatus.OK).body("Exercise successfully approved");
     }
-
-    //prebaciti f-ju kreiranja muscle grupa ovdje
-
 
 
 }

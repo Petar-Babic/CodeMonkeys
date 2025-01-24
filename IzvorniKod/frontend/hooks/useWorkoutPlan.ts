@@ -74,8 +74,6 @@ export const useWorkoutPlan = () => {
     ): Promise<WorkoutPlanBase | undefined> => {
       let updatedPlan: WorkoutPlanBase | undefined;
 
-      console.log("input", input);
-
       setWorkoutPlans((prevPlans) =>
         prevPlans.map((plan) => {
           if (plan.id === input.id) {
@@ -94,6 +92,8 @@ export const useWorkoutPlan = () => {
       if (!accessToken) {
         throw new Error("Access token is not set");
       }
+
+      console.log("updateWorkoutPlan input", input);
 
       await fetch(`${backendUrl}/api/workout-plans/${input.id}`, {
         method: "PUT",

@@ -26,5 +26,9 @@ public interface MealService {
 
     List<Meal> getAllMeals(MyUser u);
 
+    void deleteMeal(String id);
+
+    void updateMeal(String id,MealForm form);
+
     List<Meal> getMealsBetweenDates(MyUser user, LocalDate startDate, LocalDate endDate);
 }

@@ -127,6 +127,19 @@ public class CustomExceptionHandler {
     public ResponseEntity<String> handleEntityNotFound(NonExistantEntityException ex){
         return new ResponseEntity<>(ex.getMessage(),HttpStatus.NOT_FOUND);
     }
+    @ExceptionHandler(InvalidInputException.class)
+    public ResponseEntity<String> handleEntityNotFound(InvalidInputException ex){
+        return new ResponseEntity<>(ex.getMessage(),HttpStatus.BAD_REQUEST);
+    }
+    @ExceptionHandler(RemoveWorkoutException.class)
+    public ResponseEntity<String> handleEntityNotFound(RemoveWorkoutException ex){
+        return new ResponseEntity<>(ex.getMessage(),HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(ForbiddenActionException.class)
+    public ResponseEntity<String> handleEntityNotFound(ForbiddenActionException ex){
+        return new ResponseEntity<>(ex.getMessage(),HttpStatus.FORBIDDEN);
+    }
 
     /*
 

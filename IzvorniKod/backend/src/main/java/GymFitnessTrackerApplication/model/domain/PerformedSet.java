@@ -44,4 +44,16 @@ public class PerformedSet {
     public Float getWeight() {
         return weight;
     }
+
+    public void setReps(Integer reps) {
+        this.reps = reps;
+    }
+
+    public void setRpe(Integer rpe) {
+        this.rpe = rpe;
+    }
+
+    public void setWeight(Float weight) {
+        this.weight = weight;
+    }
 }

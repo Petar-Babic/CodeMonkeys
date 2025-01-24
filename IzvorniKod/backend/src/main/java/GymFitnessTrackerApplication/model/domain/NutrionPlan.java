@@ -1,5 +1,6 @@
 package GymFitnessTrackerApplication.model.domain;
 
+import GymFitnessTrackerApplication.model.dto.forms.BodyGoalsForm;
 import GymFitnessTrackerApplication.model.dto.forms.NutrionPlanForm;
 import jakarta.persistence.*;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -153,6 +154,21 @@ public class NutrionPlan {
         this.startDate = LocalDate.parse(form.getStartDate().substring(0, 10));
         this.endDate = LocalDate.parse(form.getEndDate().substring(0, 10));
         
+        this.createdAt = ZonedDateTime.now();
+        this.updatedAt = ZonedDateTime.now();
+    }
+
+    public NutrionPlan(MyUser user, @RequestBody BodyGoalsForm form){
+        this.myUser = user;
+        this.calories = form.getCalories();
+        this.fat = form.getFat();
+        this.carbs = form.getCarbs();
+        this.protein = form.getProtein();
+
+        // Parse ISO format date and extract only the date part
+        this.startDate = form.getStartDate();
+        this.endDate = form.getEndDate();
+
         this.createdAt = ZonedDateTime.now();
         this.updatedAt = ZonedDateTime.now();
     }
