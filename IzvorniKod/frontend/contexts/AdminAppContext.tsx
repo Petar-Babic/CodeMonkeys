@@ -31,17 +31,12 @@ import { ExerciseBase } from "@/types/exercise";
 import { MuscleGroupBase } from "@/types/muscleGroup";
 import { WorkoutPlanBase } from "@/types/workoutPlan";
 import { UserBase } from "@/types/user";
-import {
-  useWorkoutSession,
-  UseWorkoutSessionType,
-} from "@/hooks/useWorkoutSession";
 
 type AppContextType = UseUserContextType &
   UseNutritionPlanContextType &
   UseExerciseContextType &
   UseWorkoutPlanContextType &
   UseMuscleGroupContextType &
-  UseWorkoutSessionType &
   UseUserWorkoutPlanType & {
     isLoading: boolean;
   } & {
@@ -69,7 +64,6 @@ export function AdminAppProvider({
   const muscleGroupContext = useMuscleGroup();
   const workoutPlanContext = useWorkoutPlan();
   const userWorkoutPlanContext = useUserWorkoutPlan();
-  const workoutSessionContext = useWorkoutSession();
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -103,7 +97,6 @@ export function AdminAppProvider({
       ...muscleGroupContext,
       ...nutritionPlanContext,
       ...workoutPlanContext,
-      ...workoutSessionContext,
       ...userWorkoutPlanContext,
       isLoading: isLoading,
       accessToken: initialData.accessToken,
@@ -114,7 +107,6 @@ export function AdminAppProvider({
       exerciseContext,
       muscleGroupContext,
       workoutPlanContext,
-      workoutSessionContext,
       userWorkoutPlanContext,
       isLoading,
       initialData.accessToken,

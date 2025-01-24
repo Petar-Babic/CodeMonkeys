@@ -5,6 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 import WorkoutNowExerciseCard from "@/components/WorkoutNowExerciseCard";
 import ExerciseInProgress from "@/components/ExerciseInProgress";
 import { useAppContext } from "@/contexts/AppContext";
+import { CreateWorkoutSessionInput } from "@/types/workoutSession";
 
 type Exercise = {
   id: number;
@@ -26,7 +27,7 @@ export default function WorkoutNowPage() {
   console.log(pathname);
   console.log(workoutId);
 
-  const { userWorkoutPlan } = useAppContext();
+  const { userWorkoutPlan, createWorkoutSession } = useAppContext();
 
   const selectedWorkout = userWorkoutPlan?.workouts.find(
     (workout) => workout.id === parseInt(workoutId)
@@ -48,7 +49,14 @@ export default function WorkoutNowPage() {
     setActiveExercise(null);
   };
 
-  const handleFinishWorkout = () => {
+  const handleFinishWorkout = async () => {
+
+    const data: CreateWorkoutSessionInput = {
+     
+    };
+
+    await createWorkoutSession(data);
+
     const confirmFinish = window.confirm(
       "Are you sure you want to finish the workout early?"
     );

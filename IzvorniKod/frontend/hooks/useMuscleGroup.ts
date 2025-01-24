@@ -6,7 +6,6 @@ import {
 } from "@/types/muscleGroup";
 import { muscleGroups as predefinedMuscleGroups } from "@/data/muscleGroup";
 import { backendUrl } from "@/data/backendUrl";
-// Predefined muscle groups
 
 export const useMuscleGroup = () => {
   const [muscleGroups, setMuscleGroups] = useState<MuscleGroupBase[]>(
