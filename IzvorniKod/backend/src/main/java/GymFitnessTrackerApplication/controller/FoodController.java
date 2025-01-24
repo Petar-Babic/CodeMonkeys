@@ -1,6 +1,8 @@
 package GymFitnessTrackerApplication.controller;
 
 
+import GymFitnessTrackerApplication.exception.AdminRestrictedException;
+import GymFitnessTrackerApplication.exception.NoExistingFoodException;
 import GymFitnessTrackerApplication.model.domain.*;
 import GymFitnessTrackerApplication.model.dto.forms.FoodForm;
 import GymFitnessTrackerApplication.model.dto.forms.MealForm;
@@ -83,6 +85,21 @@ public class FoodController {
         MyUser user = (MyUser) myUserService.getMyUser(email);
         Food food = foodService.updateFood(id,form,user);
         return ResponseEntity.status(200).body(new FoodResponse(food));
+    }
+
+    @DeleteMapping("/api/food/{id}")
+    public ResponseEntity<?> deleteFood(@RequestHeader("Authorization") String token,@PathVariable String id){
+        String email = jwtService.extractEmail(token.trim().substring(7));
+        MyUser user = (MyUser) myUserService.getMyUser(email);
+        if(!user.getRole().equals(Role.ADMIN))
+            throw new AdminRestrictedException("Admin only action");
+        try{
+            Long i = Long.parseLong(id);
+        }catch(Exception e){
+            throw new NoExistingFoodException("No such food exists");
+        }
+        foodService.deleteFood(id);
+        return ResponseEntity.status(200).body("Deleted food with ID : "+id);
     }
 
     @PostMapping("/api/meal")

@@ -20,4 +20,6 @@ public interface FoodService {
     Food updateFood(String id,FoodForm form,MyUser user);
 
     Food createFoodFromBarcode(MyUser user,String barcode);
+
+    void deleteFood(String id);
 }

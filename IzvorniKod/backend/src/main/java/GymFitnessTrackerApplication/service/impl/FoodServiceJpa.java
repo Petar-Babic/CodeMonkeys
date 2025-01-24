@@ -50,6 +50,12 @@ public class FoodServiceJpa implements FoodService{
         return foodRepo.findAll();
     }
 
+    public void deleteFood(String id){
+        Long iD = Long.parseLong(id);
+        if(foodRepo.findById(iD).isEmpty()) throw new NoExistingFoodException("No such food exists");
+        foodRepo.deleteById(iD);
+    }
+
     @Override
     public Food updateFood(String id,FoodForm form,MyUser user){
         Optional<Food> f = foodRepo.findById(Long.parseLong(id));
