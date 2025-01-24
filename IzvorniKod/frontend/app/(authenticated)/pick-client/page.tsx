@@ -17,7 +17,7 @@ export default async function PickClientPage() {
 
   return (
     <>
-      <div className="w-full bg-white h-full flex-col flex xl:flex-row relative max-xl:pt-14">
+      <div className="w-full z-50 top-0 left-0 p-30 gap-10 justify-center items-center  bg-black h-full flex-col flex xl:flex-row absolute max-xl:pt-14">
         {clients?.map((client) => (
           <div key={client.userId}>
             <PickClient user={client} />
