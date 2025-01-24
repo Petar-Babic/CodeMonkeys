@@ -8,7 +8,7 @@ export const foods: FoodBase[] = [
     unit: "g",
     protein: 1,
     defaultNumber: 1,
-    fat: 0,
+    fats: 0,
     carbs: 27,
   },
   {
@@ -18,7 +18,7 @@ export const foods: FoodBase[] = [
     unit: "g",
     protein: 1,
     defaultNumber: 1,
-    fat: 0,
+    fats: 0,
     carbs: 27,
   },
   {
@@ -28,7 +28,7 @@ export const foods: FoodBase[] = [
     unit: "g",
     protein: 1,
     defaultNumber: 1,
-    fat: 0,
+    fats: 0,
     carbs: 27,
   },
 ];

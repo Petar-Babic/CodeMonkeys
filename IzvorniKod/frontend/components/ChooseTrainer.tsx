@@ -15,7 +15,7 @@ export default function ChooseTrainer({ trainer }: { trainer: TrainerBase }) {
         .toUpperCase()
     : "??";
 
-  const handlePickClient = async () => {
+  const handleChooseTrainer = async () => {
     try {
       const token = localStorage.getItem("accessToken");
 
@@ -30,7 +30,7 @@ export default function ChooseTrainer({ trainer }: { trainer: TrainerBase }) {
 
       console.log(data);
 
-      const response = await fetch(`${backendUrl}/api/user/choose-trainer`, {
+      await fetch(`${backendUrl}/api/user/choose-trainer`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -40,6 +40,8 @@ export default function ChooseTrainer({ trainer }: { trainer: TrainerBase }) {
       });
 
       alert("Trainer chosen successfully");
+
+      router.push("/workouts");
     } catch (error) {
       console.error("Error choosing trainer", error);
     }
@@ -50,7 +52,7 @@ export default function ChooseTrainer({ trainer }: { trainer: TrainerBase }) {
       <Button
         variant="outline"
         className="relative h-[100px] bg-gray-900 w-[100px] mx-4 rounded-full focus:ring-0 flex justify-center items-center focus:ring-offset-0 hover:bg-gray-700"
-        onClick={handlePickClient}
+        onClick={handleChooseTrainer}
       >
         <Avatar className="bg-transparent ">
           <AvatarImage

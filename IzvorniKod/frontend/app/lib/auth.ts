@@ -182,7 +182,7 @@ export const authOptions: NextAuthOptions = {
       }
       return true;
     },
-    async jwt({ token, user, account }) {
+    async jwt({ token, user, account, trigger, session }) {
       if (user) {
         token.id = Number(user.id);
         token.email = user.email;
@@ -192,11 +192,15 @@ export const authOptions: NextAuthOptions = {
         token.provider = account?.provider;
         token.users = user.users;
       }
+      if (trigger === "update") {
+        return {
+          ...token,
+          accessToken: session?.user,
+        };
+      }
       return token;
     },
     async session({ session, token }) {
-      console.log("session", session);
-
       session.user = {
         id: token.id,
         email: token.email as string,

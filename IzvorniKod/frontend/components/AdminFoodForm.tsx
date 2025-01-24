@@ -22,7 +22,7 @@ const formSchema = z.object({
   calories: z.number().min(0, "Kalorije moraju biti pozitivan broj"),
   protein: z.number().min(0, "Proteini moraju biti pozitivan broj"),
   carbs: z.number().min(0, "Ugljikohidrati moraju biti pozitivan broj"),
-  fat: z.number().min(0, "Masti moraju biti pozitivan broj"),
+  fats: z.number().min(0, "Masti moraju biti pozitivan broj"),
   unit: z.string().min(1, "Jedinica je obavezna"),
   defaultNumber: z.number().min(1, "Default number is required"),
 });
@@ -40,7 +40,7 @@ export function AdminFoodForm({ food }: { food: FoodBase | null }) {
       calories: food?.calories || 0,
       protein: food?.protein || 0,
       carbs: food?.carbs || 0,
-      fat: food?.fat || 0,
+      fats: food?.fats || 0,
       unit: food?.unit || "",
       defaultNumber: food?.defaultNumber || 1,
     },
@@ -135,7 +135,7 @@ export function AdminFoodForm({ food }: { food: FoodBase | null }) {
 
         <FormField
           control={form.control}
-          name="fat"
+          name="fats"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Masti (g)</FormLabel>

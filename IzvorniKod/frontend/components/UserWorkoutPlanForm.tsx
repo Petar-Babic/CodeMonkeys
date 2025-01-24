@@ -45,6 +45,7 @@ import { useAppContext } from "@/contexts/AppContext";
 import { Loader2 } from "lucide-react";
 import { EditUserWorkoutForm } from "./EditUserWorkoutForm";
 import Image from "next/image";
+import { Role } from "@/types/user";
 
 const formSchema = z.object({
   name: z.string().min(1, "Name is required"),
@@ -81,12 +82,13 @@ export function UserWorkoutPlanForm() {
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const router = useRouter();
-
   const {
     updateUserWorkoutPlan: updateWorkoutPlan,
     userWorkoutPlan: workoutPlan,
     createUserWorkoutPlan: createWorkoutPlan,
     exercises,
+    userData: user,
+    trainer,
   } = useAppContext();
 
   console.log("workoutPlan UserWorkoutPlanForm", workoutPlan);
@@ -120,9 +122,19 @@ export function UserWorkoutPlanForm() {
   });
 
   const handleSubmit = async (values: FormValues) => {
+    let userId = user?.id;
+    let createdById = trainer ? trainer.id : user?.id;
+
+    console.log("userId", userId);
+    console.log("createdById", createdById);
+
     setIsSubmitting(true);
     try {
       let imageUrl = values.image;
+
+      if (!userId || !createdById) {
+        throw new Error("User ID or created by ID is not set");
+      }
 
       if (selectedImage) {
         imageUrl = await handleUploadImage(selectedImage);
@@ -162,12 +174,12 @@ export function UserWorkoutPlanForm() {
           })),
         };
 
-        await createWorkoutPlan(data);
+        await createWorkoutPlan(data, userId, createdById);
         console.log("data in create workout plan", data);
       } else {
-        await updateWorkoutPlan(formattedData);
+        await updateWorkoutPlan(formattedData, userId, createdById);
       }
-
+      router.refresh();
       router.push("/workout-plans");
     } catch (error) {
       console.error("Error submitting form:", error);

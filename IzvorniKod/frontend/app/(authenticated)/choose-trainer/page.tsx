@@ -15,7 +15,7 @@ export default function ChooseTrainerPage() {
           Choose Trainer
         </h4>
         {trainers?.map((trainer) => (
-          <div key={trainer.id}>
+          <div key={trainer.userId}>
             <ChooseTrainer trainer={trainer} />
           </div>
         ))}

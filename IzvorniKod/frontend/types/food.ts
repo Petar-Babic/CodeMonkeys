@@ -5,7 +5,7 @@ export type FoodBase = {
   unit: string;
   protein: number;
   defaultNumber: number;
-  fat: number;
+  fats: number;
   carbs: number;
 };
 

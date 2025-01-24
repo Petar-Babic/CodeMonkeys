@@ -42,6 +42,7 @@ import { useFile, UseFileContextType } from "@/hooks/useFile";
 import { useTrainers } from "@/hooks/useTrainers";
 import { UseTrainersContextType } from "@/hooks/useTrainers";
 import { TrainerBase } from "@/types/trainer";
+
 type AppContextType = UseUserContextType &
   UseFileContextType &
   UseNutritionPlanContextType &
@@ -73,6 +74,7 @@ export function AppProvider({
     workoutPlans: WorkoutPlanBase[];
     accessToken: string;
     user: UserBase;
+    trainer: UserBase | null;
     role: "ADMIN" | "USER" | "TRAINER";
     foods: FoodBase[];
   };
@@ -101,6 +103,7 @@ export function AppProvider({
   const { setUserData } = userContext;
   const { setFoods } = foodContext;
   const { setTrainers } = trainersContext;
+  const { setTrainer } = userContext;
   useEffect(() => {
     setExercises(initialData.exercises);
     setMuscleGroups(initialData.muscleGroups);
@@ -112,6 +115,9 @@ export function AppProvider({
     setRole(initialData.role);
     setFoods(initialData.foods);
     setTrainers(initialData.trainers ?? []);
+    if (initialData.trainer) {
+      setTrainer(initialData.trainer);
+    }
   }, [
     initialData,
     setExercises,
@@ -123,6 +129,7 @@ export function AppProvider({
     setFoods,
     setRole,
     setTrainers,
+    setTrainer,
   ]);
 
   const appContextValue = useMemo<AppContextType>(

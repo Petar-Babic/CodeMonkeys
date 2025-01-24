@@ -16,22 +16,19 @@ export function useUserWorkoutPlan() {
   const [error, setError] = useState<string | null>(null);
   const [userWorkoutPlan, setUserWorkoutPlan] =
     useState<WorkoutPlanWithWorkouts | null>(null);
-  const { user } = useAuthContext();
-
-  const userId = user?.id;
 
   const createUserWorkoutPlan = useCallback(
-    async (data: CreateWorkoutPlanInput) => {
+    async (
+      data: CreateWorkoutPlanInput,
+      userId: number,
+      createdById: number
+    ) => {
       console.log("data for createUserWorkoutPlan", data);
-
-      if (!userId) {
-        throw new Error("User ID is not set");
-      }
 
       const dataSend = {
         ...data,
         userId: userId,
-        createdByUserId: userId,
+        createdByUserId: createdById,
       };
 
       console.log("dataSend", dataSend);
@@ -91,13 +88,24 @@ export function useUserWorkoutPlan() {
         setIsLoadingUserWorkoutPlan(false);
       }
     },
-    [userId]
+    []
   );
 
   const updateUserWorkoutPlan = useCallback(
-    async (data: UpdateWorkoutPlanInput) => {
+    async (
+      data: UpdateWorkoutPlanInput,
+      userId: number,
+      createdById: number
+    ) => {
       setIsLoadingUserWorkoutPlan(true);
       setError(null);
+
+      const dataSend = {
+        ...data,
+        userId: userId,
+        createdByUserId: createdById,
+      };
+
       if (!userWorkoutPlan) {
         throw new Error("User workout plan not found");
       }
@@ -169,7 +177,9 @@ export type UseUserWorkoutPlanType = {
   isLoadingUserWorkoutPlan: boolean;
   error: string | null;
   createUserWorkoutPlan: (
-    data: CreateWorkoutPlanInput
+    data: CreateWorkoutPlanInput,
+    userId: number,
+    createdById: number
   ) => Promise<WorkoutPlanWithWorkouts>;
   userWorkoutPlan: WorkoutPlanWithWorkouts | null;
   setUserWorkoutPlan: React.Dispatch<
@@ -177,6 +187,8 @@ export type UseUserWorkoutPlanType = {
   >;
   getUserWorkoutPlan: (userId: string) => Promise<boolean>;
   updateUserWorkoutPlan: (
-    data: UpdateWorkoutPlanInput
+    data: UpdateWorkoutPlanInput,
+    userId: number,
+    createdById: number
   ) => Promise<WorkoutPlanWithWorkouts>;
 };

@@ -11,6 +11,8 @@ export default async function AppLayout({
 }>) {
   const session = await getServerSession(authOptions);
 
+  console.log("session at layout", session);
+
   const userId = session?.user.id;
   const accessToken = session?.accessToken;
   const refreshToken = session?.refreshToken;
@@ -28,6 +30,7 @@ export default async function AppLayout({
       <AppLayoutComponent
         userId={Number(userId)}
         accessToken={accessToken ?? ""}
+        session={session}
       >
         {children}
       </AppLayoutComponent>

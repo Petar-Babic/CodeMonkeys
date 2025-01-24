@@ -15,6 +15,7 @@ export default function PickClient({
   };
 }) {
   const router = useRouter();
+
   const initials = user.name
     ? user.name
         .split(" ")
@@ -45,14 +46,13 @@ export default function PickClient({
 
       const data = await response.json();
 
-      console.log(data);
+      console.log("data after pick client", data);
 
-      if (data.token) {
-        localStorage.setItem("accessToken", data.token);
-      }
+      localStorage.removeItem("accessToken");
+      localStorage.setItem("accessToken", data.token);
+      localStorage.setItem("userId", user.userId.toString());
 
-      console.log(data);
-
+      router.refresh();
       router.push("/workouts");
     } catch (error) {
       console.error("Error picking client", error);
@@ -66,13 +66,13 @@ export default function PickClient({
         className="relative h-[100px] bg-gray-900 w-[100px] mx-4 rounded-full focus:ring-0 flex justify-center items-center focus:ring-offset-0 hover:bg-gray-700"
         onClick={handlePickClient}
       >
-        <Avatar className="bg-transparent ">
+        <Avatar className="bg-transparent">
           <AvatarImage
             src={user.image || undefined}
             alt={user.name || "User"}
             className="bg-black rounded-full"
           />
-          <AvatarFallback className=" bg-transparent text-white">
+          <AvatarFallback className="bg-transparent text-white">
             {initials}
           </AvatarFallback>
         </Avatar>

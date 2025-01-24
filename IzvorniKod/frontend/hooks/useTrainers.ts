@@ -29,28 +29,6 @@ export const useTrainers = () => {
     }
   }, []);
 
-  const becomeTrainer = useCallback(async () => {
-    try {
-      const token = localStorage.getItem("accessToken");
-      if (!token) {
-        console.error("No token found");
-        return;
-      }
-
-      const response = await fetch(`${backendUrl}/api/user/trainer`, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      const data = await response.json();
-      console.log(data);
-    } catch (error) {
-      console.error("Error becoming trainer", error);
-    }
-  }, []);
-
   return { pickTrainer, trainers, setTrainers } as UseTrainersContextType;
 };
 

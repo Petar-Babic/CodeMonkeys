@@ -8,13 +8,7 @@ import React, {
   useEffect,
   useCallback,
 } from "react";
-import {
-  SessionProvider,
-  signIn,
-  SignInResponse,
-  signOut,
-  useSession,
-} from "next-auth/react";
+import { signIn, SignInResponse, signOut, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { UserBase } from "@/types/user";
 import { SessionWithRelations } from "@/types/session";
@@ -24,6 +18,7 @@ import {
   AuthContextType,
 } from "@/types/auth";
 import { backendUrl } from "@/data/backendUrl";
+import { SessionProvider } from "next-auth/react";
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -141,6 +136,7 @@ function useAuth(): AuthContextType {
     setUser(null);
     setIsAuthenticated(false);
     router.push("/sign-in");
+    localStorage.clear();
   }, [router]);
 
   const getNutritionPlan = useCallback(

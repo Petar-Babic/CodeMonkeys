@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useRouter } from "next/navigation";
 import { useAuthContext } from "@/contexts/AuthContext";
+import { backendUrl } from "@/data/backendUrl";
 import { Role } from "@/types/user";
 
 export default function UserMenu() {
@@ -40,6 +41,28 @@ export default function UserMenu() {
   console.log("session", session);
 
   const role = session.user.role;
+
+  const becomeTrainer = async () => {
+    try {
+      const token = localStorage.getItem("accessToken");
+      if (!token) {
+        console.error("No token found");
+        return;
+      }
+
+      await fetch(`${backendUrl}/api/user/trainer`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+
+      alert("You are now a trainer");
+    } catch (error) {
+      console.error("Error becoming trainer", error);
+    }
+  };
 
   const isUser =
     role.toString().toLowerCase() === Role.USER.toString().toLowerCase();
@@ -99,21 +122,36 @@ export default function UserMenu() {
           />
         </DropdownMenuItem>
         {isUser && (
-          <DropdownMenuItem
-            className="pl-4 flex items-center cursor-pointer"
-            onClick={() => {
-              router.push("/choose-trainer");
-            }}
-          >
-            <UserPlus className="w-4 h-4 mr-2" />
-            <span className="font-light text-sm text-gray-700">
-              Choose Trainer
-            </span>
-            <ChevronRight
-              className="w-4 h-4 ml-auto text-gray-700"
-              strokeWidth={1}
-            />
-          </DropdownMenuItem>
+          <>
+            <DropdownMenuItem
+              className="pl-4 flex items-center cursor-pointer"
+              onClick={() => {
+                router.push("/choose-trainer");
+              }}
+            >
+              <UserPlus className="w-4 h-4 mr-2" />
+              <span className="font-light text-sm text-gray-700">
+                Choose Trainer
+              </span>
+              <ChevronRight
+                className="w-4 h-4 ml-auto text-gray-700"
+                strokeWidth={1}
+              />
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              className="pl-4 flex items-center cursor-pointer"
+              onClick={becomeTrainer}
+            >
+              <UserPlus className="w-4 h-4 mr-2" />
+              <span className="font-light text-sm text-gray-700">
+                Become Trainer
+              </span>
+              <ChevronRight
+                className="w-4 h-4 ml-auto text-gray-700"
+                strokeWidth={1}
+              />
+            </DropdownMenuItem>
+          </>
         )}
         <DropdownMenuItem
           onClick={handleLogout}

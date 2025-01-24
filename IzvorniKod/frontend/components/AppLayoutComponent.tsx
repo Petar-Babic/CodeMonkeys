@@ -1,7 +1,7 @@
+"use client";
 import { AppProvider } from "@/contexts/AppContext";
 import Header from "@/components/Header";
 import Navigation from "@/components/Navigation";
-import { AuthProvider } from "@/contexts/AuthContext";
 import { ExerciseBase } from "@/types/exercise";
 import { MuscleGroupBase } from "@/types/muscleGroup";
 import { NutritionPlanBase } from "@/types/nutritionPlan";
@@ -10,17 +10,15 @@ import { WorkoutPlanBase } from "@/types/workoutPlan";
 import NutritionPlanRedirect from "./NutritionPlanRedirect";
 import { backendUrl } from "@/data/backendUrl";
 import { UserBase } from "@/types/user";
-import Link from "next/link";
 import { Toaster } from "sonner";
 import { FoodBase } from "@/types/food";
-import { authOptions } from "@/app/lib/auth";
-import { getServerSession } from "next-auth";
+import { Session } from "next-auth";
 import { TrainerBase } from "@/types/trainer";
+import { useEffect, useState } from "react";
 
 const getInitialData = async (
-  userId: number,
   accessToken: string,
-  role: string
+  trainer: UserBase | null
 ): Promise<{
   exercises: ExerciseBase[];
   muscleGroups: MuscleGroupBase[];
@@ -31,14 +29,26 @@ const getInitialData = async (
   user: UserBase | null;
   foods: FoodBase[];
   trainers: TrainerBase[];
+  trainer: UserBase | null;
 }> => {
   let user = null;
 
+  let jwtResponse = null;
+
+  try {
+    jwtResponse = await fetch(`${backendUrl}/api/auth/jwt`, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+    jwtResponse = await jwtResponse.json();
+    console.log("jwtResponse", jwtResponse);
+  } catch (error) {
+    console.error("Error fetching jwt:", error);
+  }
+
   try {
     let apiUrl = `${backendUrl}/api/user/profile`;
-    if (role === "TRAINER") {
-      apiUrl = `${backendUrl}/api/trainer`;
-    }
 
     user = await fetch(apiUrl, {
       headers: {
@@ -180,65 +190,94 @@ const getInitialData = async (
     user,
     foods,
     trainers,
+    trainer,
   };
 };
 
-export default async function AppLayoutComponent({
+type InitialDataType = Omit<
+  Awaited<ReturnType<typeof getInitialData>>,
+  "user"
+> & {
+  user: UserBase;
+  role: "USER" | "TRAINER" | "ADMIN";
+};
+
+export default function AppLayoutComponent({
   children,
   userId,
   accessToken,
+  session,
 }: Readonly<{
   children: React.ReactNode;
   userId: number;
   accessToken: string;
+  session: Session;
 }>) {
-  const session = await getServerSession(authOptions);
+  const [initialData, setInitialData] = useState<InitialDataType | null>(null);
+  const [localStorageAccessToken, setLocalStorageAccessToken] = useState<
+    string | null
+  >(null);
 
-  const initialData = await getInitialData(
-    userId,
-    accessToken,
-    session?.user?.role ?? "USER"
-  );
+  useEffect(() => {
+    const token =
+      typeof window !== "undefined"
+        ? localStorage.getItem("accessToken")
+        : null;
+    setLocalStorageAccessToken(token);
+  }, []);
 
-  if (!initialData.user) {
-    const user = session?.user as UserBase;
-    initialData.user = user;
-  }
+  useEffect(() => {
+    console.log("localStorageAccessToken", localStorageAccessToken);
+    console.log("accessToken", accessToken);
+  }, [localStorageAccessToken, accessToken]);
 
-  const safeInitialData = {
-    ...initialData,
-    user: initialData.user,
-    role: "USER",
-  } as const;
+  useEffect(() => {
+    const fetchData = async () => {
+      const data = await getInitialData(
+        localStorageAccessToken ?? accessToken,
+        session?.user?.role === "TRAINER" ? (session?.user as UserBase) : null
+      );
+
+      console.log("data", data);
+
+      if (!data.user) {
+        data.user = session?.user as UserBase;
+      }
+
+      if (!data.user) return;
+
+      setInitialData({
+        ...data,
+        user: data.user,
+        role: (session?.user?.role ?? "USER") as "USER" | "TRAINER" | "ADMIN",
+      });
+    };
+
+    fetchData();
+  }, [userId, accessToken, session, localStorageAccessToken]);
+
+  if (!initialData) return null;
 
   return (
-    <AuthProvider>
-      <AppProvider initialData={safeInitialData}>
-        <div className="flex flex-col min-h-screen">
-          <Toaster />
-          <NutritionPlanRedirect
-            innitialNutritionPlan={initialData.nutritionPlan}
-          />
-          <Header />
-          <div className="flex flex-1 h-[calc(100dvh-60px)]">
-            <div className="hidden xl:block">
-              <Navigation
-                orientation="vertical"
-                role={initialData.user?.role}
-              />
-            </div>
-            <main className="flex-1 overflow-y-auto max-xl:pb-[60px]">
-              {children}
-            </main>
+    <AppProvider initialData={initialData}>
+      <div className="flex flex-col min-h-screen">
+        <Toaster />
+        <NutritionPlanRedirect
+          innitialNutritionPlan={initialData.nutritionPlan}
+        />
+        <Header />
+        <div className="flex flex-1 h-[calc(100dvh-60px)]">
+          <div className="hidden xl:block">
+            <Navigation orientation="vertical" role={initialData.user?.role} />
           </div>
-          <div className="xl:hidden fixed bottom-0 w-full">
-            <Navigation
-              orientation="horizontal"
-              role={initialData.user?.role}
-            />
-          </div>
+          <main className="flex-1 overflow-y-auto max-xl:pb-[60px]">
+            {children}
+          </main>
         </div>
-      </AppProvider>
-    </AuthProvider>
+        <div className="xl:hidden fixed bottom-0 w-full">
+          <Navigation orientation="horizontal" role={initialData.user?.role} />
+        </div>
+      </div>
+    </AppProvider>
   );
 }

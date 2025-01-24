@@ -26,10 +26,16 @@ function convertActivityLevel(level: string): string {
 }
 
 export function useUser() {
-  const { user } = useAuthContext();
+  const { user, setUser } = useAuthContext();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [userData, setUserData] = useState<UserBase | null>(null);
+  const [trainer, setTrainer] = useState<UserBase | null>(null);
+
+  useEffect(() => {
+    console.log("userData", userData);
+    console.log("trainer", trainer);
+  }, [userData, trainer]);
 
   const bodyStatsAndGoal = useCallback(
     async (data: BodyStatsAndGoalDataType) => {
@@ -115,6 +121,8 @@ export function useUser() {
     bodyStatsAndGoal,
     userData,
     setUserData,
+    trainer,
+    setTrainer,
   } as UseUserContextType;
 }
 
@@ -125,4 +133,6 @@ export type UseUserContextType = {
   bodyStatsAndGoal: (data: BodyStatsAndGoalDataType) => Promise<void>;
   userData: UserBase | null;
   setUserData: (user: UserBase) => void;
+  trainer: UserBase | null;
+  setTrainer: (trainer: UserBase) => void;
 };
