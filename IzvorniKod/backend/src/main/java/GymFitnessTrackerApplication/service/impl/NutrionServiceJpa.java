@@ -50,6 +50,16 @@ public class NutrionServiceJpa implements NutrionService {
         return nutrionPlanRepo.save(nutrionPlan);
     }
 
+    @Override
+    public NutrionPlan createNutrionPlanTrainer(MyUser user, @RequestBody BodyGoalsForm form,Long createdFor){
+        MyUser createdForUser = myUserRepository.findById(createdFor).get();
+        NutrionPlan nutrionPlan = new NutrionPlan(createdForUser, form);
+        nutrionPlan.setCreatedBy(user.getId().toString());
+        removeCurrentPlan(createdForUser);
+        nutrionPlan.setCurrent(true);
+        return nutrionPlanRepo.save(nutrionPlan);
+    }
+
     @Transactional
     public void updateNutrionPlan(@RequestBody NutrionPlanForm form,NutrionPlan plan) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");

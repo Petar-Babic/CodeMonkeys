@@ -16,6 +16,8 @@ public interface NutrionService {
 
     NutrionPlan createNutrionPlanTrainer(MyUser user, @RequestBody NutrionPlanForm form,Long createdFor);
 
+    NutrionPlan createNutrionPlanTrainer(MyUser user, @RequestBody BodyGoalsForm form,Long createdFor);
+
     void updateNutrionPlan(@RequestBody NutrionPlanForm form,NutrionPlan plan);
 
     NutrionPlan getMyPlan(MyUser user);
