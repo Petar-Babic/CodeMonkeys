@@ -201,7 +201,9 @@ public class MyUserServiceJpa implements MyUserService {
 
     @Override
     public MyUser getMyUserByID(String id){
-        return userRepository.findById(Long.parseLong(id)).get();
+        Optional<MyUser> u = userRepository.findById(Long.parseLong(id));
+        if(u.isEmpty()) throw new UsernameNotFoundException("User doesnt exist");
+        return u.get();
     }
 
 }

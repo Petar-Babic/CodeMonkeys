@@ -49,6 +49,10 @@ public class TrainerController {
         String email= jwtService.extractEmail(token.trim().substring(7));
         MyUser user = (MyUser) myUserService.getMyUser(email);
         if(!user.getRole().equals(Role.TRAINER)) throw new AdminRestrictedException("User not trainer");
+        MyUser user1 = myUserService.getMyUserByID(id);
+        if(user1.getTrainer()!=null)
+            if(user1.getTrainer().getId().equals(user.getId()));
+        else throw new AdminRestrictedException("User not trained by trainer");
         String  jwtToken = jwtService.generateForTraining(user,id);
         return ResponseEntity.status(200).body(new JwtResponse(jwtToken,user.getId().toString(),user.getName(),user.getEmail(),user.getRole().toString()));
     }
