@@ -9,12 +9,15 @@ import GymFitnessTrackerApplication.model.domain.Unit;
 import GymFitnessTrackerApplication.model.dto.forms.FoodForm;
 import GymFitnessTrackerApplication.service.FoodService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -117,23 +120,88 @@ public class FoodServiceJpa implements FoodService{
     }
 
     @Override
-    public Food createFoodFromBarcode(MyUser user,String barcode){
-        String url = "https://world.openfoodfacts.net/api/v2/product/";
-        String secondPart = "?product_type=all&fields=product_name%2Cnutriments";
-        String sb = url+barcode.replaceAll(" ","%20").replaceAll("/","%2F")+secondPart;
-        System.out.println(sb);
+    public Food createFoodFromBarcode(MyUser user, String barcode) {
+        String baseUrl = "https://world.openfoodfacts.net/api/v2/product/";
+        String apiUrl = baseUrl + barcode.replaceAll("\\([^)]*\\)", ""); // Remove any extra characters
 
-       /* WebClient webClient = WebClient.create();
+        WebClient webClient = WebClient.builder().build();
 
-        // Parametriziramo tip podataka za vraćanje odgovora s WebClient
-        List<Map<String, Object>> emails = webClient.get()
-                .uri(url)
-                .headers(headers -> headers.setBearerAuth(accessToken.getTokenValue()))
-                .retrieve()
-                .bodyToMono(new ParameterizedTypeReference<List<Map<String, Object>>>() {
-                })
-                .block();*/
-        return null;
+        try {
+            Map<String, Object> response = webClient.get()
+                    .uri(apiUrl)
+                    .retrieve()
+                    .bodyToMono(new ParameterizedTypeReference<Map<String, Object>>() {})
+                    .block();
+            if (response == null || !response.containsKey("product")) {
+                throw new NoExistingFoodException("No such item exists in the Open Food Facts database.");
+            }
 
+            // Extract product data
+            LinkedHashMap<String, Object> productData = (LinkedHashMap<String, Object>) response.get("product");
+            String name = (String) productData.getOrDefault("product_name", "Unknown Product");
+            String quantity = (String) productData.getOrDefault("product_quantity", null);
+            String quantity2 = (String) productData.getOrDefault("quantity", null);
+            String unit = (String) productData.getOrDefault("product_quantity_unit",null);
+            LinkedHashMap<String, Object> nutriments = (LinkedHashMap<String, Object>) productData.get("nutriments");
+            Unit unit1 = determineUnit(unit,quantity2);
+
+            float calories = nutriments != null ? ((Number) nutriments.getOrDefault("energy-kcal_100g", 0)).floatValue() : 0;
+            float protein = nutriments != null ? ((Number) nutriments.getOrDefault("proteins_100g", 0)).floatValue() : 0;
+            float fat = nutriments != null ? ((Number) nutriments.getOrDefault("fat_100g", 0)).floatValue() : 0;
+            float carbs = nutriments != null ? ((Number) nutriments.getOrDefault("carbohydrates_100g", 0)).floatValue() : 0;
+
+            if(quantity!=null){
+                if(calories>0)
+                    calories = calories*Float.valueOf(quantity)/100;
+                if(protein>0)
+                    protein = protein*Float.valueOf(quantity)/100;
+                if(fat>0)
+                    fat = fat*Float.valueOf(quantity)/100;
+                if(carbs>0)
+                    carbs = carbs*Float.valueOf(quantity)/100;
+            }
+
+
+            Food food = new Food();
+            food.setName(name);
+            food.setCalories(calories);
+            food.setProtein(protein);
+            food.setFat(fat);
+            food.setCarbs(carbs);
+            food.setUnit(unit1);
+            try{
+                Float def = Float.valueOf(quantity);
+                food.setDefaultNumber(def);
+            }catch(Exception e){
+                food.setDefaultNumber(1);
+            }
+            food.setApproved(user.getRole().equals(Role.ADMIN)); // Automatically approve if user is admin
+
+            // Save the food object to the database
+            return foodRepo.save(food);
+
+        } catch (Exception e) {
+            System.err.println("Error fetching food details: " + e.getMessage());
+            e.printStackTrace();
+            throw new NoExistingFoodException("Failed to create food from barcode. Please try again.");
+        }
     }
+
+    Unit determineUnit(String unit,String quantity2){
+        if(unit == null && quantity2==null) return null;
+        else {
+            if(unit == null) {
+                if ( quantity2.contains(" g")) return Unit.g;
+                else if (quantity2.contains(" ml")) return Unit.ml;
+                else return Unit.pcs;
+            }else {
+                if (unit.equalsIgnoreCase("g") || quantity2.contains(" g")) return Unit.g;
+                else if (unit.equalsIgnoreCase("ml") || quantity2.contains(" ml")) return Unit.ml;
+                else return Unit.pcs;
+            }
+        }
+    }
+
+
+
 }

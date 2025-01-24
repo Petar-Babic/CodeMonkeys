@@ -127,4 +127,10 @@ public class MealServiceJpa implements MealService {
         if(opt.isEmpty()) throw new NoExistingFoodException("No such meal");
         else mealRepo.deleteById(opt.get().getId());
     }
+
+    public void updateMeal(String id,MealForm mealForm){
+        Optional<Meal>  opt=  mealRepo.findById(Long.parseLong(id));
+        if(opt.isEmpty()) throw new NoExistingFoodException("No such meal");
+        else mealRepo.deleteById(opt.get().getId());
+    }
 }

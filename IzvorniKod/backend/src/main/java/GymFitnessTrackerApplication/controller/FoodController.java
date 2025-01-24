@@ -42,8 +42,8 @@ public class FoodController {
     public ResponseEntity<?> searchFood(@RequestHeader("Authorization") String token,@RequestParam String barcode){
         String email = jwtService.extractEmail(token.trim().substring(7));
         MyUser user = (MyUser) myUserService.getMyUser(email);
-        foodService.createFoodFromBarcode(user,barcode);
-        return ResponseEntity.status(200).body(barcode);
+        Food f = foodService.createFoodFromBarcode(user,barcode);
+        return ResponseEntity.status(200).body(new FoodResponse(f));
     }
 
     @PostMapping("/api/food")
@@ -119,6 +119,12 @@ public class FoodController {
     public ResponseEntity<?> updateMeal(@RequestHeader("Authorization") String auth,@RequestBody MealForm form,@PathVariable String id ){
         String email = jwtService.extractEmail(auth.trim().substring(7));
         MyUser user = (MyUser) myUserService.getMyUser(email);
+        Meal m = mealService.getMeal(user,id);
+        if(user.getRole().equals(Role.ADMIN) || (user.getRole().equals(Role.TRAINER)) ||  user.getId().equals(m.getUser().getId())) {
+            if (user.getRole().equals(Role.TRAINER) && m.getUser().getTrainer() == null)
+                throw new AdminRestrictedException("Trainer doesnt train user");
+            mealService.updateMeal(id,form);
+        }
         return ResponseEntity.status(200).body("Updated meal :"+id);
     }
 
