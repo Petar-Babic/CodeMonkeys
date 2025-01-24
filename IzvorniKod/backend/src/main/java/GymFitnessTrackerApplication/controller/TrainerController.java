@@ -50,6 +50,6 @@ public class TrainerController {
         MyUser user = (MyUser) myUserService.getMyUser(email);
         if(!user.getRole().equals(Role.TRAINER)) throw new AdminRestrictedException("User not trainer");
         String  jwtToken = jwtService.generateForTraining(user,id);
-        return ResponseEntity.status(200).body(new JwtResponse(token.substring(7),user.getId().toString(),user.getName(),user.getEmail()));
+        return ResponseEntity.status(200).body(new JwtResponse(jwtToken,user.getId().toString(),user.getName(),user.getEmail(),user.getRole().toString()));
     }
 }
