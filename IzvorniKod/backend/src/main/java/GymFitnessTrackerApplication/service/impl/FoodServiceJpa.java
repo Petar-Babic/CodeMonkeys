@@ -36,6 +36,13 @@ public class FoodServiceJpa implements FoodService{
     public Food getSpecificFood(String id){
         Optional<Food> food = foodRepo.findById(Long.parseLong(id));
         if(food.isEmpty()) throw new NoExistingFoodException("No existing food with ID: " + id);
+        if(!food.get().isApproved()) throw new NoExistingFoodException("Food not verified");
+        return food.get();
+    }
+    @Override
+    public Food getSpecificFoodAdmin(String id){
+        Optional<Food> food = foodRepo.findById(Long.parseLong(id));
+        if(food.isEmpty()) throw new NoExistingFoodException("No existing food with ID: " + id);
         return food.get();
     }
 
@@ -49,25 +56,58 @@ public class FoodServiceJpa implements FoodService{
         if(f.isEmpty()) throw new NoExistingFoodException("No food item with ID : "+id);
         Food food = f.get();
 
-        if(!Float.isNaN(form.getCalories()))
-            food.setCalories(form.getCalories());
-        if(!Float.isNaN(form.getCarbs()))
-            food.setCarbs(form.getCarbs());
-        if(!Float.isNaN(form.getFats()))
-            food.setFat(form.getFats());
-        if((form.getName() != null))
-            food.setName(form.getName());
-        if(form.getDefaultNumber() != 0)
-            food.setDefaultNumber(form.getDefaultNumber());
-        if(!Float.isNaN(form.getProtein()))
-            food.setProtein(form.getProtein());
-        if(form.getUnit() != null)
-            food.setUnit(form.getUnit());
+        if(user.getRole().equals(Role.ADMIN)) {
+            if (!Float.isNaN(form.getCalories()))
+                food.setCalories(form.getCalories());
+            if (!Float.isNaN(form.getCarbs()))
+                food.setCarbs(form.getCarbs());
+            if (!Float.isNaN(form.getFats()))
+                food.setFat(form.getFats());
+            if ((form.getName() != null))
+                food.setName(form.getName());
+            if (form.getDefaultNumber() != 0)
+                food.setDefaultNumber(form.getDefaultNumber());
+            if (!Float.isNaN(form.getProtein()))
+                food.setProtein(form.getProtein());
+            if (form.getUnit() != null)
+                food.setUnit(form.getUnit());
+            food.setApproved(true);
+            return foodRepo.save(food);
+        }else{
+            Food food2 = new Food();
+            food2.setApproved(false);
 
-        if(user.getRole().equals(Role.ADMIN)) food.setApproved(true);
-        else food.setApproved(false);
+            if (!Float.isNaN(form.getCalories()))
+                food2.setCalories(form.getCalories());
+            else food2.setCalories(food.getCalories());
 
-        return foodRepo.save(food);
+            if (!Float.isNaN(form.getCarbs()))
+                food2.setCarbs(form.getCarbs());
+            else food2.setCarbs(food.getCarbs());
+
+            if (!Float.isNaN(form.getFats()))
+                food2.setFat(form.getFats());
+            else food2.setFat(food.getFat());
+
+            if ((form.getName() != null))
+                food2.setName(form.getName());
+            else food2.setName(food.getName());
+
+            if (form.getDefaultNumber() != 0)
+                food2.setDefaultNumber(form.getDefaultNumber());
+            else food2.setDefaultNumber(food.getDefaultNumber());
+
+            if (!Float.isNaN(form.getProtein()))
+                food2.setProtein(form.getProtein());
+            else food2.setProtein(food.getProtein());
+
+            if (form.getUnit() != null)
+                food2.setUnit(form.getUnit());
+            else food2.setUnit(food.getUnit());
+
+            food2.setApproved(false);
+            return foodRepo.save(food2);
+        }
     }
 
     @Override

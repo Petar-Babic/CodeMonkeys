@@ -31,12 +31,18 @@ public class SleepServiceJpa implements SleepService {
 
     public List<SleepLog> getUserLogs(MyUser user){
         List<SleepLog> logs;
+        logs = mySleepLogRepo.findAllByUser(user);
+        return logs;
+    }
+
+    @Override
+    public List<SleepLog> getAllUserLogs(MyUser user){
+        List<SleepLog> logs;
         if(user.getRole().equals(Role.ADMIN)){
             logs= mySleepLogRepo.findAll();
             return logs;
         }
-        logs = mySleepLogRepo.findAllByUser(user);
-        return logs;
+        throw new AdminRestrictedException("USER NOT ADMIN");
     }
 
     public Optional<SleepLog> getSpecificLog(MyUser user, String id){
@@ -44,6 +50,7 @@ public class SleepServiceJpa implements SleepService {
         if(log.isEmpty())  throw new NonExistantSleepLog("Sleep log doesnt exist");
         if(!log.get().getUser().getId().toString().equalsIgnoreCase(user.getId().toString())){
             if(user.getRole().equals(Role.ADMIN)) return log;
+            if(log.get().getUser().getTrainer().getId().equals(user)) return log;
             throw new AdminRestrictedException("User trying to access other users sleep log");
         }
         return log;
@@ -54,7 +61,7 @@ public class SleepServiceJpa implements SleepService {
         Optional<SleepLog> log = mySleepLogRepo.findById(Long.parseLong(id));
         if(log.isEmpty()) throw new NonExistantSleepLog("Nepostojeci sleep log");
         if(!log.get().getUser().getId().toString().equals(user.getId().toString())){
-            if(user.getRole().equals(Role.ADMIN))
+            if(user.getRole().equals(Role.ADMIN) || log.get().getUser().getTrainer().getId().equals(user.getId()))
                 mySleepLogRepo.deleteById(Long.parseLong(id));
             throw new AdminRestrictedException("User pokusava izbrisati log drugog usera");
         }
@@ -66,7 +73,7 @@ public class SleepServiceJpa implements SleepService {
         Optional<SleepLog> optLog = mySleepLogRepo.findById(Long.parseLong(id));
         if(optLog.isEmpty()) throw new NonExistantSleepLog("Nepostojeci sleep log");
         if(!optLog.get().getUser().getId().toString().equals(user.getId().toString())){
-            if(user.getRole().equals(Role.ADMIN))
+            if(user.getRole().equals(Role.ADMIN) || optLog.get().getUser().getTrainer().getId().equals(user.getId()))
                 mySleepLogRepo.deleteById(Long.parseLong(id));
             throw new AdminRestrictedException("User pokusava updateati log drugog usera");
         }

@@ -28,6 +28,9 @@ public class FoodController {
     private MyUserService myUserService;
 
     @Autowired
+    private MyUserDetailsService userDetailsService;
+
+    @Autowired
     private MealService mealService;
 
     @Autowired
@@ -53,16 +56,21 @@ public class FoodController {
     public ResponseEntity<?> getFood(@PathVariable String id,@RequestHeader("Authorization") String auth){
         String email = jwtService.extractEmail(auth.trim().substring(7));
         MyUser user = (MyUser) myUserService.getMyUser(email);
-        Food food = foodService.getSpecificFood(id);
+        Food food;
+        if(user.getRole().equals(Role.ADMIN)) food = foodService.getSpecificFoodAdmin(id);
+        else food = foodService.getSpecificFood(id);
         return ResponseEntity.status(200).body(new FoodResponse(food));
     }
 
     @GetMapping("/api/food")
-    public ResponseEntity<?> getAllFood(){
+    public ResponseEntity<?> getAllFood(@RequestHeader("Authorization") String auth){
+        String email = jwtService.extractEmail(auth.trim().substring(7));
+        MyUser user = (MyUser) myUserService.getMyUser(email);
         List<Food> foods = foodService.foods();
         List<FoodResponse> food = new ArrayList<>();
         foods.forEach(food1 -> {
-            food.add(new FoodResponse(food1));
+            if(user.getRole().equals(Role.ADMIN)) food.add(new FoodResponse(food1));
+            else if (food1.isApproved()) food.add(new FoodResponse(food1));
         });
         return ResponseEntity.status(200).body(food);
     }
