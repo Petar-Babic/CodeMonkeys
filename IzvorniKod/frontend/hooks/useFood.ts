@@ -106,31 +106,30 @@ export const useFood = () => {
     []
   );
 
-  const deleteFood = useCallback(async (id: number): Promise<void> => {
-    const accessToken = localStorage.getItem("accessToken");
+  const deleteFood = useCallback(
+    async (id: number): Promise<void> => {
+      const accessToken = localStorage.getItem("accessToken");
 
-    try {
-      if (!accessToken) {
-        throw new Error("Access token is not set");
+      try {
+        if (!accessToken) {
+          throw new Error("Access token is not set");
+        }
+
+        await fetch(`${backendUrl}/api/food/${id}`, {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        });
+
+        setFoods((prevFoods) => prevFoods.filter((food) => food.id !== id));
+      } catch (err) {
+        console.error(err);
+        throw new Error("Failed to delete food");
       }
-
-      const res = await fetch(`${backendUrl}/api/food/${id}`, {
-        method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      });
-
-      const deletedFood = await res.json();
-
-      console.log(deletedFood);
-    } catch (err) {
-      console.error(err);
-      throw new Error("Failed to delete food");
-    } finally {
-      setFoods((prevFoods) => prevFoods.filter((food) => food.id !== id));
-    }
-  }, []);
+    },
+    [setFoods]
+  );
 
   return {
     foods,

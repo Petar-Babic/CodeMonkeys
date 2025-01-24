@@ -49,7 +49,7 @@ import Image from "next/image";
 
 const formSchema = z.object({
   name: z.string().min(1, "Name is required"),
-  userId: z.number().optional(),
+  userId: z.number().nullable(),
   image: z.string().optional(),
   description: z.string().optional(),
   workouts: z
@@ -95,7 +95,7 @@ export function AdminWorkoutPlanForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: workoutPlan?.name || "",
-      userId: workoutPlan?.userId || 0,
+      userId: workoutPlan?.userId || undefined,
       image: workoutPlan?.image || "",
       description: workoutPlan?.description || "",
       workouts:
@@ -109,7 +109,7 @@ export function AdminWorkoutPlanForm({
   useEffect(() => {
     form.reset({
       name: workoutPlan?.name || "",
-      userId: workoutPlan?.userId || 0,
+      userId: workoutPlan?.userId || undefined,
       image: workoutPlan?.image || "",
       description: workoutPlan?.description || "",
       workouts:
@@ -140,24 +140,32 @@ export function AdminWorkoutPlanForm({
         imageUrl = await handleUploadImage(selectedImage);
       }
 
-      const formattedData: UpdateWorkoutPlanInput = {
-        ...values,
-        image: imageUrl,
-        id: Number(workoutPlan?.id),
-        userId: Number(values.userId),
-        workouts: fields.map((field) => ({
-          ...field,
-          description: "",
-          workoutPlanId: Number(workoutPlan?.id),
-          exercises: field.exercises.map((exercise) => ({
-            ...exercise,
-            workoutId: Number(field.id || 0),
-            exercise: exercises.find((e) => e.id === exercise.exerciseId)!,
+      if (workoutPlan) {
+        const formattedData: UpdateWorkoutPlanInput = {
+          name: values.name,
+          userId: values.userId,
+          image: imageUrl,
+          description: values.description,
+          id: workoutPlan.id,
+          workouts: workoutPlan.workouts.map((workout) => ({
+            id: Number(workout.id),
+            name: workout.name,
+            description: workout.description || "",
+            workoutPlanId: workoutPlan.id,
+            exercises: workout.exercises.map((exercise) => ({
+              id: exercise.id,
+              exerciseId: exercise.exerciseId,
+              sets: exercise.sets,
+              reps: exercise.reps,
+              rpe: exercise.rpe || 0,
+              order: exercise.order,
+              workoutId: Number(workout.id),
+            })),
           })),
-        })) as WorkoutWithPlannedExercise[],
-      };
+        };
 
-      if (!workoutPlan) {
+        await updateWorkoutPlan(formattedData);
+      } else {
         const data: CreateWorkoutPlanInput = {
           ...values,
           image: imageUrl,
@@ -166,7 +174,7 @@ export function AdminWorkoutPlanForm({
             description: "",
             order: field.order,
             exercises: field.exercises.map((exercise) => ({
-              exerciseId: Number(exercise.exerciseId),
+              exerciseId: exercise.exerciseId,
               sets: exercise.sets,
               reps: exercise.reps,
               rpe: exercise.rpe || 0,
@@ -177,8 +185,6 @@ export function AdminWorkoutPlanForm({
         console.log("data in create workout plan", data);
 
         await createWorkoutPlan(data);
-      } else {
-        await updateWorkoutPlan(formattedData);
       }
 
       router.push("/admin/workout-plans");
@@ -372,15 +378,31 @@ export function AdminWorkoutPlanForm({
           name="userId"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>User ID</FormLabel>
-              <FormControl>
-                <Input
-                  {...field}
-                  type="number"
-                  onChange={(e) => field.onChange(Number(e.target.value))}
-                  value={field.value || ""}
-                />
-              </FormControl>
+              <FormLabel>User ID (optional)</FormLabel>
+              <div className="flex gap-2 items-center">
+                <FormControl>
+                  <Input
+                    {...field}
+                    type="number"
+                    onChange={(e) =>
+                      field.onChange(
+                        e.target.value ? Number(e.target.value) : null
+                      )
+                    }
+                    value={field.value || ""}
+                    placeholder="Leave empty for public plan"
+                  />
+                </FormControl>
+                {field.value && (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => field.onChange(null)}
+                  >
+                    Clear
+                  </Button>
+                )}
+              </div>
               <FormMessage />
             </FormItem>
           )}

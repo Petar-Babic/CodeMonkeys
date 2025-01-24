@@ -94,9 +94,22 @@ export const useMuscleGroup = () => {
   );
 
   const deleteMuscleGroup = useCallback(async (id: number) => {
-    setMuscleGroups((prevMuscleGroups) =>
-      prevMuscleGroups.filter((muscleGroup) => muscleGroup.id !== id)
-    );
+    try {
+      const token = localStorage.getItem("accessToken");
+      await fetch(`${backendUrl}/api/muscle-groups/${id}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+    } catch (err) {
+      console.error(err);
+      throw new Error("Failed to delete muscle group");
+    } finally {
+      setMuscleGroups((prevMuscleGroups) =>
+        prevMuscleGroups.filter((muscleGroup) => muscleGroup.id !== id)
+      );
+    }
   }, []);
 
   return {

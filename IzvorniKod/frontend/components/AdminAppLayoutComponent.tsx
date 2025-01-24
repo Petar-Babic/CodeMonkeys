@@ -65,6 +65,8 @@ const getInitialData = async (
     console.error("Error fetching foods:", error);
   }
 
+  console.log("foods", foods);
+
   let workoutPlans: WorkoutPlanBase[] = [];
   try {
     const response = await fetch(`${backendUrl}/api/admin/workout-plans`, {

@@ -27,12 +27,14 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AlertCircle, Loader2 } from "lucide-react";
 
 const formSchema = z.object({
+  id: z.number(),
   name: z.string().min(1, "Name is required"),
   order: z.coerce.number().min(1, "Order must be at least 1"),
   exercises: z
     .array(
       z.object({
         id: z.number().optional(),
+        workoutId: z.number(),
         exerciseId: z.number(),
         sets: z.coerce.number().min(1, "Sets must be at least 1"),
         reps: z.coerce.number().min(1, "Reps must be at least 1"),
@@ -62,16 +64,17 @@ export function EditUserWorkoutForm({
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
+      id: workout.id,
       name: workout.name,
       order: workout.order || 1,
       exercises: workout.exercises.map((exercise) => ({
         id: exercise.id,
         exerciseId: exercise.exerciseId,
-        exercise: exercises.find((e) => e.id === exercise.exerciseId)!,
         sets: exercise.sets,
         reps: exercise.reps,
         rpe: exercise.rpe,
         order: exercise.order,
+        workoutId: workout.id,
       })),
     },
   });
@@ -96,11 +99,7 @@ export function EditUserWorkoutForm({
           sets: exercise.sets,
           reps: exercise.reps,
           rpe: exercise.rpe,
-          exercise: exercises.find(
-            (e) => e.id === exercise.exerciseId
-          ) as ExerciseBase,
           workoutId: workout.id,
-          updatedAt: new Date(),
         })),
       };
       await onSubmit(formattedData);
@@ -126,6 +125,7 @@ export function EditUserWorkoutForm({
           reps: 1,
           rpe: 1,
           order: fields.length + 1,
+          workoutId: workout.id,
           exercise: exercise,
         };
       }

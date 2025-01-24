@@ -1,13 +1,11 @@
 import { useState, useCallback, useEffect } from "react";
 import {
-  WorkoutSessionBase,
   CreateWorkoutSessionInput,
   UpdateWorkoutSessionInput,
   WorkoutSessionWithPerformedExercises,
 } from "@/types/workoutSession";
 import { useAuthContext } from "@/contexts/AuthContext";
 import { backendUrl } from "@/data/backendUrl";
-import { useFile } from "@/hooks/useFile";
 
 export const useWorkoutSession = () => {
   const [workoutSessions, setWorkoutSessions] = useState<
@@ -15,7 +13,6 @@ export const useWorkoutSession = () => {
   >([]);
 
   const { user } = useAuthContext();
-  const { deleteFile } = useFile();
 
   const userId = user?.id;
 
@@ -107,10 +104,6 @@ export const useWorkoutSession = () => {
     async (id: number): Promise<void> => {
       setWorkoutSessions(
         workoutSessions.filter((session) => session.id !== id)
-      );
-
-      const workoutSession = workoutSessions.find(
-        (session) => session.id === id
       );
 
       const accessToken = localStorage.getItem("accessToken");
