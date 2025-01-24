@@ -1,0 +1,826 @@
+{
+  "id": "2ad5d583-bd2d-44c4-bdd9-0f7719f0f189",
+  "version": "2.0",
+  "name": "gym progress tracking",
+  "url": "https://gymprogress.lukakordic.me",
+  "tests": [{
+    "id": "088f141e-eb5f-4c9f-ac37-8ac0439301f9",
+    "name": "Login: wrong username and password",
+    "commands": [{
+      "id": "707ee951-4d98-4bbe-b5e7-7306bf8d3365",
+      "comment": "",
+      "command": "open",
+      "target": "/",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "908cbe0a-dd80-482a-98dc-ee41350658bc",
+      "comment": "",
+      "command": "setWindowSize",
+      "target": "952x752",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "6a89aa9f-ecb5-4c77-9a19-4b9e5a0e144c",
+      "comment": "",
+      "command": "click",
+      "target": "css=span",
+      "targets": [
+        ["css=span", "css:finder"],
+        ["xpath=//span", "xpath:position"],
+        ["xpath=//span[contains(.,'Go to the app')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "507263c9-eeea-4ab3-be24-6140a8fcd1b4",
+      "comment": "",
+      "command": "click",
+      "target": "id=:r0:-form-item",
+      "targets": [
+        ["id=:r0:-form-item", "id"],
+        ["name=email", "name"],
+        ["css=#\\3Ar0\\3A-form-item", "css:finder"],
+        ["xpath=//input[@id=':r0:-form-item']", "xpath:attributes"],
+        ["xpath=//input", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "aea73c86-38ac-4872-9fa7-656f57618cfd",
+      "comment": "",
+      "command": "type",
+      "target": "id=:r0:-form-item",
+      "targets": [
+        ["id=:r0:-form-item", "id"],
+        ["name=email", "name"],
+        ["css=#\\3Ar0\\3A-form-item", "css:finder"],
+        ["xpath=//input[@id=':r0:-form-item']", "xpath:attributes"],
+        ["xpath=//input", "xpath:position"]
+      ],
+      "value": "l;aksd;awlkd"
+    }, {
+      "id": "6e5ad174-6ee6-4203-9f5d-702364f7d21c",
+      "comment": "",
+      "command": "type",
+      "target": "name=password",
+      "targets": [
+        ["name=password", "name"],
+        ["css=.h-11:nth-child(1)", "css:finder"],
+        ["xpath=//input[@name='password']", "xpath:attributes"],
+        ["xpath=//div[@id=':r1:-form-item']/input", "xpath:idRelative"],
+        ["xpath=//div[3]/div/input", "xpath:position"]
+      ],
+      "value": "wa;lkdsa"
+    }, {
+      "id": "5f584d7a-07af-43d8-99ed-7f1efbac8cd3",
+      "comment": "",
+      "command": "sendKeys",
+      "target": "name=password",
+      "targets": [
+        ["name=password", "name"],
+        ["css=.h-11:nth-child(1)", "css:finder"],
+        ["xpath=//input[@name='password']", "xpath:attributes"],
+        ["xpath=//div[@id=':r1:-form-item']/input", "xpath:idRelative"],
+        ["xpath=//div[3]/div/input", "xpath:position"]
+      ],
+      "value": "${KEY_ENTER}"
+    }, {
+      "id": "91726a0c-2679-4306-8d49-8e80ae51b520",
+      "comment": "",
+      "command": "click",
+      "target": "css=.mt-4",
+      "targets": [
+        ["css=.mt-4", "css:finder"],
+        ["xpath=//div[4]", "xpath:position"]
+      ],
+      "value": ""
+    }]
+  }, {
+    "id": "e258e08d-04ed-4256-8732-1f29897ccccc",
+    "name": "Login: correct username and password",
+    "commands": [{
+      "id": "85a28195-fe47-4323-b119-bdfc12cca60d",
+      "comment": "",
+      "command": "open",
+      "target": "/",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "f0e190a2-b258-4f4e-8777-c0fbe722d17e",
+      "comment": "",
+      "command": "setWindowSize",
+      "target": "703x821",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "6d3b49ec-bf05-4e92-bbb7-3f129e03733a",
+      "comment": "",
+      "command": "click",
+      "target": "css=span",
+      "targets": [
+        ["css=span", "css:finder"],
+        ["xpath=//span", "xpath:position"],
+        ["xpath=//span[contains(.,'Go to the app')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "d12ae3f2-6e57-427f-9b97-2e8dbf7c38c8",
+      "comment": "",
+      "command": "type",
+      "target": "id=:r0:-form-item",
+      "targets": [
+        ["id=:r0:-form-item", "id"],
+        ["name=email", "name"],
+        ["css=#\\3Ar0\\3A-form-item", "css:finder"],
+        ["xpath=//input[@id=':r0:-form-item']", "xpath:attributes"],
+        ["xpath=//input", "xpath:position"]
+      ],
+      "value": "qedgncccshgttwgfxj@poplk.com"
+    }, {
+      "id": "e49cde73-63d7-47d8-b5a4-869b59976c3a",
+      "comment": "",
+      "command": "type",
+      "target": "name=password",
+      "targets": [
+        ["name=password", "name"],
+        ["css=.h-11:nth-child(1)", "css:finder"],
+        ["xpath=//input[@name='password']", "xpath:attributes"],
+        ["xpath=//div[@id=':r1:-form-item']/input", "xpath:idRelative"],
+        ["xpath=//div[3]/div/input", "xpath:position"]
+      ],
+      "value": "qedgncccshgttwgfxj@poplk.com"
+    }, {
+      "id": "7e47bb85-5b64-4cc2-9377-6bac727ddcb0",
+      "comment": "",
+      "command": "click",
+      "target": "css=.inline-flex",
+      "targets": [
+        ["css=.inline-flex", "css:finder"],
+        ["xpath=//button[@type='submit']", "xpath:attributes"],
+        ["xpath=//form/button", "xpath:position"],
+        ["xpath=//button[contains(.,'Sign In')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }]
+  }, {
+    "id": "6015f8e6-9a41-4feb-9a45-652e0f7e8ee5",
+    "name": "Login: correct username, but wrong password",
+    "commands": [{
+      "id": "3272e297-31fb-43bc-8360-c8bde2b36513",
+      "comment": "",
+      "command": "open",
+      "target": "/",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "41ea15d4-ddde-4c40-80c8-c8cf9ae504a1",
+      "comment": "",
+      "command": "setWindowSize",
+      "target": "703x821",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "275abbac-9eff-41be-a17f-c4fa8014b878",
+      "comment": "",
+      "command": "click",
+      "target": "css=span",
+      "targets": [
+        ["css=span", "css:finder"],
+        ["xpath=//span", "xpath:position"],
+        ["xpath=//span[contains(.,'Go to the app')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "c459ab9b-5b3a-4d64-856b-3e0e2d8cda5b",
+      "comment": "",
+      "command": "mouseOver",
+      "target": "css=span",
+      "targets": [
+        ["css=span", "css:finder"],
+        ["xpath=//span", "xpath:position"],
+        ["xpath=//span[contains(.,'Go to the app')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "c5a33dff-6238-4db4-9bb3-3ae960a3b798",
+      "comment": "",
+      "command": "type",
+      "target": "id=:r0:-form-item",
+      "targets": [
+        ["id=:r0:-form-item", "id"],
+        ["name=email", "name"],
+        ["css=#\\3Ar0\\3A-form-item", "css:finder"],
+        ["xpath=//input[@id=':r0:-form-item']", "xpath:attributes"],
+        ["xpath=//input", "xpath:position"]
+      ],
+      "value": "qedgncccshgttwgfxj@poplk.com"
+    }, {
+      "id": "c04559a0-1972-4731-a02c-1ee3fe644a0a",
+      "comment": "",
+      "command": "type",
+      "target": "name=password",
+      "targets": [
+        ["name=password", "name"],
+        ["css=.h-11:nth-child(1)", "css:finder"],
+        ["xpath=//input[@name='password']", "xpath:attributes"],
+        ["xpath=//div[@id=':r1:-form-item']/input", "xpath:idRelative"],
+        ["xpath=//div[3]/div/input", "xpath:position"]
+      ],
+      "value": "qedgncccshgttwgfxj@poplk.com"
+    }, {
+      "id": "90938897-a7c5-4cd5-bb57-59bce23eb693",
+      "comment": "",
+      "command": "click",
+      "target": "name=password",
+      "targets": [
+        ["name=password", "name"],
+        ["css=.h-11:nth-child(1)", "css:finder"],
+        ["xpath=//input[@name='password']", "xpath:attributes"],
+        ["xpath=//div[@id=':r1:-form-item']/input", "xpath:idRelative"],
+        ["xpath=//div[3]/div/input", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "680a64fc-11e2-4a44-9291-ae1a0fe28408",
+      "comment": "",
+      "command": "type",
+      "target": "name=password",
+      "targets": [
+        ["name=password", "name"],
+        ["css=.h-11:nth-child(1)", "css:finder"],
+        ["xpath=//input[@name='password']", "xpath:attributes"],
+        ["xpath=//div[@id=':r1:-form-item']/input", "xpath:idRelative"],
+        ["xpath=//div[3]/div/input", "xpath:position"]
+      ],
+      "value": "1234"
+    }, {
+      "id": "85bb8330-9c59-4090-91e3-94da4af6652d",
+      "comment": "",
+      "command": "click",
+      "target": "css=.inline-flex",
+      "targets": [
+        ["css=.inline-flex", "css:finder"],
+        ["xpath=//button[@type='submit']", "xpath:attributes"],
+        ["xpath=//form/button", "xpath:position"],
+        ["xpath=//button[contains(.,'Sign In')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }]
+  }, {
+    "id": "8ff02bf7-fee9-47b0-b107-dfcb11042fbf",
+    "name": "Login: wrong username, but existing password",
+    "commands": [{
+      "id": "876c794a-ab22-47ea-a444-e95180f49f54",
+      "comment": "",
+      "command": "open",
+      "target": "/",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "e5953a6e-9cc4-4f82-a3af-38ce45d39088",
+      "comment": "",
+      "command": "setWindowSize",
+      "target": "703x821",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "b3f733d4-58fe-45ad-b4ce-1677a3e405c5",
+      "comment": "",
+      "command": "click",
+      "target": "css=span",
+      "targets": [
+        ["css=span", "css:finder"],
+        ["xpath=//span", "xpath:position"],
+        ["xpath=//span[contains(.,'Go to the app')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "5ee85d56-43f6-49e3-b054-4c7a15fb6b6e",
+      "comment": "",
+      "command": "type",
+      "target": "id=:r0:-form-item",
+      "targets": [
+        ["id=:r0:-form-item", "id"],
+        ["name=email", "name"],
+        ["css=#\\3Ar0\\3A-form-item", "css:finder"],
+        ["xpath=//input[@id=':r0:-form-item']", "xpath:attributes"],
+        ["xpath=//input", "xpath:position"]
+      ],
+      "value": "qedgncccshgttwgfxj@poplk.com"
+    }, {
+      "id": "5f7baa6b-3755-45f7-b484-656309f830b0",
+      "comment": "",
+      "command": "type",
+      "target": "name=password",
+      "targets": [
+        ["name=password", "name"],
+        ["css=.h-11:nth-child(1)", "css:finder"],
+        ["xpath=//input[@name='password']", "xpath:attributes"],
+        ["xpath=//div[@id=':r1:-form-item']/input", "xpath:idRelative"],
+        ["xpath=//div[3]/div/input", "xpath:position"]
+      ],
+      "value": "qedgncccshgttwgfxj@poplk.com"
+    }, {
+      "id": "51f309b0-ef29-4e56-b362-1b55428b1fa9",
+      "comment": "",
+      "command": "click",
+      "target": "id=:r0:-form-item",
+      "targets": [
+        ["id=:r0:-form-item", "id"],
+        ["name=email", "name"],
+        ["css=#\\3Ar0\\3A-form-item", "css:finder"],
+        ["xpath=//input[@id=':r0:-form-item']", "xpath:attributes"],
+        ["xpath=//input", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "9b18b5aa-175d-46fd-a8f9-cd0a236b381f",
+      "comment": "",
+      "command": "type",
+      "target": "id=:r0:-form-item",
+      "targets": [
+        ["id=:r0:-form-item", "id"],
+        ["name=email", "name"],
+        ["css=#\\3Ar0\\3A-form-item", "css:finder"],
+        ["xpath=//input[@id=':r0:-form-item']", "xpath:attributes"],
+        ["xpath=//input", "xpath:position"]
+      ],
+      "value": "qedgncccshgttwgf"
+    }, {
+      "id": "12fc1dd7-f465-43e2-90d0-a7e7a6874186",
+      "comment": "",
+      "command": "click",
+      "target": "css=.inline-flex > span",
+      "targets": [
+        ["css=.inline-flex > span", "css:finder"],
+        ["xpath=//button/span", "xpath:position"],
+        ["xpath=//span[contains(.,'Sign In')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }]
+  }, {
+    "id": "799325bf-23ab-4173-9403-11394e2df885",
+    "name": "Login: SQL-injcetion",
+    "commands": [{
+      "id": "065732fc-b3c5-4c67-8d22-cefe904af7b5",
+      "comment": "",
+      "command": "open",
+      "target": "/",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "949c8c68-b975-421e-a64e-538799a1c4ef",
+      "comment": "",
+      "command": "setWindowSize",
+      "target": "703x821",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "e1b16d37-fd54-4dea-8900-a032e42954c9",
+      "comment": "",
+      "command": "click",
+      "target": "css=span",
+      "targets": [
+        ["css=span", "css:finder"],
+        ["xpath=//span", "xpath:position"],
+        ["xpath=//span[contains(.,'Go to the app')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "6d200988-328b-4b2f-858e-dee385ca648e",
+      "comment": "",
+      "command": "click",
+      "target": "id=:r0:-form-item",
+      "targets": [
+        ["id=:r0:-form-item", "id"],
+        ["name=email", "name"],
+        ["css=#\\3Ar0\\3A-form-item", "css:finder"],
+        ["xpath=//input[@id=':r0:-form-item']", "xpath:attributes"],
+        ["xpath=//input", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "9119aaa6-b61f-41bd-ba1b-ce10a01bcb07",
+      "comment": "",
+      "command": "type",
+      "target": "id=:r0:-form-item",
+      "targets": [
+        ["id=:r0:-form-item", "id"],
+        ["name=email", "name"],
+        ["css=#\\3Ar0\\3A-form-item", "css:finder"],
+        ["xpath=//input[@id=':r0:-form-item']", "xpath:attributes"],
+        ["xpath=//input", "xpath:position"]
+      ],
+      "value": "' OR '1'='1' --"
+    }, {
+      "id": "e2ae7dd3-b9b9-44b7-b927-3dddb1678838",
+      "comment": "",
+      "command": "click",
+      "target": "name=password",
+      "targets": [
+        ["name=password", "name"],
+        ["css=.h-11:nth-child(1)", "css:finder"],
+        ["xpath=//input[@name='password']", "xpath:attributes"],
+        ["xpath=//div[@id=':r1:-form-item']/input", "xpath:idRelative"],
+        ["xpath=//div[3]/div/input", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "f21d6c36-3288-463d-a5d7-2de5f3e8879c",
+      "comment": "",
+      "command": "type",
+      "target": "name=password",
+      "targets": [
+        ["name=password", "name"],
+        ["css=.h-11:nth-child(1)", "css:finder"],
+        ["xpath=//input[@name='password']", "xpath:attributes"],
+        ["xpath=//div[@id=':r1:-form-item']/input", "xpath:idRelative"],
+        ["xpath=//div[3]/div/input", "xpath:position"]
+      ],
+      "value": "' OR '1'='1' --"
+    }, {
+      "id": "b5315711-31cd-4d8c-98c1-78343c31d2e1",
+      "comment": "",
+      "command": "click",
+      "target": "css=.inline-flex",
+      "targets": [
+        ["css=.inline-flex", "css:finder"],
+        ["xpath=//button[@type='submit']", "xpath:attributes"],
+        ["xpath=//form/button", "xpath:position"],
+        ["xpath=//button[contains(.,'Sign In')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }]
+  }, {
+    "id": "c262dfe8-649d-40a2-b9b8-ed844dd288d5",
+    "name": "Choose a workout plan",
+    "commands": [{
+      "id": "04e78249-7955-49b4-bc6f-de1961d1dc98",
+      "comment": "",
+      "command": "open",
+      "target": "/",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "95163994-4c02-41d3-96cd-13716dac2917",
+      "comment": "",
+      "command": "setWindowSize",
+      "target": "703x821",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "1cf1790b-642b-4719-8e3f-1b9ba77a3e88",
+      "comment": "",
+      "command": "click",
+      "target": "linkText=Go to the app",
+      "targets": [
+        ["linkText=Go to the app", "linkText"],
+        ["css=.bg-white", "css:finder"],
+        ["xpath=//a[contains(@href, '/sign-in')]", "xpath:href"],
+        ["xpath=//a", "xpath:position"],
+        ["xpath=//a[contains(.,'Go to the app')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "b2b774fb-9a5b-4f96-a57e-1c1e30fb3a25",
+      "comment": "",
+      "command": "type",
+      "target": "id=:r0:-form-item",
+      "targets": [
+        ["id=:r0:-form-item", "id"],
+        ["name=email", "name"],
+        ["css=#\\3Ar0\\3A-form-item", "css:finder"],
+        ["xpath=//input[@id=':r0:-form-item']", "xpath:attributes"],
+        ["xpath=//input", "xpath:position"]
+      ],
+      "value": "qedgncccshgttwgfxj@poplk.com"
+    }, {
+      "id": "d99ad065-bbde-4719-9b40-cd99844c8cc7",
+      "comment": "",
+      "command": "type",
+      "target": "name=password",
+      "targets": [
+        ["name=password", "name"],
+        ["css=.h-11:nth-child(1)", "css:finder"],
+        ["xpath=//input[@name='password']", "xpath:attributes"],
+        ["xpath=//div[@id=':r1:-form-item']/input", "xpath:idRelative"],
+        ["xpath=//div[3]/div/input", "xpath:position"]
+      ],
+      "value": "qedgncccshgttwgfxj@poplk.com"
+    }, {
+      "id": "732a9697-ec92-42c6-8af9-fae253e7d4af",
+      "comment": "",
+      "command": "click",
+      "target": "css=.inline-flex > span",
+      "targets": [
+        ["css=.inline-flex > span", "css:finder"],
+        ["xpath=//button/span", "xpath:position"],
+        ["xpath=//span[contains(.,'Sign In')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "d90d8884-547b-4d2c-a1fe-3023c741269b",
+      "comment": "",
+      "command": "mouseOver",
+      "target": "css=.inline-flex > span",
+      "targets": [
+        ["css=.inline-flex > span", "css:finder"],
+        ["xpath=//button/span", "xpath:position"],
+        ["xpath=//span[contains(.,'Sign In')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "9184caeb-90a0-4dab-8114-fc903252d477",
+      "comment": "",
+      "command": "mouseOver",
+      "target": "linkText=Workout Plans",
+      "targets": [
+        ["linkText=Workout Plans", "linkText"],
+        ["css=.flex-col > .inline-flex:nth-child(1)", "css:finder"],
+        ["xpath=//a[contains(@href, '/workout-plans')]", "xpath:href"],
+        ["xpath=//a", "xpath:position"],
+        ["xpath=//a[contains(.,'Workout Plans')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "583888db-e4a8-4704-b991-9ef66430148c",
+      "comment": "",
+      "command": "click",
+      "target": "linkText=Workout Plans",
+      "targets": [
+        ["linkText=Workout Plans", "linkText"],
+        ["css=.flex-col > .inline-flex:nth-child(1)", "css:finder"],
+        ["xpath=//a[contains(@href, '/workout-plans')]", "xpath:href"],
+        ["xpath=//a", "xpath:position"],
+        ["xpath=//a[contains(.,'Workout Plans')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "6e656c59-56bb-46b2-99ef-a9a07c2c9694",
+      "comment": "",
+      "command": "mouseOut",
+      "target": "linkText=Workout Plans",
+      "targets": [
+        ["linkText=Workout Plans", "linkText"],
+        ["css=.flex-col > .bg-black", "css:finder"],
+        ["xpath=//a[contains(@href, '/workout-plans')]", "xpath:href"],
+        ["xpath=//a", "xpath:position"],
+        ["xpath=//a[contains(.,'Workout Plans')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "882b80cb-ad5c-44c6-84cd-e7fe1506a3f7",
+      "comment": "",
+      "command": "click",
+      "target": "css=.aspect-square:nth-child(1) .inline-flex",
+      "targets": [
+        ["css=.aspect-square:nth-child(1) .inline-flex", "css:finder"],
+        ["xpath=//div[2]/button", "xpath:position"],
+        ["xpath=//button[contains(.,'Make yours now')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "ac01c600-5749-409d-96a5-aca1196606f5",
+      "comment": "",
+      "command": "click",
+      "target": "css=.max-w-\\[25rem\\]",
+      "targets": [
+        ["css=.max-w-\\[25rem\\]", "css:finder"],
+        ["xpath=//div[3]/button", "xpath:position"],
+        ["xpath=//button[contains(.,'Apply workout plan to user')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "75aeca30-1410-473e-a07a-387689909eae",
+      "comment": "",
+      "command": "mouseOver",
+      "target": "css=.max-w-\\[25rem\\]",
+      "targets": [
+        ["css=.max-w-\\[25rem\\]", "css:finder"],
+        ["xpath=//div[3]/button", "xpath:position"],
+        ["xpath=//button[contains(.,'Apply workout plan to user')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "8db3ef4c-88e3-4a35-b487-cd24b0369f04",
+      "comment": "",
+      "command": "mouseOut",
+      "target": "css=.max-w-\\[25rem\\]",
+      "targets": [
+        ["css=.max-w-\\[25rem\\]", "css:finder"],
+        ["xpath=//div[3]/button", "xpath:position"]
+      ],
+      "value": ""
+    }]
+  }, {
+    "id": "42a5b82d-a023-49d6-ac38-c53379201642",
+    "name": "Start a workout",
+    "commands": [{
+      "id": "7f7c0f97-2175-46b3-9db0-9b1d21655864",
+      "comment": "",
+      "command": "open",
+      "target": "/",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "755f67a9-8aae-470b-865d-93f562560a44",
+      "comment": "",
+      "command": "setWindowSize",
+      "target": "703x821",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "49793fd4-d809-4cf3-ba00-2d541f98efcc",
+      "comment": "",
+      "command": "click",
+      "target": "linkText=Go to the app",
+      "targets": [
+        ["linkText=Go to the app", "linkText"],
+        ["css=.bg-white", "css:finder"],
+        ["xpath=//a[contains(@href, '/sign-in')]", "xpath:href"],
+        ["xpath=//a", "xpath:position"],
+        ["xpath=//a[contains(.,'Go to the app')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "23254b0b-df09-4344-b967-c8e8f6883d4f",
+      "comment": "",
+      "command": "mouseOver",
+      "target": "linkText=Go to the app",
+      "targets": [
+        ["linkText=Go to the app", "linkText"],
+        ["css=.bg-white", "css:finder"],
+        ["xpath=//a[contains(@href, '/sign-in')]", "xpath:href"],
+        ["xpath=//a", "xpath:position"],
+        ["xpath=//a[contains(.,'Go to the app')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "c8ec0db8-e420-4176-9f9f-4e481e7da2b8",
+      "comment": "",
+      "command": "type",
+      "target": "id=:r0:-form-item",
+      "targets": [
+        ["id=:r0:-form-item", "id"],
+        ["name=email", "name"],
+        ["css=#\\3Ar0\\3A-form-item", "css:finder"],
+        ["xpath=//input[@id=':r0:-form-item']", "xpath:attributes"],
+        ["xpath=//input", "xpath:position"]
+      ],
+      "value": "qedgncccshgttwgfxj@poplk.com"
+    }, {
+      "id": "46e1e6d8-7f01-433e-b9b4-43b6c661aca4",
+      "comment": "",
+      "command": "type",
+      "target": "name=password",
+      "targets": [
+        ["name=password", "name"],
+        ["css=.h-11:nth-child(1)", "css:finder"],
+        ["xpath=//input[@name='password']", "xpath:attributes"],
+        ["xpath=//div[@id=':r1:-form-item']/input", "xpath:idRelative"],
+        ["xpath=//div[3]/div/input", "xpath:position"]
+      ],
+      "value": "qedgncccshgttwgfxj@poplk.com"
+    }, {
+      "id": "66e7bd84-f352-4340-a406-b1fba0cee88b",
+      "comment": "",
+      "command": "click",
+      "target": "css=.inline-flex > span",
+      "targets": [
+        ["css=.inline-flex > span", "css:finder"],
+        ["xpath=//button/span", "xpath:position"],
+        ["xpath=//span[contains(.,'Sign In')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "44d06902-f7d7-4793-9376-d6d2bd019a8d",
+      "comment": "",
+      "command": "mouseOver",
+      "target": "css=.inline-flex > span",
+      "targets": [
+        ["css=.inline-flex > span", "css:finder"],
+        ["xpath=//button/span", "xpath:position"],
+        ["xpath=//span[contains(.,'Sign In')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "3acbceaa-8528-410c-a22b-deb722531f11",
+      "comment": "",
+      "command": "click",
+      "target": "css=.h-9 > span",
+      "targets": [
+        ["css=.h-9 > span", "css:finder"],
+        ["xpath=//a/button/span", "xpath:position"],
+        ["xpath=//span[contains(.,'Start workout')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "e79f0bab-3ccf-491b-8a7c-6bb0da2a5482",
+      "comment": "",
+      "command": "close",
+      "target": "",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "fba1cf1d-0e28-463c-85b4-52c33adfc459",
+      "comment": "",
+      "command": "click",
+      "target": "linkText=Go to the app",
+      "targets": [
+        ["linkText=Go to the app", "linkText"],
+        ["css=.bg-white", "css:finder"],
+        ["xpath=//a[contains(@href, '/sign-in')]", "xpath:href"],
+        ["xpath=//a", "xpath:position"],
+        ["xpath=//a[contains(.,'Go to the app')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "e2529244-0fca-4672-b483-23d10e27aa23",
+      "comment": "",
+      "command": "type",
+      "target": "id=:r0:-form-item",
+      "targets": [
+        ["id=:r0:-form-item", "id"],
+        ["name=email", "name"],
+        ["css=#\\3Ar0\\3A-form-item", "css:finder"],
+        ["xpath=//input[@id=':r0:-form-item']", "xpath:attributes"],
+        ["xpath=//input", "xpath:position"]
+      ],
+      "value": "qedgncccshgttwgfxj@poplk.com"
+    }, {
+      "id": "a3df94cc-4286-42ef-be66-a7515449f0a8",
+      "comment": "",
+      "command": "type",
+      "target": "name=password",
+      "targets": [
+        ["name=password", "name"],
+        ["css=.h-11:nth-child(1)", "css:finder"],
+        ["xpath=//input[@name='password']", "xpath:attributes"],
+        ["xpath=//div[@id=':r1:-form-item']/input", "xpath:idRelative"],
+        ["xpath=//div[3]/div/input", "xpath:position"]
+      ],
+      "value": "qedgncccshgttwgfxj@poplk.com"
+    }, {
+      "id": "ed09c093-9e2c-4cfb-8cb5-065c3da930a0",
+      "comment": "",
+      "command": "click",
+      "target": "css=.inline-flex",
+      "targets": [
+        ["css=.inline-flex", "css:finder"],
+        ["xpath=//button[@type='submit']", "xpath:attributes"],
+        ["xpath=//form/button", "xpath:position"],
+        ["xpath=//button[contains(.,'Sign In')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "013847e4-e2d2-480d-baec-7ee0c3d94e2e",
+      "comment": "",
+      "command": "mouseOver",
+      "target": "css=.mt-8 > .w-full",
+      "targets": [
+        ["css=.mt-8 > .w-full", "css:finder"],
+        ["xpath=//a[contains(@href, '/workout-now')]", "xpath:href"],
+        ["xpath=//main/div/div/a", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "d4965d9d-a10b-430d-94c9-b7c7506ca441",
+      "comment": "",
+      "command": "mouseOut",
+      "target": "css=.mt-8 > .w-full",
+      "targets": [
+        ["css=.mt-8 > .w-full", "css:finder"],
+        ["xpath=//a[contains(@href, '/workout-now')]", "xpath:href"],
+        ["xpath=//main/div/div/a", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "6cc54d45-1251-4e11-adf7-f45939585121",
+      "comment": "",
+      "command": "click",
+      "target": "css=.h-9",
+      "targets": [
+        ["css=.h-9", "css:finder"],
+        ["xpath=//a/button", "xpath:position"],
+        ["xpath=//button[contains(.,'Start workout')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "87bbf304-0455-4821-b6cb-fcc9ffc0f53a",
+      "comment": "",
+      "command": "close",
+      "target": "",
+      "targets": [],
+      "value": ""
+    }]
+  }],
+  "suites": [{
+    "id": "57a31c27-589d-440e-aff8-5044813c9b62",
+    "name": "Default Suite",
+    "persistSession": false,
+    "parallel": false,
+    "timeout": 300,
+    "tests": []
+  }],
+  "urls": ["https://gymprogress.lukakordic.me/"],
+  "plugins": []
+}
