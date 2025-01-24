@@ -4,15 +4,15 @@ import GymFitnessTrackerApplication.model.domain.FoodMeal;
 
 public class FoodMealForm {
 
-    private int quantity;
+    private float quantity;
 
     private String foodId;
 
-    public int getQuantity() {
+    public float getQuantity() {
         return quantity;
     }
 
-    public void setQuantity(int quantity) {
+    public void setQuantity(float quantity) {
         this.quantity = quantity;
     }
 

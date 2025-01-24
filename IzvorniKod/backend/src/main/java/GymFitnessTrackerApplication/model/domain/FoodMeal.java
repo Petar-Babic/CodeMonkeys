@@ -20,6 +20,14 @@ public class FoodMeal {
 
     float quantity;
 
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
     public Food getFood() {
         return food;
     }

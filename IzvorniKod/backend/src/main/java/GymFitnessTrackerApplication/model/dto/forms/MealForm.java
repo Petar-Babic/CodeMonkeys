@@ -2,10 +2,12 @@ package GymFitnessTrackerApplication.model.dto.forms;
 
 import GymFitnessTrackerApplication.model.domain.FoodMeal;
 import GymFitnessTrackerApplication.model.domain.Meal;
+import com.fasterxml.jackson.annotation.JsonInclude;
 
 import java.time.ZonedDateTime;
 import java.util.List;
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class MealForm {
 
     private ZonedDateTime time;

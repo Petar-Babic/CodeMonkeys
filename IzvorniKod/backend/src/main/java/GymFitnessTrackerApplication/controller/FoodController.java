@@ -123,9 +123,13 @@ public class FoodController {
         if(user.getRole().equals(Role.ADMIN) || (user.getRole().equals(Role.TRAINER)) ||  user.getId().equals(m.getUser().getId())) {
             if (user.getRole().equals(Role.TRAINER) && m.getUser().getTrainer() == null)
                 throw new AdminRestrictedException("Trainer doesnt train user");
-            mealService.updateMeal(id,form);
+            Meal meal = mealService.updateMeal(id,form,user);
+            List<FoodMeal> foodMeals = foodMealService.updateFoodMeals(meal, form);
+            if(foodMeals != null)  mealService.setFoodMeals(meal, foodMeals);
+            m = meal;
+
         }
-        return ResponseEntity.status(200).body("Updated meal :"+id);
+        return ResponseEntity.status(200).body(new MealResponse(m));
     }
 
     @DeleteMapping("/api/meal/{id}")

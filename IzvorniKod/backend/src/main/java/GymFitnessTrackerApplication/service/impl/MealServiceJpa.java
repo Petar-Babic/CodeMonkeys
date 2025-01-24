@@ -128,9 +128,21 @@ public class MealServiceJpa implements MealService {
         else mealRepo.deleteById(opt.get().getId());
     }
 
-    public void updateMeal(String id,MealForm mealForm){
+    public Meal updateMeal(String id,MealForm mealForm, MyUser user){
         Optional<Meal>  opt=  mealRepo.findById(Long.parseLong(id));
         if(opt.isEmpty()) throw new NoExistingFoodException("No such meal");
-        else mealRepo.deleteById(opt.get().getId());
+        Meal meal = opt.get();
+        if(!user.getRole().equals(Role.TRAINER)){
+            meal.setSuggestion(true);
+            meal.setSuggestedId(null);
+        }else{
+            meal.setSuggestedId(mealForm.getSuggestedId());
+            meal.setSuggestion(false);
+        }
+        if(mealForm.getName() != null)
+            meal.setName(mealForm.getName());
+        if(mealForm.getTime() != null)
+            meal.setTime(mealForm.getTime());
+        return mealRepo.save(meal);
     }
 }

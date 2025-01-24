@@ -6,6 +6,7 @@ import GymFitnessTrackerApplication.model.dao.MealRepo;
 import GymFitnessTrackerApplication.model.domain.Food;
 import GymFitnessTrackerApplication.model.domain.FoodMeal;
 import GymFitnessTrackerApplication.model.domain.Meal;
+import GymFitnessTrackerApplication.model.dto.forms.FoodMealForm;
 import GymFitnessTrackerApplication.model.dto.forms.MealForm;
 import GymFitnessTrackerApplication.service.FoodMealService;
 import jakarta.transaction.Transactional;
@@ -39,6 +40,37 @@ public class FoodMealServiceJpa implements FoodMealService{
             foodMeals.add(partOfMeal);
         });
         return foodMeals;
+    }
+
+    @Override
+    public List<FoodMeal> updateFoodMeals(Meal meal, MealForm form){
+        if(form.getMealFoods() == null) return meal.getMealFoods();
+        List<FoodMeal> foodMealsOg = meal.getMealFoods();
+        if(form.getMealFoods() != null){
+            //if(foodMealsOg.containsAll(form.getMealFoods()) && form.getMealFoods().containsAll(foodMealsOg)) return null;
+            //else if(form.getMealFoods().isEmpty()) return new ArrayList<FoodMeal>();
+            //else {
+                deleteMealFoods(meal);
+                List<FoodMeal> fd = new ArrayList<>();
+                form.getMealFoods().forEach(foodMealForm -> {
+                    Optional<Food> food = foodRepo.findById(Long.parseLong(foodMealForm.getFoodId()));
+                    FoodMeal partOfMeal = new FoodMeal(foodMealForm.getQuantity(),meal,food.get());
+                    foodMealRepo.save(partOfMeal);
+                    fd.add(partOfMeal);
+                });
+                return fd;
+            //}
+        }
+        return foodMealsOg;
+
+    }
+
+    void deleteMealFoods(Meal m){
+        List<FoodMeal> list= m.getMealFoods();
+        m.setMealFoods(null);
+        mealRepo.save(m);
+        list.forEach(
+            foodMeal -> foodMealRepo.delete(foodMeal)) ;
     }
 
     

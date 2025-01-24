@@ -12,5 +12,7 @@ public interface FoodMealService {
 
     List<FoodMeal> createFoodMeals(Meal meal, MealForm form);
 
+    List<FoodMeal> updateFoodMeals(Meal meal, MealForm form);
+
 
 }
