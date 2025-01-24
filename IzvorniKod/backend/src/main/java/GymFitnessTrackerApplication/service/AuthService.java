@@ -56,7 +56,7 @@ public class AuthService {
         //String token = jwtService.generateToken(myUserDetailsService.loadUserByUsername(loginForm.email()));
         // refresh token impl
         if(user.getRole().equals(Role.USER) || user.getRole().equals(Role.ADMIN)) {
-            token = jwtService.generateToken(myUserDetailsService.loadUserByUsername(loginForm.email()));
+            token = jwtService.generateToken(user);
             return new JwtResponse(token, user.getId().toString(), user.getName(), user.getEmail());
         }
 
@@ -67,7 +67,7 @@ public class AuthService {
                     usrs.add(new UserDetailsResponse(myUser.getId(), myUser.getName(), myUser.getImage()));
                 }
         );
-        token = jwtService.generateTokenTrainer(myUserDetailsService.loadUserByUsername(loginForm.email()),usrs);
+        token = jwtService.generateTokenTrainer(user,usrs);
         return new JwtResponseTrainer(token,user.getId().toString(),user.getName(), user.getEmail(),trainedBy);
 
     }

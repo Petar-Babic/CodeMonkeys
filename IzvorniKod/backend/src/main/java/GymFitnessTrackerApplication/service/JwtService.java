@@ -28,6 +28,17 @@ public class JwtService {
     public String generateToken(UserDetails userDetails) {
         return Jwts.builder()
                 .subject(userDetails.getUsername())
+                .claim("role",userDetails.getAuthorities())
+                .issuedAt(Date.from(Instant.now()))
+                .expiration(Date.from(Instant.now().plusMillis(VALIDITY)))
+                .signWith(generateKey())
+                .compact();
+    }
+
+    public String generateToken(MyUser userDetails) {
+        return Jwts.builder()
+                .subject(userDetails.getEmail())
+                .claim("role", userDetails.getRole().toString())
                 .issuedAt(Date.from(Instant.now()))
                 .expiration(Date.from(Instant.now().plusMillis(VALIDITY)))
                 .signWith(generateKey())
@@ -38,6 +49,17 @@ public class JwtService {
         return Jwts.builder()
                 .subject(userDetails.getUsername())
                 .issuedAt(Date.from(Instant.now()))
+                .claim("role",userDetails.getAuthorities())
+                .claim("users",users)
+                .expiration(Date.from(Instant.now().plusMillis(VALIDITY)))
+                .signWith(generateKey())
+                .compact();
+    }
+    public String generateTokenTrainer(MyUser user, List<UserDetailsResponse> users) {
+        return Jwts.builder()
+                .subject(user.getEmail())
+                .issuedAt(Date.from(Instant.now()))
+                .claim("role",user.getRole().toString())
                 .claim("users",users)
                 .expiration(Date.from(Instant.now().plusMillis(VALIDITY)))
                 .signWith(generateKey())
@@ -48,6 +70,18 @@ public class JwtService {
         return Jwts.builder()
                 .subject(userDetails.getUsername())
                 .issuedAt(Date.from(Instant.now()))
+                .claim("role",userDetails.getAuthorities())
+                .claim("userId",userId)
+                .expiration(Date.from(Instant.now().plusMillis(VALIDITY)))
+                .signWith(generateKey())
+                .compact();
+    }
+
+    public String generateForTraining(MyUser user, String userId) {
+        return Jwts.builder()
+                .subject(user.getEmail())
+                .issuedAt(Date.from(Instant.now()))
+                .claim("role",user.getRole())
                 .claim("userId",userId)
                 .expiration(Date.from(Instant.now().plusMillis(VALIDITY)))
                 .signWith(generateKey())
