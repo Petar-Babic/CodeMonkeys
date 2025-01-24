@@ -1,6 +1,11 @@
 "use client";
 
 import React, { useState, useEffect, useCallback } from "react";
+
+import { useFood } from "@/hooks/useFood";
+import { useMeal } from "@/hooks/useMeal";
+import { useNutritionPlan } from "@/hooks/useNutritionPlan";
+
 import { Pie, Bar } from "react-chartjs-2";
 import {
   Chart as ChartJS,
@@ -27,6 +32,19 @@ import { NutritionPlanBase } from "@/types/nutritionPlan";
 import { MealSuggestionBase } from "@/types/mealSuggestion";
 
 const NutritionPage = () => {
+
+  const { foods, createFood, getFoodById, updateFood, deleteFood: hookDeleteFood } = useFood();
+  const { meals: hookMeals, createMeal, getMealById, updateMeal, deleteMeal: hookDeleteMeal } = useMeal();
+  const {
+    nutritionPlan: hookNUtritionPlan,
+    createNutritionPlan,
+    getNutritionPlan,
+  } = useNutritionPlan();
+
+  useEffect(() => {
+    console.log("Loaded foods:", foods);
+  }, [foods]);  
+
   const [meals, setMeals] = useState<MealBase[]>([]);
   const [mealFoods, setMealFoods] = useState<FoodBase[]>([]);
   const [mealSuggestions, setMealSuggestions] = useState<MealSuggestionBase[]>([]);
@@ -286,22 +304,22 @@ const NutritionPage = () => {
   const openModal = (meal?: MealBase) => {
     setCurrentMeal(
       meal
-        ? meal
+        ? { ...meal }
         : {
-          id: 0,
-          name: "", 
-          calories: 0,
-          protein: 0,
-          carbs: 0,
-          fat: 0,
-          userId: 0,
-          dailyNutritionLogId: 0,
-          createdAt: new Date(),
-          updatedAt: new Date(),
+            id: 0,
+            name: "",
+            calories: 0,
+            protein: 0,
+            carbs: 0,
+            fat: 0,
+            userId: 0,
+            dailyNutritionLogId: 0,
+            createdAt: new Date(),
+            updatedAt: new Date(),
           }
     );
     setIsModalOpen(true);
-  };
+  };  
 
   const closeModal = () => {
     if (hasUnsavedChanges) {
@@ -336,88 +354,55 @@ const NutritionPage = () => {
   const [isMyMealsModalOpen, setIsMyMealsModalOpen] = useState(false);
   const [saveToMyMeals, setSaveToMyMeals] = useState(false);
 
-  const addMealFromMyMeals = (meal: MealBase) => {
+  const addMealFromMyMeals = async (meal: MealBase) => {
     const dateKey = formatDateKey(currentDate);
-
-    setMealsByDate((prev) => {
-      const updatedMeals = [
-        ...(prev[dateKey] || []),
-        { ...meal, id: (prev[dateKey]?.length || 0) + 1 },
-      ];
-
-      return {
+  
+    try {
+      const newMeal = await createMeal({ ...meal, dailyNutritionLogId: currentMeal.dailyNutritionLogId });
+      setMealsByDate((prev) => ({
         ...prev,
-        [dateKey]: updatedMeals,
-      };
-    });
+        [dateKey]: [...(prev[dateKey] || []), newMeal],
+      }));
+      console.log("Meal added from My Meals:", newMeal);
+    } catch (error) {
+      console.error("Failed to add meal from My Meals:", error);
+    }
+  };  
 
-    setMeals((prevMeals) => [
-      ...prevMeals,
-      { ...meal, id: prevMeals.length + 1 },
-    ]);
-  };
-
-  const saveMeal = () => {
+  const saveMeal = async () => {
     if (!currentMeal || !currentMeal.name?.trim()) {
       alert("Please provide a name for your meal!");
       return;
     }
   
-    // Ensure meal macros are already updated in `currentMeal`
-    const updatedMeal: MealBase = {
-      ...currentMeal,
-    };
+    try {
+      if (currentMeal.id === 0) {
+        // Call backend to create a new meal
+        const newMeal = await createMeal(currentMeal);
+        console.log("Meal created:", newMeal);
+      } else {
+        // Call backend to update the existing meal
+        await updateMeal(currentMeal.id, currentMeal);
+        console.log("Meal updated:", currentMeal);
+      }
   
-    const dateKey = formatDateKey(currentDate);
-  
-    // Update the meals by date
-    setMealsByDate((prev) => ({
-      ...prev,
-      [dateKey]: updatedMeal.id
-        ? prev[dateKey].map((meal) =>
-            meal.id === updatedMeal.id ? updatedMeal : meal
-          )
-        : [
-            ...(prev[dateKey] || []),
-            { ...updatedMeal, id: prev[dateKey]?.length + 1 || 1 },
-          ],
-    }));
-  
-    // Optionally save the meal to "My Meals"
-    if (saveToMyMeals) {
-      setMyMeals((prevMeals) => {
-        const mealExists = prevMeals.some(
-          (meal) => meal.name.toLowerCase() === updatedMeal.name.toLowerCase()
-        );
-        if (!mealExists) {
-          return [...prevMeals, { ...updatedMeal, id: prevMeals.length + 1 }];
-        }
-        return prevMeals;
-      });
+      // Close modal and reset state
+      setIsModalOpen(false);
+      setHasUnsavedChanges(false);
+    } catch (error) {
+      console.error("Failed to save meal:", error);
     }
-  
-    // Reset state and close modal
-    setSaveToMyMeals(false);
-    setHasUnsavedChanges(false);
-    setIsModalOpen(false);
   };
   
-
-  const deleteMeal = (id: number) => {
-    setMeals((prevMeals) => prevMeals.filter((meal) => meal.id !== id));
+  const deleteMeal = async (id: number) => {
+    try {
+      await hookDeleteMeal(id); // Call backend to delete meal
+      console.log(`Meal with ID ${id} deleted`);
+    } catch (error) {
+      console.error("Failed to delete meal:", error);
+    }
   };
-
-  const calculateMealMacros = (
-    meal: MealBase,
-    food: FoodBase
-  ): MealBase => ({
-    ...meal,
-    calories: meal.calories + food.calories,
-    protein: meal.protein + food.protein,
-    carbs: meal.carbs + food.carbs,
-    fat: meal.fat + food.fat,
-  });
-
+  
   const [servingSize, setServingSize] = useState<number>(0);
 
   const handleSave = (food: FoodBase, newAmount: number) => {
@@ -432,6 +417,12 @@ const NutritionPage = () => {
       carbs: parseFloat((food.carbs * ratio).toFixed(1)),
     };
   
+    // Update mealFoods array
+    setMealFoods((prevMealFoods) =>
+      prevMealFoods.map((f) => (f.id === food.id ? updatedFood : f))
+    );
+  
+    // Update currentMeal nutrient totals
     setCurrentMeal((prevMeal) => ({
       ...prevMeal,
       calories: prevMeal.calories - food.calories + updatedFood.calories,
@@ -440,6 +431,7 @@ const NutritionPage = () => {
       fat: prevMeal.fat - food.fat + updatedFood.fat,
     }));
   
+    // Exit editing mode
     setEditingFoodId(null);
   };  
 
@@ -457,23 +449,98 @@ const NutritionPage = () => {
   ];
 
   const openFoodModal = (food?: FoodBase) => {
-    setNewFood(
-      food
-        ? { ...food }
-        : {
-            id: 0,
-            name: "",
-            defaultNumber: 0,
-            unit: "",
-            calories: 0,
-            fat: 0,
-            carbs: 0,
-            protein: 0,
-          }
-    );
+    setNewFood(food ? { ...food } : {
+      id: 0,
+      name: "",
+      defaultNumber: 0,
+      unit: "",
+      calories: 0,
+      fat: 0,
+      carbs: 0,
+      protein: 0,
+    });
     setIsFoodModalOpen(true);
-  };
+  };  
 
+  const [myFoods, setMyFoods] = useState<FoodBase[]>([]);
+
+  const saveFood = async () => {
+    if (!newFood.name?.trim()) {
+      alert("Please provide a name for the food!");
+      return;
+    }
+  
+    try {
+      // Create or update the food in the backend
+      let updatedOrCreatedFood = newFood;
+      if (newFood.id) {
+        await updateFood(newFood); // Update food in backend
+        console.log("Food updated in backend:", newFood);
+      } else {
+        updatedOrCreatedFood = await createFood(newFood); // Add new food in backend
+        console.log("Food added in backend:", updatedOrCreatedFood);
+      }
+  
+      // Update the `currentMeal` state
+      setCurrentMeal((prevMeal: MealBase) => {
+        const updatedFoods = mealFoods.map((food: FoodBase) =>
+          food.id === updatedOrCreatedFood.id ? updatedOrCreatedFood : food
+        );
+  
+        // Add food if it doesn't exist in the current meal
+        if (!mealFoods.some((food: FoodBase) => food.id === updatedOrCreatedFood.id)) {
+          updatedFoods.push(updatedOrCreatedFood);
+        }
+  
+        // Recalculate calories
+        const totalCalories = updatedFoods.reduce(
+          (sum: number, food: FoodBase) => sum + food.calories,
+          0
+        );
+  
+        return {
+          ...prevMeal,
+          calories: totalCalories,
+        };
+      });
+  
+      // Update the `mealFoods` state for rendering
+      setMealFoods((prevMealFoods: FoodBase[]) => {
+        const updatedMealFoods = prevMealFoods.map((food: FoodBase) =>
+          food.id === updatedOrCreatedFood.id ? updatedOrCreatedFood : food
+        );
+  
+        // Add the food if not already in the state
+        if (!prevMealFoods.some((food: FoodBase) => food.id === updatedOrCreatedFood.id)) {
+          updatedMealFoods.push(updatedOrCreatedFood);
+        }
+  
+        console.log("Updated mealFoods:", updatedMealFoods);
+        return updatedMealFoods;
+      });
+  
+      // Update the `myFoods` state
+      setMyFoods((prevFoods: FoodBase[]) => {
+        const foodExists = prevFoods.some(
+          (food: FoodBase) =>
+            food.name.toLowerCase() === updatedOrCreatedFood.name.toLowerCase()
+        );
+  
+        if (!foodExists) {
+          return [...prevFoods, updatedOrCreatedFood];
+        }
+  
+        return prevFoods;
+      });
+  
+      // Close the modal and reset
+      setHasUnsavedChangesFood(false);
+      setIsFoodModalOpen(false);
+    } catch (error) {
+      console.error("Failed to add or update food:", error);
+    }
+  };
+  
   const closeFoodModal = () => {
     if (hasUnsavedChangesFood) {
       setShowConfirmDialogFood(true);
@@ -491,15 +558,7 @@ const NutritionPage = () => {
   const handleFoodInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
 
-    const numericFields = [
-      "id",
-      "servingSize",
-      "calories",
-      "fats",
-      "carbs",
-      "protein",
-    ];
-
+    const numericFields = ["id", "defaultNumber", "calories", "fat", "carbs", "protein"];
     setNewFood((prevFood) => ({
       ...prevFood,
       [name]: numericFields.includes(name) ? Number(value) : value,
@@ -508,7 +567,6 @@ const NutritionPage = () => {
     setHasUnsavedChangesFood(true);
   };
 
-  const [myFoods, setMyFoods] = useState<FoodBase[]>([]);
   const [isMyFoodsModalOpen, setIsMyFoodsModalOpen] = useState(false);
 
   const openMyFoodModal = () => {
@@ -529,46 +587,15 @@ const NutritionPage = () => {
     }));
   
     closeFoodModal();
-  };  
+  };   
 
-  const addFood = () => {
-    if (!newFood.name?.trim()) {
-      alert("Please provide a name for the food!");
-      return;
+  const deleteFood = async (food: FoodBase) => {
+    try {
+      await hookDeleteFood(food.id); // Call backend to delete food
+      console.log(`Food with ID ${food.id} deleted`);
+    } catch (error) {
+      console.error("Failed to delete food:", error);
     }
-  
-    setCurrentMeal((prevMeal) => ({
-      ...prevMeal,
-      calories: prevMeal.calories + newFood.calories,
-      protein: prevMeal.protein + newFood.protein,
-      carbs: prevMeal.carbs + newFood.carbs,
-      fat: prevMeal.fat + newFood.fat,
-    }));
-  
-    setMyFoods((prevFoods) => {
-      const foodExists = prevFoods.some(
-        (food) => food.name.toLowerCase() === newFood.name.toLowerCase()
-      );
-  
-      if (!foodExists) {
-        return [...prevFoods, { ...newFood, id: prevFoods.length + 1 }];
-      }
-  
-      return prevFoods;
-    });
-  
-    setHasUnsavedChangesFood(false);
-    setIsFoodModalOpen(false);
-  };  
-
-  const deleteFood = (food: FoodBase) => {
-    setCurrentMeal((prevMeal) => ({
-      ...prevMeal,
-      calories: Math.max(0, prevMeal.calories - food.calories),
-      protein: Math.max(0, prevMeal.protein - food.protein),
-      carbs: Math.max(0, prevMeal.carbs - food.carbs),
-      fat: Math.max(0, prevMeal.fat - food.fat),
-    }));
   };  
 
   const scanBarcode = () => {
@@ -716,7 +743,7 @@ const NutritionPage = () => {
         {[
           { name: "protein", label: "Protein", bgColor: "bg-red-100" },
           { name: "carbs", label: "Carbs", bgColor: "bg-blue-100" },
-          { name: "fats", label: "Fats", bgColor: "bg-yellow-100" },
+          { name: "fat", label: "Fats", bgColor: "bg-yellow-100" },
         ].map(({ name, label, bgColor }) => {
           const value = totalNutrients[name as keyof typeof totalNutrients];
           const goal = goals[name as keyof NutritionPlanBase];
@@ -787,7 +814,7 @@ const NutritionPage = () => {
 
       {isGoalsModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-20">
-          <div className="bg-white p-6 rounded-md w-[1200px] h-[96vh] relative overflow-y-auto">
+          <div className="bg-white p-6 rounded-md w-[520px] h-[70vh] relative overflow-y-auto">
             {/* Title and Tooltip */}
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-2xl font-semibold">Edit Your Goals</h2>
@@ -820,7 +847,7 @@ const NutritionPage = () => {
             </div>
 
             {/* Form Fields */}
-            <div className="grid grid-cols-4 gap-6">
+            <div className="grid grid-cols-2 gap-6">
               {goalFields.map((field) => (
                 <div key={field.name} className="space-y-2">
                   {/* Input Field */}
@@ -836,7 +863,7 @@ const NutritionPage = () => {
                     />
                   </div>
 
-                  {["fats", "carbs", "protein"].includes(
+                  {["fat", "carbs", "protein"].includes(
                     field.name as string
                   ) && (
                     <div>
@@ -911,8 +938,8 @@ const NutritionPage = () => {
 
       <div className="flex w-full max-w-5xl justify-center mt-5">
         {/* Meal List Section */}
-        <div className="flex flex-col w-1/2 space-y-4">
-          <h2 className="text-2xl font-semibold">My Meals</h2>
+        <div className="flex flex-col w-1/2 space-y-4 mr-2">
+          <h2 className="text-2xl font-semibold text-center">My Meals</h2>
           {meals.map((meal) => (
             <div
               key={meal.id}
@@ -990,10 +1017,10 @@ const NutritionPage = () => {
             </div>
           )}
         </div>
-        <div className="flex flex-col w-1/2 space-y-4">
+        <div className="flex flex-col w-1/2 space-y-4 ml-2">
 
           {/* Suggested Meal List Section */}
-          <h2 className="text-2xl font-semibold">Suggested Meals</h2>
+          <h2 className="text-2xl font-semibold text-center">Suggested Meals</h2>
           {meals.map((meal) => (
             <div
               key={meal.id}
@@ -1223,8 +1250,8 @@ const NutritionPage = () => {
                         <div className="bg-white rounded-lg p-4 w-1/2">
                           <h2 className="text-xl font-bold mb-4">My Foods</h2>
                           <ul>
-                            {myFoods.length > 0 ? (
-                              myFoods.map((food) => (
+                            {foods.length > 0 ? (
+                              foods.map((food) => (
                                 <li
                                   key={food.id}
                                   className="flex justify-between items-center p-2 border-b border-gray-200"
@@ -1359,7 +1386,7 @@ const NutritionPage = () => {
                 </div>
                 <div className="mt-2 flex justify-between">
                   <button
-                    onClick={addFood}
+                    onClick={saveFood}
                     className="bg-blue-500 text-white p-2 rounded-md shadow-md hover:bg-blue-700"
                   >
                     Save Food
