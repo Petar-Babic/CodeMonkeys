@@ -1,46 +1,71 @@
 import React, { useState } from "react";
-import { muscleGroups } from "@/data/muscleGroup";
+import Select from "react-select";
+import Image from "next/image";
+import { useAppContext } from "@/contexts/AppContext";
 
 interface AddExerciseModalProps {
   closeModal: () => void;
 }
 
-export default function AddExerciseModal({ closeModal }: AddExerciseModalProps) {
+export default function AddExerciseModal({
+  closeModal,
+}: AddExerciseModalProps) {
+  const { createExercise, uploadFile, muscleGroups } = useAppContext();
+
   const [exerciseName, setExerciseName] = useState("");
-  const [primaryMuscle, setPrimaryMuscle] = useState("");
-  const [secondaryMuscle, setSecondaryMuscle] = useState("");
-  const [additionalSecondaryMuscles, setAdditionalSecondaryMuscles] = useState<string[]>([]);
-  const [showAddAnother, setShowAddAnother] = useState(true); 
-  const [description, setDescription] = useState(""); 
+  const [primaryMuscleGroups, setPrimaryMuscleGroups] = useState<number[]>([]);
+  const [secondaryMuscleGroups, setSecondaryMuscleGroups] = useState<number[]>(
+    []
+  );
+  const [description, setDescription] = useState("");
+  const [selectedImage, setSelectedImage] = useState<File | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState("");
 
-  const handleAddAnotherSecondaryMuscle = () => {
-    setAdditionalSecondaryMuscles((prev) => [...prev, ""]);
-    setShowAddAnother(false); 
-  };
-
-  const handleSecondaryMuscleChange = (index: number, value: string) => {
-    if (index === 0) {
-      setSecondaryMuscle(value);
-    } else {
-      const updatedSecondaryMuscles = [...additionalSecondaryMuscles];
-      updatedSecondaryMuscles[index - 1] = value; 
-      setAdditionalSecondaryMuscles(updatedSecondaryMuscles);
+  const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      setSelectedImage(file);
+      const objectUrl = URL.createObjectURL(file);
+      setPreviewUrl(objectUrl);
     }
   };
 
-  const handleSave = () => {
-    if (!exerciseName.trim() || !primaryMuscle) {
-      setErrorMessage("Name and Primary Muscle Group are required.");
-      return; 
+  const handleSave = async () => {
+    if (!exerciseName.trim()) {
+      setErrorMessage("Exercise name is required.");
+      return;
     }
+
+    if (primaryMuscleGroups.length === 0) {
+      setErrorMessage("Please select at least one primary muscle group.");
+      return;
+    }
+
     setErrorMessage("");
-    console.log({
-      name: exerciseName,
-      primaryMuscle,
-      secondaryMuscles: [secondaryMuscle, ...additionalSecondaryMuscles], 
-    });
-    closeModal();
+
+    try {
+      let imageUrl = "";
+      if (selectedImage) {
+        imageUrl = await uploadFile(selectedImage);
+      }
+
+      const exerciseData = {
+        name: exerciseName,
+        primaryMuscleGroupsIds: primaryMuscleGroups,
+        secondaryMuscleGroupsIds: secondaryMuscleGroups,
+        description,
+        gif: imageUrl,
+        isApproved: false,
+      };
+
+      console.log("Submitting exercise data:", exerciseData);
+      await createExercise(exerciseData);
+      closeModal();
+    } catch (error) {
+      console.error("Error saving exercise:", error);
+      setErrorMessage("An error occurred while saving the exercise.");
+    }
   };
 
   return (
@@ -48,10 +73,8 @@ export default function AddExerciseModal({ closeModal }: AddExerciseModalProps) 
       <div className="bg-white rounded-md p-6 w-96 space-y-4">
         <h2 className="text-lg font-semibold">Add New Exercise</h2>
 
-        {errorMessage && (
-          <p className="text-red-500 text-sm">{errorMessage}</p> 
-        )}
-        
+        {errorMessage && <p className="text-red-500 text-sm">{errorMessage}</p>}
+
         <input
           type="text"
           placeholder="Exercise Name"
@@ -60,62 +83,73 @@ export default function AddExerciseModal({ closeModal }: AddExerciseModalProps) 
           className="w-full border border-gray-300 rounded-md p-2"
         />
 
-        <select
-          value={primaryMuscle}
-          onChange={(e) => setPrimaryMuscle(e.target.value)}
-          className="w-full border border-gray-300 rounded-md p-2"
-        >
-          <option value="">Select Primary Muscle Group</option>
-          {muscleGroups.map((group) => (
-            <option key={group.id} value={group.id}>
-              {group.name}
-            </option>
-          ))}
-        </select>
+        <label className="block font-medium text-sm">
+          Primary Muscle Groups
+        </label>
+        <Select
+          isMulti
+          value={muscleGroups
+            .filter((group) => primaryMuscleGroups.includes(group.id))
+            .map((group) => ({ value: group.id, label: group.name }))}
+          onChange={(newValue) =>
+            setPrimaryMuscleGroups(newValue.map((item) => item.value))
+          }
+          options={muscleGroups.map((group) => ({
+            value: group.id,
+            label: group.name,
+          }))}
+          className="basic-multi-select"
+          classNamePrefix="select"
+          placeholder="Select Primary Muscle Groups"
+        />
 
-        <select
-          value={secondaryMuscle}
-          onChange={(e) => handleSecondaryMuscleChange(0, e.target.value)}
-          className="w-full border border-gray-300 rounded-md p-2"
-        >
-          <option value="">Select Secondary Muscle Group</option>
-          {muscleGroups.map((group) => (
-            <option key={group.id} value={group.id}>
-              {group.name}
-            </option>
-          ))}
-        </select>
-
-        {secondaryMuscle && showAddAnother && (
-          <button
-            onClick={handleAddAnotherSecondaryMuscle}
-            className="text-gray-600">+ Add Another Group 
-          </button>
-        )}
-
-        {additionalSecondaryMuscles.map((muscle, index) => (
-          <select
-            key={index}
-            value={muscle}
-            onChange={(e) => handleSecondaryMuscleChange(index + 1, e.target.value)} 
-            className="w-full border border-gray-300 rounded-md p-2">
-            <option value="">Select Secondary Muscle Group</option>
-            {muscleGroups.map((group) => (
-              <option key={group.id} value={group.id}>
-                {group.name}
-              </option>
-            ))}
-          </select>
-        ))}
+        <label className="block font-medium text-sm">
+          Secondary Muscle Groups
+        </label>
+        <Select
+          isMulti
+          value={muscleGroups
+            .filter((group) => secondaryMuscleGroups.includes(group.id))
+            .map((group) => ({ value: group.id, label: group.name }))}
+          onChange={(newValue) =>
+            setSecondaryMuscleGroups(newValue.map((item) => item.value))
+          }
+          options={muscleGroups.map((group) => ({
+            value: group.id,
+            label: group.name,
+          }))}
+          className="basic-multi-select"
+          classNamePrefix="select"
+          placeholder="Select Secondary Muscle Groups"
+        />
 
         <textarea
-          placeholder="Exercise Description (optional)"
+          placeholder="Exercise Description"
           value={description}
           onChange={(e) => setDescription(e.target.value)}
           className="w-full border border-gray-300 rounded-md p-2 h-24 resize-none"
         />
 
-        <div className="flex justify-end space-x-2">
+        <label className="block font-medium text-sm">Upload Image</label>
+        <input
+          type="file"
+          accept="image/*"
+          onChange={handleImageChange}
+          className="w-full border border-gray-300 rounded-md p-2"
+        />
+        {previewUrl && (
+          <div className="mt-4">
+            <Image
+              src={previewUrl}
+              alt="Preview"
+              width={200}
+              height={200}
+              className="rounded-lg object-cover"
+            />
+          </div>
+        )}
+
+        <div className="flex justify-end space-x-2 mt-4">
           <button
             onClick={closeModal}
             className="bg-gray-100 text-gray-900 py-1 px-4 rounded-md"
