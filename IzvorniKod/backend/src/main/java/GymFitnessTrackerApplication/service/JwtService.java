@@ -118,6 +118,11 @@ public class JwtService {
         return claims.getSubject();
     }
 
+    public String extractTrainerMail(String jwt) {
+        Claims claims = getClaims(jwt);
+        return claims.get("trainerEmail",String.class);
+    }
+
     public String extractUserId(String jwt){
         Claims claims = getClaims(jwt);
         return claims.get("userId",String.class);

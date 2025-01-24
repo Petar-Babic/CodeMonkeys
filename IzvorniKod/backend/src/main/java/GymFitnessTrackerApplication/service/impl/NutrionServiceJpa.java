@@ -63,7 +63,6 @@ public class NutrionServiceJpa implements NutrionService {
     @Transactional
     public void updateNutrionPlan(@RequestBody NutrionPlanForm form,NutrionPlan plan) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-
         if(!Float.isNaN(form.getCalories()))
         plan.setCalories(form.getCalories());
         if(!Float.isNaN(form.getCarbs()))

@@ -66,6 +66,10 @@ public class NutrionController {
         MyUser user = (MyUser) myUserService.getMyUser(email);
         NutrionPlan plan = myNutrionService.getPlanFromId(id);
 
+        if(plan.getMyUser().getId() != user.getId() && jwtService.extractTrainerMail(auth.trim().substring(7)) == null)
+            throw new AdminRestrictedException("USER nije trener");
+
+
         // if (!plan.getCreatedBy().equals(user.getId())) {
         //     if (user.getRole().equals(Role.TRAINER)
         //         // ako treba i za admina user.getRole().equals(Role.TRAINER)
