@@ -10,6 +10,7 @@ export const foods: FoodBase[] = [
     defaultNumber: 1,
     fats: 0,
     carbs: 27,
+    approved: true,
   },
   {
     id: 2,
@@ -19,6 +20,8 @@ export const foods: FoodBase[] = [
     protein: 1,
     defaultNumber: 1,
     fats: 0,
+    approved: true,
+
     carbs: 27,
   },
   {
@@ -30,5 +33,6 @@ export const foods: FoodBase[] = [
     defaultNumber: 1,
     fats: 0,
     carbs: 27,
+    approved: true,
   },
 ];

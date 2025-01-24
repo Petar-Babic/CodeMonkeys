@@ -45,7 +45,6 @@ import { useAppContext } from "@/contexts/AppContext";
 import { Loader2 } from "lucide-react";
 import { EditUserWorkoutForm } from "./EditUserWorkoutForm";
 import Image from "next/image";
-import { Role } from "@/types/user";
 
 const formSchema = z.object({
   name: z.string().min(1, "Name is required"),
@@ -88,7 +87,6 @@ export function UserWorkoutPlanForm() {
     createUserWorkoutPlan: createWorkoutPlan,
     exercises,
     userData: user,
-    trainer,
   } = useAppContext();
 
   console.log("workoutPlan UserWorkoutPlanForm", workoutPlan);
@@ -122,8 +120,8 @@ export function UserWorkoutPlanForm() {
   });
 
   const handleSubmit = async (values: FormValues) => {
-    let userId = user?.id;
-    let createdById = trainer ? trainer.id : user?.id;
+    const userId = user?.id;
+    const createdById = user?.id;
 
     console.log("userId", userId);
     console.log("createdById", createdById);

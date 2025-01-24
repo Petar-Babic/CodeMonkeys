@@ -7,6 +7,7 @@ export type FoodBase = {
   defaultNumber: number;
   fats: number;
   carbs: number;
+  approved: boolean;
 };
 
 export type CreateFoodInput = Omit<FoodBase, "id">;

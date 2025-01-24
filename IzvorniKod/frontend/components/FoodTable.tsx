@@ -45,7 +45,7 @@ export default function FoodTable() {
     },
     {
       title: "Masti (g)",
-      key: "fat" as keyof FoodBase,
+      key: "fats" as keyof FoodBase,
       sortable: true,
       width: "120px",
     },

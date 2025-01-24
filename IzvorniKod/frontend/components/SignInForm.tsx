@@ -68,7 +68,7 @@ export function SignInForm() {
       console.log("session", session);
 
       if (session?.user?.role === "ADMIN") {
-        router.push("/admin");
+        router.push("/admin/exercises");
       } else if (session?.user?.role === "TRAINER") {
         router.push("/pick-client");
       } else {

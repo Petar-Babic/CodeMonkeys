@@ -108,6 +108,7 @@ export default async function AdminAppLayoutComponent({
     ...initialData,
     role: "ADMIN",
     user,
+    trainer: null,
   } as const;
 
   return (

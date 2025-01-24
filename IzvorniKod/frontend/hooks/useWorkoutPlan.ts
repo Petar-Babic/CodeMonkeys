@@ -93,6 +93,8 @@ export const useWorkoutPlan = () => {
         throw new Error("Access token is not set");
       }
 
+      console.log("accessToken", accessToken);
+
       console.log("updateWorkoutPlan input", input);
 
       await fetch(`${backendUrl}/api/workout-plans/${input.id}`, {

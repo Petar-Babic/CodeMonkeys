@@ -1,14 +1,19 @@
 import React from "react";
-import { foods } from "@/data/food";
 import { FoodBase } from "@/types/food";
 import { AdminFoodForm } from "@/components/AdminFoodForm";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/app/lib/auth";
+import { backendUrl } from "@/data/backendUrl";
 
 const getFoodAPI = async (id: number): Promise<FoodBase | undefined> => {
-  // Simulate API delay
-  await new Promise((resolve) => setTimeout(resolve, 1000));
-
-  // Find the food item
-  return foods.find((food) => food.id === id);
+  const session = await getServerSession(authOptions);
+  const res = await fetch(`${backendUrl}/api/food/${id}`, {
+    headers: {
+      Authorization: `Bearer ${session?.accessToken}`,
+    },
+  });
+  const food = await res.json();
+  return food;
 };
 
 export default async function AdminEditFoodPage(props: {

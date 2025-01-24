@@ -111,6 +111,7 @@ const NutritionPage = () => {
     fats: 0,
     carbs: 0,
     protein: 0,
+    approved: true,
   });
 
   const [currentMeal, setCurrentMeal] = useState<MealBase>(defaultMeal);

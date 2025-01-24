@@ -48,7 +48,7 @@ const getInitialData = async (
   }
 
   try {
-    let apiUrl = `${backendUrl}/api/user/profile`;
+    const apiUrl = `${backendUrl}/api/user/profile`;
 
     user = await fetch(apiUrl, {
       headers: {

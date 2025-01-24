@@ -49,9 +49,10 @@ import Image from "next/image";
 
 const formSchema = z.object({
   name: z.string().min(1, "Name is required"),
-  userId: z.number().nullable(),
+  userId: z.number().nullable().optional(),
   image: z.string().optional(),
   description: z.string().optional(),
+
   workouts: z
     .array(
       z.object({
@@ -82,8 +83,10 @@ export function AdminWorkoutPlanForm({
 }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-  const [editingWorkout, setEditingWorkout] =
-    useState<WorkoutWithPlannedExercise | null>(null);
+  const [editingWorkout, setEditingWorkout] = useState<Omit<
+    WorkoutWithPlannedExercise,
+    "description" | "workoutPlanId"
+  > | null>(null);
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const router = useRouter();
@@ -102,6 +105,16 @@ export function AdminWorkoutPlanForm({
         workoutPlan?.workouts.map((workout, index) => ({
           ...workout,
           order: workout.order || index + 1,
+          id: workout.id || 0,
+          exercises: workout.exercises.map((exercise) => ({
+            ...exercise,
+            id: exercise.id || 0,
+            exerciseId: exercise.exerciseId,
+            order: exercise.order,
+            sets: exercise.sets,
+            reps: exercise.reps,
+            rpe: exercise.rpe,
+          })),
         })) || [],
     },
   });
@@ -116,6 +129,16 @@ export function AdminWorkoutPlanForm({
         workoutPlan?.workouts.map((workout, index) => ({
           ...workout,
           order: workout.order || index + 1,
+          id: workout.id || 0,
+          exercises: workout.exercises.map((exercise) => ({
+            ...exercise,
+            id: exercise.id || 0,
+            exerciseId: exercise.exerciseId,
+            order: exercise.order,
+            sets: exercise.sets,
+            reps: exercise.reps,
+            rpe: exercise.rpe,
+          })),
         })) || [],
     });
 
@@ -335,26 +358,21 @@ export function AdminWorkoutPlanForm({
                       });
 
                       setEditingWorkout({
-                        id: workout.id || "",
-                        name: workout.name,
-                        order: workout.order || 1,
-                        description: "",
-                        workoutPlanId: Number(workoutPlan?.id),
-                        exercises: workout.exercises.map((exercise) => {
-                          const foundExercise = exercises.find(
+                        ...workout,
+                        id: workout.id || 0,
+                        exercises: workout.exercises.map((exercise) => ({
+                          ...exercise,
+                          id: exercise.id || 0,
+                          exerciseId: exercise.exerciseId,
+                          order: exercise.order,
+                          sets: exercise.sets,
+                          reps: exercise.reps,
+                          rpe: exercise.rpe || 0,
+                          workoutId: workout.id || 0,
+                          exercise: exercises.find(
                             (e) => e.id === exercise.exerciseId
-                          );
-                          return {
-                            id: 0,
-                            workoutId: Number(workout.id || 0),
-                            exerciseId: Number(exercise.exerciseId),
-                            sets: exercise.sets,
-                            reps: exercise.reps,
-                            rpe: exercise.rpe || 0,
-                            order: exercise.order,
-                            exercise: foundExercise!,
-                          };
-                        }),
+                          )!,
+                        })),
                       });
                       setIsDrawerOpen(true);
                     }}

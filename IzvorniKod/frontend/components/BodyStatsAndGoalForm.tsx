@@ -134,6 +134,8 @@ export default function BodyStatsAndGoalForm() {
     useState(false);
   const pathname = usePathname();
 
+  const { trainer } = useAppContext();
+
   useEffect(() => {
     const isExistingPlan = async () => {
       const isExistingPlan = await getNutritionPlan();
@@ -143,6 +145,12 @@ export default function BodyStatsAndGoalForm() {
     };
     isExistingPlan();
   }, [getNutritionPlan, router, pathname]);
+
+  useEffect(() => {
+    if (trainer) {
+      router.push("/workouts");
+    }
+  }, [trainer, router, pathname]);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),

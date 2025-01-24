@@ -27,14 +27,14 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AlertCircle, Loader2 } from "lucide-react";
 
 const formSchema = z.object({
-  id: z.number(),
+  id: z.number().optional(),
   name: z.string().min(1, "Name is required"),
   order: z.coerce.number().min(1, "Order must be at least 1"),
   exercises: z
     .array(
       z.object({
         id: z.number().optional(),
-        workoutId: z.number(),
+        workoutId: z.number().optional(),
         exerciseId: z.number(),
         sets: z.coerce.number().min(1, "Sets must be at least 1"),
         reps: z.coerce.number().min(1, "Reps must be at least 1"),
@@ -48,7 +48,10 @@ const formSchema = z.object({
 type FormValues = z.infer<typeof formSchema>;
 
 interface EditUserWorkoutFormProps {
-  workout: WorkoutWithPlannedExercisesBase;
+  workout: Omit<
+    WorkoutWithPlannedExercisesBase,
+    "description" | "workoutPlanId"
+  >;
   onSubmit: (data: WorkoutWithPlannedExerciseBaseUpdateInput) => Promise<void>;
 }
 
@@ -95,11 +98,13 @@ export function EditUserWorkoutForm({
         exercises: values.exercises.map((exercise) => ({
           ...exercise,
           id: exercise.id || 0,
+          exerciseId: exercise.exerciseId,
           order: exercise.order,
           sets: exercise.sets,
           reps: exercise.reps,
-          rpe: exercise.rpe,
+          rpe: exercise.rpe || 0,
           workoutId: workout.id,
+          exercise: exercises.find((e) => e.id === exercise.exerciseId)!,
         })),
       };
       await onSubmit(formattedData);

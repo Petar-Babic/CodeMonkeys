@@ -9,7 +9,6 @@ import {
   LayoutList,
   User,
   Utensils,
-  Settings,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -54,11 +53,6 @@ const navItemsForUser: NavItem[] = [
 ];
 
 const navItemsForAdmin: NavItem[] = [
-  {
-    title: "Admin",
-    href: "/admin",
-    icon: Settings,
-  },
   {
     title: "Workout Plans",
     href: "/admin/workout-plans",

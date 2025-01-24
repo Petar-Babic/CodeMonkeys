@@ -21,8 +21,8 @@ export default function UserWorkoutPlanCard() {
 
   useEffect(() => {
     getWorkoutSessions(
-      new Date(new Date().setDate(new Date().getDate() - 30)).toISOString(),
-      new Date().toISOString()
+      new Date(new Date().setDate(new Date().getDate() - 30)),
+      new Date()
     ).then((workoutSessions) => setWorkoutSessions(workoutSessions));
   }, [getWorkoutSessions]);
 
@@ -32,7 +32,7 @@ export default function UserWorkoutPlanCard() {
         (workout) => workout.id === workoutSession.workoutId
       )?.name || "",
     href: `/workout-session/${workoutSession.id}`,
-    date: workoutSession.date,
+    date: new Date(workoutSession.date),
   }));
 
   return (

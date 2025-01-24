@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import { backendUrl } from "@/data/backendUrl";
+import { DragEndEvent } from "react-dnd";
 
 interface ExerciseModalProps {
   exercise: {
-    id: number; 
+    id: number;
     name: string;
     description: string;
     gifUrl: string;
@@ -41,12 +42,15 @@ export default function ExerciseModal({
 
       try {
         const accessToken = localStorage.getItem("accessToken");
-        const response = await fetch(`${backendUrl}/api/exercises/history/${exercise.id}`, {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-        });
+        const response = await fetch(
+          `${backendUrl}/api/exercises/history/${exercise.id}`,
+          {
+            method: "GET",
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
+          }
+        );
 
         if (response.status === 404) {
           setHistory([]);
@@ -54,17 +58,21 @@ export default function ExerciseModal({
           throw new Error(`Error: ${response.status} ${response.statusText}`);
         } else {
           const data = await response.json();
-          setHistory(data); 
+          setHistory(data);
         }
       } catch (err: any) {
         setError(err.message || "Failed to load history.");
       } finally {
-        setLoading(false); 
+        setLoading(false);
       }
     };
 
     fetchHistory();
   }, [activeTab, exercise.id]);
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    // Implementation of handleDragEnd function
+  };
 
   return (
     <div className="fixed top-5 inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
@@ -74,7 +82,9 @@ export default function ExerciseModal({
         <div className="flex space-x-4 mb-4 border-b pb-2">
           <button
             className={`font-semibold ${
-              activeTab === "About" ? "text-gray-800 border-b-2 border-gray-800" : "text-gray-500"
+              activeTab === "About"
+                ? "text-gray-800 border-b-2 border-gray-800"
+                : "text-gray-500"
             }`}
             onClick={() => setActiveTab("About")}
           >
@@ -82,7 +92,9 @@ export default function ExerciseModal({
           </button>
           <button
             className={`font-semibold ${
-              activeTab === "History" ? "text-gray-800 border-b-2 border-gray-800" : "text-gray-500"
+              activeTab === "History"
+                ? "text-gray-800 border-b-2 border-gray-800"
+                : "text-gray-500"
             }`}
             onClick={() => setActiveTab("History")}
           >

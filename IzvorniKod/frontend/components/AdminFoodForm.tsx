@@ -16,6 +16,13 @@ import {
 import { useAppContext } from "@/contexts/AppContext";
 import { Loader2 } from "lucide-react";
 import { FoodBase } from "@/types/food";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const formSchema = z.object({
   name: z.string().min(1, "Naziv je obavezan"),
@@ -25,6 +32,7 @@ const formSchema = z.object({
   fats: z.number().min(0, "Masti moraju biti pozitivan broj"),
   unit: z.string().min(1, "Jedinica je obavezna"),
   defaultNumber: z.number().min(1, "Default number is required"),
+  approved: z.boolean(),
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -43,6 +51,7 @@ export function AdminFoodForm({ food }: { food: FoodBase | null }) {
       fats: food?.fats || 0,
       unit: food?.unit || "",
       defaultNumber: food?.defaultNumber || 1,
+      approved: food?.approved || false,
     },
   });
 
@@ -178,6 +187,32 @@ export function AdminFoodForm({ food }: { food: FoodBase | null }) {
                   {...field}
                   onChange={(e) => field.onChange(Number(e.target.value))}
                 />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="approved"
+          render={({ field }) => (
+            <FormItem>
+              {" "}
+              <FormLabel>Odobreno</FormLabel>
+              <FormControl>
+                <Select
+                  onValueChange={(value) => field.onChange(value === "true")}
+                  value={field.value.toString()}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Odaberite status" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="true">Odobreno</SelectItem>
+                    <SelectItem value="false">Nije odobreno</SelectItem>
+                  </SelectContent>
+                </Select>
               </FormControl>
               <FormMessage />
             </FormItem>

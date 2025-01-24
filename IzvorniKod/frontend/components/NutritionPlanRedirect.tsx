@@ -12,17 +12,18 @@ export default function NutritionPlanRedirect({
 }) {
   const router = useRouter();
   const pathname = usePathname();
-  const { nutritionPlan } = useAppContext();
+  const { nutritionPlan, trainer } = useAppContext();
   useEffect(() => {
     if (
       innitialNutritionPlan === null &&
       nutritionPlan === null &&
       pathname !== "/body-stats-and-goals" &&
-      pathname !== "/pick-client"
+      pathname !== "/pick-client" &&
+      trainer === null
     ) {
       router.push("/body-stats-and-goals");
     }
-  }, [innitialNutritionPlan, nutritionPlan, router, pathname]);
+  }, [innitialNutritionPlan, nutritionPlan, router, pathname, trainer]);
 
   return null;
 }
