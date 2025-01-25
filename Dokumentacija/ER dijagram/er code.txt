@@ -1,0 +1,204 @@
+user [icon: user, color: blue] {
+  id uuid pk
+  name string
+  email string
+  emailVerified boolean
+  image string
+  role enum
+  password? string
+  currentNutritionalPlan uuid fk
+  trainerId uuid fk
+}
+
+meal [color: red] {
+  id uuid pk
+  isSuggestion boolean
+  userId uuid fk
+  createdById uuid fk
+  nutritionPlan uuid fk
+  time timestamp
+  suggestedId uuid fk
+}
+
+food [color: red] {
+  id uuid pk
+  calories number
+  unit enum
+  defaultNumber number
+  fats number
+  carbs number
+  protein number
+}
+
+foodMeal [color: red] {
+  id uuid pk
+  quantity number
+  foodId uuid fk
+  mealId uuid fk
+}
+
+nutritionPlan [color: red] {
+  id uuid pk
+  userId uuid fk
+  name string
+  calories number
+  protein number
+  carbs number
+  fat number
+  startDate datetime
+  endDate datetime
+}
+
+performedSet [color: green] {
+  id uuid pk
+  performedExercises uuid fk
+  reps number
+  weight number
+  rpe number
+}
+
+performedExercises [color: green] {
+  id uuid pk
+  workoutSession uuid fk
+  plannedExercise uuid fk
+}
+
+workoutSession [color: green] {
+  id uuid pk
+  workoutId uuid fk
+  userId uuid fk
+  date datetime
+  userReviewId uuid fk
+  trainerReviewId uuid fk
+}
+
+plannedExercise [color: green] {
+  id uuid pk
+  workoutId uuid fk
+  exerciseId uuid fk
+  sets number
+  reps number
+  rpe number
+  order number
+}
+
+workoutPlan [color: green] {
+  id uuid pk
+  name string
+  description string
+  image string
+  createdById uuid fk
+  userId? uuid fk
+  originalWorkoutPlanId uuid fk
+}
+
+workout [color: green] {
+  id uuid pk
+  name string
+  description string
+  workoutPlanId uuid fk
+  order number
+}
+
+exercise [color: green] {
+  id uuid pk
+  name string
+  description string
+  gif string
+  createdById uuid fk
+  isApproved boolean
+  primaryMuscleGroup uuid fk
+  secondaryMuscleGroup uuid fk
+}
+
+review [color: yellow] {
+  id uuid pk
+  rating number
+  comment string
+}
+
+verificationToken [color: gray] {
+  id uuid pk
+  token uuid
+  myUser uuid fk
+  expiry datetime
+}
+
+refreshToken [color: gray] {
+  id uuid pk
+  token uuid
+  userId uuid fk
+  expires datetime
+}
+
+sleepLog [color: purple] {
+  id uuid pk
+  userId uuid fk
+  date datetime
+  duration number
+  quality number
+  notes string
+  createdAt datetime
+  updatedAt datetime
+}
+
+muscleGroup [color: pink] {
+  id uuid pk
+  name string
+  description string
+  image string
+}
+
+bodyMeasurement [color: teal] {
+  id uuid pk
+  weight number
+  height number
+  chest number
+  waist number
+  hips number
+  biceps number
+  createdAt datetime
+  updatedAt datetime
+  isGoal boolean
+  createdBy uuid fk
+}
+
+performedExercises.workoutSession > workoutSession.id
+performedExercises.plannedExercise > plannedExercise.id
+
+workoutSession.userId > user.id
+workoutSession.workoutId > workout.id
+workoutSession.userReviewId > review.id
+workoutSession.trainerReviewId > review.id
+
+plannedExercise.workoutId > workout.id
+plannedExercise.exerciseId > exercise.id
+
+performedSet.performedExercises > performedExercises.id
+
+workout.workoutPlanId > workoutPlan.id
+
+workoutPlan.createdById > user.id
+workoutPlan.userId? > user.id
+
+nutritionPlan.userId > user.id
+
+foodMeal.foodId > food.id
+foodMeal.mealId > meal.id
+
+meal.userId > user.id
+meal.createdById > user.id
+meal.suggestedId > meal.id
+
+verificationToken.userId > user.id
+
+refreshToken.myUser > user.id
+
+sleepLog.userId > user.id
+
+muscleGroup.id <> exercise.primaryMuscleGroup
+muscleGroup.id <> exercise.secondaryMuscleGroup
+
+exercise.createdById > user.id
+
+user.id > bodyMeasurement.createdBy
