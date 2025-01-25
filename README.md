@@ -1,4 +1,18 @@
-# Gym Progress Tracking App
+# Gym Progress Tracking App 
+
+http://gymprogress.lukakordic.me
+
+Pristupni podaci:
+* Testni korisnik:
+  * Username: kcfakduswvbjevmoqz@hthlm.com
+  * Password: kcfakduswvbjevmoqz@hthlm.com
+* Admin:
+  * Username: luka.kordic@fer.hr
+  * Password: luka.kordic@fer.hr
+* Trener:
+  * Username: trener@gmail.com
+  * Password: trener@gmail.com
+
 
 # Opis projekta
 
